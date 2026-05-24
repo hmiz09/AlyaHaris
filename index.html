@@ -520,7 +520,7 @@
     /* Budget spacing */
     .budget-header {
       display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr 1fr 28px;
+      grid-template-columns: 2.2fr 1fr 1fr 1fr 28px;
       gap: 6px;
       font-size: 11px;
       color: var(--pm);
@@ -528,27 +528,27 @@
       letter-spacing: .08em;
       padding-bottom: 8px;
       border-bottom: 0.5px solid var(--pb);
-      min-width: 440px;
+      min-width: 560px;
     }
 
     .budget-row {
       display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr 1fr 28px;
+      grid-template-columns: 2.2fr 1fr 1fr 1fr 28px;
       gap: 6px;
       align-items: center;
       padding: 10px 0;
       border-bottom: 0.5px solid var(--pb);
-      min-width: 440px;
+      min-width: 560px;
     }
 
     .budget-total {
       display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr 1fr 28px;
+      grid-template-columns: 2.2fr 1fr 1fr 1fr 28px;
       gap: 6px;
       padding-top: 10px;
       font-size: 12.5px;
       font-weight: 600;
-      min-width: 440px;
+      min-width: 560px;
     }
 
     /* Guest */
@@ -1496,13 +1496,13 @@
 
           const nameCol = div("");
           nameCol.style.cssText = "display:flex;flex-direction:column;gap:2px;overflow:hidden;";
-          
+
           const nameRow = div("");
           nameRow.style.cssText = "display:flex;align-items:center;gap:6px;overflow:hidden;";
-          
+
           const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
           nameRow.appendChild(name);
-          
+
           if (item.link) {
             const lk = h("a", { href: item.link, target: "_blank", style: "display:inline-flex;align-items:center;color:#ff5722;text-decoration:none;" });
             lk.appendChild(icon("shopping-cart", { fontSize: "13px" }));
