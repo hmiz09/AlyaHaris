@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#fdf6f8" />
+  <title>Haris & Alya 💍</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --pk: #d4537e;
+      --pl: #fce8ef;
+      --pm: #c4849a;
+      --pd: #6b2d45;
+      --pb: #f0cdd8;
+      --bg: #fdf6f8;
+      --white: #fff;
+      --green: #2e7d52;
+      --green-bg: #e9f7ef;
+      --orange: #a05f00;
+      --orange-bg: #fff4e5;
+      --red: #993556;
+      --red-bg: #fce8ef;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 20px rgba(107, 45, 69, .04);
+      --glass-bg: rgba(255, 255, 255, 0.88);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--pd);
+      font-size: 14px;
+    }
+
+    /* Layout */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    #header {
+      flex-shrink: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 0.5px solid rgba(240, 205, 216, 0.7);
+      padding: 14px 16px 12px;
+      position: relative;
+      z-index: 40;
+    }
+
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 90px;
+    }
+
+    #nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 0.5px solid rgba(240, 205, 216, 0.7);
+      display: flex;
+      padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+      z-index: 100;
+      box-shadow: 0 -4px 30px rgba(107, 45, 69, .05);
+    }
+
+    /* Nav buttons */
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 8px 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 48px;
+    }
+
+    .nav-btn:active,
+    .btn-primary:active,
+    .btn-secondary:active,
+    .btn-ghost:active,
+    .card-active-tap:active {
+      transform: scale(0.96);
+    }
+
+    .nav-btn.active {
+      background: rgba(212, 83, 126, 0.08);
+    }
+
+    .nav-btn i {
+      font-size: 19px;
+      color: var(--pm);
+      transition: color .2s;
+    }
+
+    .nav-btn span {
+      font-size: 9.5px;
+      color: var(--pm);
+      font-weight: 500;
+      letter-spacing: .02em;
+      transition: color .2s;
+    }
+
+    .nav-btn.active i,
+    .nav-btn.active span {
+      color: var(--pk);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border: 0.5px solid var(--pb);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--pm);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .card-title i {
+      font-size: 15px;
+    }
+
+    /* Stat cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 0.5px solid var(--pb);
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--pd);
+      line-height: 1;
+      font-weight: 500;
+    }
+
+    .stat-num.sm {
+      font-size: 18px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--pm);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Progress bar */
+    .prog-wrap {
+      margin: 6px 0 2px;
+    }
+
+    .prog-bar {
+      height: 6px;
+      background: var(--pl);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--pk);
+      border-radius: 99px;
+      transition: width .4s ease-out;
+    }
+
+    .prog-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--pm);
+      margin-top: 4px;
+    }
+
+    /* Check items */
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 8px;
+      border-radius: var(--radius-sm);
+      transition: background .15s;
+      min-height: 48px;
+    }
+
+    .check-item:active {
+      background: var(--pl);
+    }
+
+    .check-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--pb);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+
+    .check-circle.done {
+      background: var(--pk);
+      border-color: var(--pk);
+    }
+
+    .check-circle i {
+      font-size: 12px;
+      color: var(--white);
+    }
+
+    .check-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--pd);
+      line-height: 1.4;
+    }
+
+    .check-text.done {
+      color: var(--pm);
+      text-decoration: line-through;
+    }
+
+    .check-actions {
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .check-actions i {
+      font-size: 17px;
+      color: var(--pb);
+      padding: 6px;
+    }
+
+    /* Inputs (iOS Zoom Prevention) */
+    .inp {
+      border: 0.5px solid var(--pb);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 15px;
+      background: var(--white);
+      color: var(--pd);
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-appearance: none;
+      transition: border-color 0.2s;
+    }
+
+    .inp:focus {
+      outline: none;
+      border-color: var(--pk);
+      box-shadow: 0 0 0 3px rgba(212, 83, 126, 0.1);
+    }
+
+    .inp.sm {
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    select.inp {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4849a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    /* iPhone/Android Input scale blocker */
+    @media (max-width: 768px) {
+
+      .inp,
+      select.inp,
+      .inp.sm,
+      select,
+      input[type="text"],
+      input[type="number"],
+      input[type="url"],
+      input[type="date"] {
+        font-size: 16px !important;
+      }
+    }
+
+    /* Buttons */
+    .btn-primary {
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--pk);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-appearance: none;
+      min-height: 44px;
+      justify-content: center;
+    }
+
+    .btn-secondary {
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--pl);
+      color: var(--pk);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 44px;
+      justify-content: center;
+    }
+
+    .btn-ghost {
+      border: 0.5px solid var(--pb);
+      border-radius: var(--radius-sm);
+      padding: 9px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      background: var(--white);
+      color: var(--pm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 38px;
+    }
+
+    /* Badges */
+    .badge {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Timeline */
+    .tl-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--pb);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .tl-dot.active {
+      background: var(--pk);
+      border-color: var(--pk);
+    }
+
+    .tl-line {
+      width: 2px;
+      background: var(--pb);
+      flex: 1;
+      min-height: 24px;
+      margin-top: 4px;
+    }
+
+    /* Modal Sheet styles */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(107, 45, 69, .4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-sheet {
+      background: var(--white);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-height: 85dvh;
+      overflow-y: auto;
+      padding: 0 0 calc(24px + env(safe-area-inset-bottom));
+      -webkit-overflow-scrolling: touch;
+      animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 5px;
+      background: var(--pb);
+      border-radius: 99px;
+      margin: 12px auto 16px;
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 24px;
+      color: var(--pd);
+      padding: 0 20px 14px;
+      border-bottom: 0.5px solid var(--pb);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .modal-body {
+      padding: 0 20px;
+    }
+
+    .modal-label {
+      font-size: 12px;
+      color: var(--pm);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .modal-field {
+      margin-bottom: 16px;
+    }
+
+    /* Vendor row */
+    .vendor-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 0.5px solid var(--pb);
+    }
+
+    /* Budget spacing */
+    .budget-header {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 28px;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--pm);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding-bottom: 8px;
+      border-bottom: 0.5px solid var(--pb);
+      min-width: 440px;
+    }
+
+    .budget-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 28px;
+      gap: 6px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 0.5px solid var(--pb);
+      min-width: 440px;
+    }
+
+    .budget-total {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 28px;
+      gap: 6px;
+      padding-top: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      min-width: 440px;
+    }
+
+    /* Guest */
+    .guest-row {
+      display: grid;
+      grid-template-columns: 1fr 95px 32px;
+      gap: 8px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 0.5px solid var(--pb);
+    }
+
+    /* Cat tabs */
+    .cat-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .cat-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-tab {
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 0.5px solid var(--pb);
+      background: var(--pl);
+      color: var(--pd);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    .cat-tab.active {
+      background: var(--pk);
+      border-color: var(--pk);
+      color: var(--white);
+    }
+
+    /* Countdown */
+    .cd-box {
+      text-align: center;
+      background: var(--white);
+      border: 0.5px solid var(--pb);
+      border-radius: 14px;
+      padding: 10px 18px;
+      min-width: 72px;
+      box-shadow: var(--shadow);
+    }
+
+    .cd-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: #b8426a;
+      line-height: 1;
+    }
+
+    .cd-label {
+      font-size: 9px;
+      color: var(--pm);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Sync badge */
+    .sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* Info banner */
+    .info-banner {
+      background: var(--pl);
+      border: 0.5px solid var(--pk);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    /* Petal */
+    .petal {
+      position: absolute;
+      font-size: 18px;
+      opacity: .15;
+      pointer-events: none;
+      animation: fp 6s ease-in-out infinite;
+    }
+
+    @keyframes fp {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg)
+      }
+
+      50% {
+        transform: translateY(-8px) rotate(15deg)
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .spin {
+      animation: spin .8s linear infinite;
+      display: inline-block;
+    }
+
+    /* Add row */
+    .add-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 0.5px solid var(--pb);
+      margin-top: 6px;
+    }
+
+    /* Section divider */
+    .divider {
+      height: 0.5px;
+      background: var(--pb);
+      margin: 10px 0;
+    }
+
+    /* Sisa label */
+    .sisa {
+      font-size: 11px;
+      text-align: right;
+      padding-top: 3px;
+      font-weight: 500;
+    }
+
+    /* Summary strip */
+    .sum-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .sum-box {
+      background: var(--pl);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .sum-box-label {
+      font-size: 9px;
+      color: var(--pm);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .sum-box-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      color: var(--pd);
+      line-height: 1.2;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div id="header"></div>
+    <div id="content"></div>
+    <nav id="nav"></nav>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    // ── State ──────────────────────────────────────────────────
+    const uid = () => Math.random().toString(36).slice(2, 8);
+    const fmtRp = n => n ? ("Rp " + Math.round(n).toLocaleString("id-ID")) : "–";
+    const CATS = ["Seserahan", "Lamaran", "Pre-Wedding", "Transport", "Resepsi", "Akad"];
+    const VSTATUS = { confirmed: { bg: "#e9f7ef", color: "#2e7d52", label: "Confirmed" }, pending: { bg: "#fff4e5", color: "#a05f00", label: "Pending" }, searching: { bg: "#fce8ef", color: "#993556", label: "Searching" } };
+    const RSVP_MAP = { confirmed: { bg: "#e9f7ef", color: "#2e7d52", label: "Hadir" }, declined: { bg: "#fce8ef", color: "#993556", label: "Tidak Hadir" }, pending: { bg: "#fff4e5", color: "#a05f00", label: "Belum" } };
+    const SIDES = ["Mempelai Pria", "Mempelai Wanita", "Keluarga Bersama"];
+
+    let state = {
+      page: "dashboard",
+      syncStatus: "nourl", // nourl|syncing|synced|error|local
+      scriptUrl: "",
+      activeCat: "Seserahan",
+      guestFilter: "all",
+      guestSearch: "",
+      editingCheckId: null,
+      editingKuaId: null,
+      modal: null, // null|setup|info|vendor|guest|tl
+      modalForm: {},
+      data: {
+        info: { date: "2026-02-14", location: "Makassar, Sulawesi Selatan" },
+        checklist: [
+          { id: "c1", text: "Book venue & catering", done: true }, { id: "c2", text: "Pilih gaun pengantin", done: true },
+          { id: "c3", text: "Kirim save-the-date", done: true }, { id: "c4", text: "Book fotografer & videografer", done: true },
+          { id: "c5", text: "Rencana honeymoon", done: true }, { id: "c6", text: "Sewa dekorasi & florist", done: true },
+          { id: "c7", text: "Cicip & pesan wedding cake", done: true }, { id: "c8", text: "Buat denah tempat duduk", done: false },
+          { id: "c9", text: "Pesan souvenir pernikahan", done: false }, { id: "c10", text: "Trial hair & makeup", done: false },
+          { id: "c11", text: "Tulis janji & vows", done: false }, { id: "c12", text: "Rehearsal dinner", done: false },
+        ],
+        kua: [
+          { id: "k1", text: "Surat pengantar RT/RW", done: false }, { id: "k2", text: "Fotokopi KTP (2 lembar/orang)", done: false },
+          { id: "k3", text: "Fotokopi KK (2 lembar/orang)", done: false }, { id: "k4", text: "Fotokopi Akta Kelahiran", done: false },
+          { id: "k5", text: "Pas foto 2×3 (4 lembar/orang)", done: false }, { id: "k6", text: "Pas foto 3×4 (2 lembar/orang)", done: false },
+          { id: "k7", text: "Surat keterangan belum menikah", done: false }, { id: "k8", text: "Formulir N1 – Surat keterangan nikah", done: false },
+          { id: "k9", text: "Formulir N2 – Surat asal-usul", done: false }, { id: "k10", text: "Formulir N4 – Surat keterangan orang tua", done: false },
+          { id: "k11", text: "Fotokopi buku nikah orang tua", done: false }, { id: "k12", text: "Surat rekomendasi KUA asal", done: false },
+          { id: "k13", text: "Surat izin orang tua (jika < 21 thn)", done: false }, { id: "k14", text: "Fotokopi ijazah terakhir", done: false },
+        ],
+        timeline: [
+          { id: "t1", month: "Mei 2025", task: "Trial hair & makeup" }, { id: "t2", month: "Jun 2025", task: "Finalisasi denah & menu" },
+          { id: "t3", month: "Agu 2025", task: "Kirim undangan resmi" }, { id: "t4", month: "Okt 2025", task: "Fitting & alterasi gaun" },
+          { id: "t5", month: "Jan 2026", task: "Rehearsal dinner" },
+        ],
+        vendors: [
+          { id: "v1", name: "Bali Garden Resort", type: "Venue", status: "confirmed", contact: "" },
+          { id: "v2", name: "Foto Kenangan", type: "Photography", status: "confirmed", contact: "" },
+          { id: "v3", name: "La Belle Patisserie", type: "Cake", status: "confirmed", contact: "" },
+          { id: "v4", name: "Rosa Florist", type: "Flowers", status: "pending", contact: "" },
+          { id: "v5", name: "Live Band", type: "Music", status: "searching", contact: "" },
+        ],
+        guests: [],
+        budget: Object.fromEntries(CATS.map(c => [c, []])),
+        dana: [] // [{id, nama, jumlah, keterangan}]
+      }
+    };
+
+    let saveTimer = null;
+    let loaded = false;
+
+    // ── Computed ───────────────────────────────────────────────
+    function countdown() {
+      const diff = Math.max(0, new Date(state.data.info.date + "T00:00:00") - new Date());
+      const d = Math.floor(diff / 86400000);
+      return { days: d, weeks: Math.floor(d / 7), months: Math.floor(d / 30) };
+    }
+    function displayDate() {
+      try { return new Date(state.data.info.date + "T00:00:00").toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" }); }
+      catch { return state.data.info.date; }
+    }
+    function catSum(cat, f) { return (state.data.budget[cat] || []).reduce((s, i) => s + (Number(i[f]) || 0), 0); }
+    function totalOf(f) { return CATS.reduce((s, c) => s + catSum(c, f), 0); }
+    function totalDana() { return (state.data.dana || []).reduce((s, i) => s + (Number(i.jumlah) || 0), 0); }
+
+    // ── Persist ────────────────────────────────────────────────
+    async function load() {
+      let url = "";
+      if (typeof GSHEET_SCRIPT_URL !== "undefined" && GSHEET_SCRIPT_URL) {
+        url = GSHEET_SCRIPT_URL;
+      } else {
+        try { const r = localStorage.getItem("gscript_url_v1"); if (r) url = r; } catch (e) { }
+      }
+      state.scriptUrl = url;
+      if (url) {
+        state.syncStatus = "syncing";
+        try {
+          const res = await fetch(url);
+          const parsed = JSON.parse(await res.text());
+          if (parsed && Object.keys(parsed).length > 0) {
+            state.data = { ...state.data, ...parsed, budget: { ...state.data.budget, ...(parsed.budget || {}) }, guests: parsed.guests || [], dana: parsed.dana || [] };
+          }
+          state.syncStatus = "synced";
+        } catch (e) {
+          state.syncStatus = "error";
+          try { const r = localStorage.getItem("ha_data_v7"); if (r) { const d = JSON.parse(r); state.data = { ...state.data, ...d, budget: { ...state.data.budget, ...(d.budget || {}) }, guests: d.guests || [], dana: d.dana || [] }; } } catch (e2) { }
+        }
+      } else {
+        state.syncStatus = "nourl";
+        try { const r = localStorage.getItem("ha_data_v7"); if (r) { const d = JSON.parse(r); state.data = { ...state.data, ...d, budget: { ...state.data.budget, ...(d.budget || {}) }, guests: d.guests || [], dana: d.dana || [] }; } } catch (e) { }
+      }
+      loaded = true;
+      render();
+    }
+
+    function scheduleSave() {
+      if (!loaded) return;
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(doSave, 1200);
+    }
+
+    async function doSave() {
+      const json = JSON.stringify(state.data);
+      try { localStorage.setItem("ha_data_v7", json); } catch (e) { }
+      if (!state.scriptUrl) { state.syncStatus = "local"; updateSyncBadge(); return; }
+      state.syncStatus = "syncing"; updateSyncBadge();
+      try {
+        await fetch(state.scriptUrl, { method: "POST", body: json });
+        state.syncStatus = "synced";
+      } catch (e) { state.syncStatus = "error"; }
+      updateSyncBadge();
+    }
+
+    // ── DOM helpers ────────────────────────────────────────────
+    const h = (tag, attrs = {}, children = []) => {
+      const el = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "class") el.className = v;
+        else if (k.startsWith("on")) el.addEventListener(k.slice(2).toLowerCase(), v);
+        else if (k === "style" && typeof v === "object") Object.assign(el.style, v);
+        else el.setAttribute(k, v);
+      }
+      for (const c of children) {
+        if (c == null || c === false) continue;
+        el.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+      }
+      return el;
+    };
+    const div = (cls, children = [], attrs = {}) => h("div", { class: cls, ...attrs }, children);
+    const icon = (name, extra = {}) => { const i = document.createElement("i"); i.className = `ti ti-${name}`; Object.assign(i.style, extra); return i; };
+
+    function progBar(pct, color = "var(--pk)") {
+      const wrap = div("prog-bar");
+      const fill = div("prog-fill");
+      fill.style.width = pct + "%";
+      fill.style.background = color;
+      wrap.appendChild(fill);
+      return wrap;
+    }
+
+    // ── Sync badge ─────────────────────────────────────────────
+    function updateSyncBadge() {
+      const el = document.getElementById("sync-badge");
+      if (!el) return;
+      const cfg = {
+        syncing: { icon: "ti-refresh", color: "#a05f00", bg: "#fff4e5", label: "Menyimpan...", spin: true },
+        synced: { icon: "ti-cloud-check", color: "#2e7d52", bg: "#e9f7ef", label: "Tersimpan" },
+        error: { icon: "ti-cloud-x", color: "#993556", bg: var_("--red-bg"), label: "Gagal simpan" },
+        local: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
+        nourl: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
+      };
+      const c = cfg[state.syncStatus] || cfg.nourl;
+      el.style.background = c.bg; el.style.color = c.color;
+      el.innerHTML = `<i class="ti ${c.icon}${c.spin ? " spin" : ""}"></i> ${c.label}`;
+    }
+    function var_(v) { return getComputedStyle(document.documentElement).getPropertyValue(v); }
+
+    // ── Render ─────────────────────────────────────────────────
+    function render() {
+      renderHeader();
+      renderContent();
+      renderNav();
+      if (state.modal) renderModal();
+      else { const m = document.getElementById("modal-container"); if (m) m.remove(); }
+    }
+
+    function renderHeader() {
+      const hdr = document.getElementById("header");
+      const cd = countdown();
+      hdr.innerHTML = "";
+      hdr.style.cssText = "background:#fff;border-bottom:0.5px solid var(--pb);padding:12px 16px 14px;position:relative;overflow:hidden;";
+
+      // petals
+      [["🌸", 10, 20, "0s"], ["🌷", 5, null, "1.5s"], ["🌸", null, null, "2.5s"]].forEach(([e, t, l, d]) => {
+        const p = document.createElement("span");
+        p.className = "petal";
+        p.textContent = e;
+        p.style.cssText = `top:${t || "auto"}px;left:${l != null ? l + "px" : "auto"};right:${l == null ? "30px" : "auto"};bottom:auto;animation-delay:${d}`;
+        hdr.appendChild(p);
+      });
+
+      // Top row: sync badge (centered)
+      const topRow = div("", [
+        h("span", { id: "sync-badge", class: "sync-badge" })
+      ]);
+      topRow.style.cssText = "display:flex;justify-content:center;align-items:center;margin-bottom:10px;";
+      hdr.appendChild(topRow);
+
+      // Title
+      const title = document.createElement("div");
+      title.style.cssText = "font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;color:var(--pd);line-height:1.1;text-align:center;";
+      title.textContent = "Haris & Alya";
+      hdr.appendChild(title);
+
+      // Date + edit
+      const dateRow = div("", []);
+      dateRow.style.cssText = "display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;";
+      const dateText = document.createElement("span");
+      dateText.style.cssText = "font-size:12px;color:#b87090;";
+      dateText.textContent = displayDate();
+      const editBtn = h("button", { onclick: () => openModal("info"), class: "" });
+      editBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;";
+      editBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pb)" }));
+      dateRow.append(dateText, editBtn);
+      hdr.appendChild(dateRow);
+
+      // Location
+      const loc = div("");
+      loc.style.cssText = "display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--pm);margin-top:2px;";
+      loc.appendChild(icon("map-pin", { fontSize: "12px" }));
+      loc.appendChild(document.createTextNode(state.data.info.location));
+      hdr.appendChild(loc);
+
+      // Countdown
+      const cdRow = div("");
+      cdRow.style.cssText = "display:flex;justify-content:center;gap:10px;margin-top:10px;";
+      [["Days", cd.days], ["Weeks", cd.weeks], ["Months", cd.months]].forEach(([l, v]) => {
+        const box = div("cd-box");
+        const num = div("cd-num"); num.textContent = v;
+        const lbl = div("cd-label"); lbl.textContent = l;
+        box.append(num, lbl);
+        cdRow.appendChild(box);
+      });
+      hdr.appendChild(cdRow);
+
+      updateSyncBadge();
+    }
+
+    function renderNav() {
+      const nav = document.getElementById("nav");
+      nav.innerHTML = "";
+      const primaryItems = [
+        ["dashboard", "layout-dashboard", "Home"],
+        ["checklist", "checklist", "Checklist"],
+        ["budget", "coins", "Budget"],
+        ["tamu", "users", "Tamu"]
+      ];
+
+      primaryItems.forEach(([p, icon_name, label]) => {
+        const isActive = state.page === p;
+        const btn = h("button", {
+          class: "nav-btn" + (isActive ? " active" : ""),
+          onclick: () => { state.page = p; renderContent(); renderNav(); }
+        });
+        const ic = document.createElement("i");
+        ic.className = `ti ti-${icon_name}`;
+        const sp = document.createElement("span");
+        sp.textContent = label;
+        btn.append(ic, sp);
+        nav.appendChild(btn);
+      });
+
+      // Render "Lainnya" (More) button
+      const isLainnyaActive = ["timeline", "vendor", "dana"].includes(state.page);
+      const lainnyaBtn = h("button", {
+        class: "nav-btn" + (isLainnyaActive ? " active" : ""),
+        onclick: () => { openModal("lainnya_menu"); }
+      });
+      const ic = document.createElement("i");
+      ic.className = "ti ti-dots";
+      const sp = document.createElement("span");
+      sp.textContent = "Lainnya";
+      lainnyaBtn.append(ic, sp);
+      nav.appendChild(lainnyaBtn);
+    }
+
+    function renderContent() {
+      const c = document.getElementById("content");
+      c.innerHTML = "";
+      const fns = { dashboard: renderDashboard, checklist: renderChecklist, timeline: renderTimeline, tamu: renderTamu, vendor: renderVendor, budget: renderBudget, dana: renderDana };
+      (fns[state.page] || renderDashboard)(c);
+    }
+
+    // ── Dashboard ──────────────────────────────────────────────
+    function renderDashboard(c) {
+      const d = state.data;
+      const tasksDone = d.checklist.filter(t => t.done).length;
+      const taskPct = d.checklist.length ? Math.round(tasksDone / d.checklist.length * 100) : 0;
+      const gConfirmed = d.guests.filter(g => g.rsvp === "confirmed").length;
+      const gTotal = d.guests.length;
+      const gPct = gTotal ? Math.round(gConfirmed / gTotal * 100) : 0;
+      const totalEst = totalOf("estimasi");
+      const totalDibayar = totalOf("dibayar");
+      const totalHarga = totalOf("harga");
+
+      const totalDanaVal = totalDana();
+
+      // Ringkasan Keuangan card
+      const rkCard = div("card");
+      const rkTtl = div("card-title");
+      rkTtl.append(icon("piggy-bank"), document.createTextNode("Ringkasan Keuangan"));
+      rkCard.appendChild(rkTtl);
+
+      // Financial balance grid
+      const fGrid = div("");
+      fGrid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;";
+
+      const boxDana = div("sum-box");
+      const lblDana = div("sum-box-label"); lblDana.textContent = "Dana Dimiliki";
+      const valDana = div("sum-box-val"); valDana.style.color = "var(--green)"; valDana.textContent = totalDanaVal > 0 ? fmtRp(totalDanaVal) : "Rp 0";
+      boxDana.append(lblDana, valDana);
+
+      const boxEst = div("sum-box");
+      const lblEst = div("sum-box-label"); lblEst.textContent = "Budget Dibutuhkan";
+      const valEst = div("sum-box-val"); valEst.style.color = "var(--pk)"; valEst.textContent = totalEst > 0 ? fmtRp(totalEst) : "Rp 0";
+      boxEst.append(lblEst, valEst);
+
+      fGrid.append(boxDana, boxEst);
+      rkCard.appendChild(fGrid);
+
+      // Progress bar inside financial card
+      const pct = totalEst > 0 ? Math.min(100, Math.round(totalDanaVal / totalEst * 100)) : 0;
+      const plbl = div(""); plbl.style.cssText = "display:flex;justify-content:space-between;font-size:11px;color:var(--pm);margin-bottom:4px;margin-top:2px;";
+      plbl.innerHTML = `<span>Dana Terkumpul</span><strong>${pct}%</strong>`;
+      rkCard.append(plbl, progBar(pct, totalDanaVal >= totalEst ? "var(--green)" : "var(--orange)"));
+
+      const space = div(""); space.style.height = "12px";
+      rkCard.appendChild(space);
+
+      // Progress and status
+      const diffVal = totalDanaVal - totalEst;
+      const statusWrap = div("");
+      statusWrap.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:600;";
+      if (diffVal >= 0) {
+        statusWrap.style.background = "var(--green-bg)";
+        statusWrap.style.color = "var(--green)";
+        statusWrap.innerHTML = `<span><i class="ti ti-circle-check"></i> Dana Cukup</span><span>+${fmtRp(diffVal)}</span>`;
+      } else {
+        statusWrap.style.background = "var(--red-bg)";
+        statusWrap.style.color = "var(--red)";
+        statusWrap.innerHTML = `<span><i class="ti ti-alert-circle"></i> Dana Kurang</span><span>-${fmtRp(Math.abs(diffVal))}</span>`;
+      }
+      rkCard.appendChild(statusWrap);
+
+      // Breakdown of funding sources
+      const rkBreakdown = div("");
+      rkBreakdown.style.cssText = "margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:12px;";
+
+      const breakdownHeader = div("");
+      breakdownHeader.style.cssText = "display:flex;justify-content:space-between;font-weight:600;color:var(--pm);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;border-bottom:0.5px solid var(--pb);padding-bottom:4px;";
+      breakdownHeader.innerHTML = "<span>Sumber Dana</span><span>Jumlah</span>";
+      rkBreakdown.appendChild(breakdownHeader);
+
+      if (d.dana && d.dana.length > 0) {
+        d.dana.forEach(src => {
+          const row = div("");
+          row.style.cssText = "display:flex;justify-content:space-between;color:var(--pd);";
+          row.innerHTML = `<span>${src.nama}</span><strong>${fmtRp(src.jumlah)}</strong>`;
+          rkBreakdown.appendChild(row);
+        });
+      } else {
+        const row = div("");
+        row.style.cssText = "text-align:center;color:var(--pm);font-style:italic;";
+        row.textContent = "Belum ada data dana yang dimasukkan.";
+        rkBreakdown.appendChild(row);
+      }
+      rkCard.appendChild(rkBreakdown);
+
+      c.appendChild(rkCard);
+
+      // Vendors + Budget side by side
+      const grid2 = div(""); grid2.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;";
+      // Vendors
+      const vc = div("card"); vc.style.marginBottom = "0";
+      const vt = div("card-title");
+      vt.style.justifyContent = "space-between";
+      const vtl = div(""); vtl.style.display = "flex"; vtl.style.alignItems = "center"; vtl.style.gap = "6px";
+      vtl.append(icon("building-store"), document.createTextNode("Vendors"));
+      const vadd = h("button", { onclick: () => openModal("vendor", { id: "", name: "", type: "", status: "pending", contact: "" }) });
+      vadd.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;";
+      vadd.appendChild(icon("plus", { fontSize: "14px", color: "var(--pm)" }));
+      vt.append(vtl, vadd);
+      vc.appendChild(vt);
+      d.vendors.forEach(v => {
+        const row = div("vendor-row");
+        row.style.cssText = "display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--pb);";
+        const name = div(""); name.style.cssText = "flex:1;font-size:12px;font-weight:500;color:var(--pd);"; name.textContent = v.name;
+        const badge = div("badge"); badge.style.cssText = `background:${VSTATUS[v.status].bg};color:${VSTATUS[v.status].color};font-size:10px;padding:2px 7px;`; badge.textContent = VSTATUS[v.status].label;
+        row.append(name, badge);
+        vc.appendChild(row);
+      });
+      grid2.appendChild(vc);
+
+      // Budget breakdown
+      const bc = div("card"); bc.style.marginBottom = "0";
+      const bct = div("card-title"); bct.append(icon("chart-pie"), document.createTextNode("Budget"));
+      bc.appendChild(bct);
+      CATS.forEach(cat => {
+        const e = catSum(cat, "estimasi");
+        const pct = totalEst ? Math.round(e / totalEst * 100) : 0;
+        const row = div(""); row.style.marginBottom = "7px";
+        const lrow = div(""); lrow.style.cssText = "display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;";
+        const ln = div(""); ln.style.color = "var(--pd)"; ln.textContent = cat;
+        const lv = div(""); lv.style.color = "var(--pm)"; lv.textContent = e > 0 ? fmtRp(e) : "–";
+        lrow.append(ln, lv);
+        const pb = progBar(pct);
+        pb.style.height = "4px";
+        row.append(lrow, pb);
+        bc.appendChild(row);
+      });
+      grid2.appendChild(bc);
+      c.appendChild(grid2);
+
+      // Timeline
+      const tlc = div("card");
+      const tlt = div("card-title"); tlt.append(icon("calendar-event"), document.createTextNode("Milestones"));
+      tlc.appendChild(tlt);
+      d.timeline.forEach((t, i) => {
+        const row = div(""); row.style.cssText = "display:flex;gap:10px;padding-bottom:10px;";
+        const left = div(""); left.style.cssText = "display:flex;flex-direction:column;align-items:center;width:12px;";
+        const dot = div("tl-dot" + (i === 0 ? " active" : ""));
+        const line = div("tl-line");
+        left.append(dot);
+        if (i < d.timeline.length - 1) left.appendChild(line);
+        const right = div("");
+        const mo = div(""); mo.style.cssText = "font-size:10px;color:var(--pm);text-transform:uppercase;"; mo.textContent = t.month;
+        const tk = div(""); tk.style.cssText = "font-size:13px;color:var(--pd);font-weight:500;"; tk.textContent = t.task;
+        right.append(mo, tk);
+        row.append(left, right);
+        tlc.appendChild(row);
+      });
+      const bigDay = div(""); bigDay.style.cssText = "display:flex;gap:10px;align-items:center;";
+      const bigDot = div("tl-dot active"); bigDot.style.cssText = "width:14px;height:14px;border-radius:50%;background:var(--pk);flex-shrink:0;";
+      const bigText = div(""); bigText.style.cssText = "font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--pk);"; bigText.textContent = "Hari Pernikahan 💍";
+      bigDay.append(bigDot, bigText);
+      tlc.appendChild(bigDay);
+      c.appendChild(tlc);
+
+      const quote = div(""); quote.style.cssText = "text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--pm);font-size:15px;padding:4px 0 8px;";
+      quote.textContent = '"Two souls, one heart, one perfect day." 🌸';
+      c.appendChild(quote);
+    }
+
+    // ── Checklist ──────────────────────────────────────────────
+    function renderChecklist(c) {
+      const d = state.data;
+      const tasksDone = d.checklist.filter(t => t.done).length;
+      const taskPct = d.checklist.length ? Math.round(tasksDone / d.checklist.length * 100) : 0;
+      const kuaDone = d.kua.filter(k => k.done).length;
+      const kuaPct = d.kua.length ? Math.round(kuaDone / d.kua.length * 100) : 0;
+
+      // Persiapan card
+      const ck = div("card");
+      const ct = div("card-title"); ct.style.justifyContent = "space-between";
+      const ctl = div(""); ctl.style.display = "flex"; ctl.style.alignItems = "center"; ctl.style.gap = "6px";
+      ctl.append(icon("checklist"), document.createTextNode(`Persiapan — ${tasksDone}/${d.checklist.length}`));
+      const pct_lbl = div(""); pct_lbl.style.cssText = "font-size:12px;color:var(--pm);"; pct_lbl.textContent = taskPct + "%";
+      ct.append(ctl, pct_lbl);
+      ck.appendChild(ct);
+      ck.appendChild(progBar(taskPct));
+      ck.appendChild(h("div", { style: { height: "8px" } }));
+
+      d.checklist.forEach(item => {
+        if (state.editingCheckId === item.id) {
+          const inp = h("input", { type: "text", class: "inp", value: item.text });
+          inp.style.marginBottom = "4px";
+          inp.addEventListener("blur", () => { if (inp.value.trim()) item.text = inp.value.trim(); state.editingCheckId = null; scheduleSave(); renderContent(); });
+          inp.addEventListener("keydown", e => { if (e.key === "Enter") { if (inp.value.trim()) item.text = inp.value.trim(); state.editingCheckId = null; scheduleSave(); renderContent(); } if (e.key === "Escape") { state.editingCheckId = null; renderContent(); } });
+          ck.appendChild(inp);
+          setTimeout(() => inp.focus(), 50);
+        } else {
+          const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingCheckId = item.id; renderContent(); }, () => { state.data.checklist = state.data.checklist.filter(i => i.id !== item.id); scheduleSave(); renderContent(); });
+          ck.appendChild(row);
+        }
+      });
+
+      // Add task
+      const addRow = div("add-row");
+      const newInp = h("input", { type: "text", class: "inp", placeholder: "Tambah tugas baru..." });
+      const addBtn = h("button", { class: "btn-primary", onclick: () => { const v = newInp.value.trim(); if (!v) return; d.checklist.push({ id: uid(), text: v, done: false }); newInp.value = ""; scheduleSave(); renderContent(); } });
+      addBtn.style.flexShrink = "0";
+      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
+      newInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
+      addRow.append(newInp, addBtn);
+      ck.appendChild(addRow);
+      c.appendChild(ck);
+
+      // KUA card
+      const kc = div("card");
+      const kct = div("card-title"); kct.style.justifyContent = "space-between";
+      const kctl = div(""); kctl.style.display = "flex"; kctl.style.alignItems = "center"; kctl.style.gap = "6px";
+      kctl.append(icon("file-certificate"), document.createTextNode(`Dokumen KUA — ${kuaDone}/${d.kua.length}`));
+      const kpct_lbl = div(""); kpct_lbl.style.cssText = "font-size:12px;color:var(--pm);"; kpct_lbl.textContent = kuaPct + "%";
+      kct.append(kctl, kpct_lbl);
+      kc.appendChild(kct);
+      kc.appendChild(progBar(kuaPct, "#e8a0b8"));
+      kc.appendChild(h("div", { style: { height: "8px" } }));
+
+      d.kua.forEach(item => {
+        if (state.editingKuaId === item.id) {
+          const inp = h("input", { type: "text", class: "inp", value: item.text });
+          inp.addEventListener("blur", () => { if (inp.value.trim()) item.text = inp.value.trim(); state.editingKuaId = null; scheduleSave(); renderContent(); });
+          inp.addEventListener("keydown", e => { if (e.key === "Enter") { if (inp.value.trim()) item.text = inp.value.trim(); state.editingKuaId = null; scheduleSave(); renderContent(); } });
+          kc.appendChild(inp);
+          setTimeout(() => inp.focus(), 50);
+        } else {
+          const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingKuaId = item.id; renderContent(); }, null);
+          kc.appendChild(row);
+        }
+      });
+
+      const note = div(""); note.style.cssText = "background:var(--pl);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--pm);margin-top:10px;";
+      note.innerHTML = `<i class="ti ti-info-circle"></i> Klik ✏️ untuk edit. Konfirmasi ke KUA setempat.`;
+      kc.appendChild(note);
+      c.appendChild(kc);
+    }
+
+    function makeCheckRow(item, onToggle, onEdit, onDelete) {
+      const row = div("check-item");
+      const circle = div("check-circle" + (item.done ? " done" : ""));
+      if (item.done) circle.appendChild(icon("check"));
+      circle.addEventListener("click", onToggle);
+      const txt = div("check-text" + (item.done ? " done" : "")); txt.textContent = item.text; txt.style.flex = "1";
+      txt.addEventListener("click", onToggle);
+      const actions = div("check-actions");
+      const editBtn = h("button", { onclick: onEdit }); editBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; editBtn.appendChild(icon("pencil", { fontSize: "14px", color: "var(--pb)" }));
+      actions.appendChild(editBtn);
+      if (onDelete) {
+        const delBtn = h("button", { onclick: onDelete }); delBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; delBtn.appendChild(icon("trash", { fontSize: "14px", color: "var(--pb)" }));
+        actions.appendChild(delBtn);
+      }
+      row.append(circle, txt, actions);
+      return row;
+    }
+
+    // ── Timeline ───────────────────────────────────────────────
+    function renderTimeline(c) {
+      const d = state.data;
+      const card = div("card");
+      const ct = div("card-title"); ct.append(icon("timeline"), document.createTextNode("Milestone Pernikahan"));
+      card.appendChild(ct);
+
+      d.timeline.forEach((t, i) => {
+        const row = div(""); row.style.cssText = "display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--pb);align-items:flex-start;";
+        const left = div(""); left.style.cssText = "display:flex;flex-direction:column;align-items:center;width:12px;";
+        const dot = div("tl-dot" + (i === 0 ? " active" : ""));
+        left.appendChild(dot);
+        if (i < d.timeline.length - 1) { const ln = div("tl-line"); ln.style.minHeight = "24px"; left.appendChild(ln); }
+        const right = div(""); right.style.flex = "1";
+        const mo = div(""); mo.style.cssText = "font-size:10px;color:var(--pm);text-transform:uppercase;"; mo.textContent = t.month;
+        const tk = div(""); tk.style.cssText = "font-size:13px;color:var(--pd);font-weight:500;"; tk.textContent = t.task;
+        right.append(mo, tk);
+        const acts = div(""); acts.style.cssText = "display:flex;gap:6px;margin-left:auto;padding-left:8px;flex-shrink:0;";
+        const editBtn = h("button", { onclick: () => openModal("tl", { ...t }) }); editBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; editBtn.appendChild(icon("pencil", { fontSize: "14px", color: "var(--pm)" }));
+        const delBtn = h("button", { onclick: () => { state.data.timeline = state.data.timeline.filter(x => x.id !== t.id); scheduleSave(); renderContent(); } }); delBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; delBtn.appendChild(icon("trash", { fontSize: "14px", color: "var(--pb)" }));
+        acts.append(editBtn, delBtn);
+        row.append(left, right, acts);
+        card.appendChild(row);
+      });
+
+      const bigDay = div(""); bigDay.style.cssText = "display:flex;gap:10px;align-items:center;padding-top:10px;";
+      const dot = div(""); dot.style.cssText = "width:14px;height:14px;border-radius:50%;background:var(--pk);flex-shrink:0;";
+      const txt = div(""); txt.style.cssText = "font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--pk);"; txt.textContent = "Hari Pernikahan 💍";
+      bigDay.append(dot, txt);
+      card.appendChild(bigDay);
+
+      // Add new
+      const addSec = div(""); addSec.style.cssText = "border-top:0.5px solid var(--pb);margin-top:14px;padding-top:14px;";
+      const addLabel = div(""); addLabel.style.cssText = "font-size:12px;color:var(--pm);margin-bottom:8px;font-weight:500;"; addLabel.textContent = "Tambah milestone baru";
+      const monthInp = h("input", { type: "text", class: "inp", placeholder: "Bulan (mis. Mar 2026)" }); monthInp.style.marginBottom = "8px";
+      const taskInp = h("input", { type: "text", class: "inp", placeholder: "Nama milestone..." }); taskInp.style.marginBottom = "8px";
+      const addBtn = h("button", { class: "btn-primary", onclick: () => { const mo = monthInp.value.trim(), ta = taskInp.value.trim(); if (!mo || !ta) return; state.data.timeline.push({ id: uid(), month: mo, task: ta }); monthInp.value = ""; taskInp.value = ""; scheduleSave(); renderContent(); } });
+      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
+      addSec.append(addLabel, monthInp, taskInp, addBtn);
+      card.appendChild(addSec);
+      c.appendChild(card);
+    }
+
+    // ── Tamu ───────────────────────────────────────────────────
+    function renderTamu(c) {
+      const d = state.data;
+      const gConf = d.guests.filter(g => g.rsvp === "confirmed").length;
+      const gDec = d.guests.filter(g => g.rsvp === "declined").length;
+      const gPend = d.guests.filter(g => g.rsvp === "pending").length;
+      const gTotal = d.guests.length;
+
+      const sg = div("stat-grid"); sg.style.gridTemplateColumns = "repeat(4,1fr)";
+      [[gTotal, "Total", "var(--pk)"], [gConf, "Hadir", "var(--green)"], [gDec, "Menolak", "var(--red)"], [gPend, "Belum", "var(--orange)"]].forEach(([v, l, cl]) => {
+        const sc = div("stat-card"); sc.style.padding = "10px 6px";
+        const num = div("stat-num"); num.style.fontSize = "22px"; num.style.color = cl; num.textContent = v;
+        const lbl = div("stat-label"); lbl.textContent = l;
+        sc.append(num, lbl); sg.appendChild(sc);
+      });
+      c.appendChild(sg);
+
+      const card = div("card");
+      const topRow = div(""); topRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
+      const ttl = div("card-title"); ttl.style.marginBottom = "0"; ttl.append(icon("users"), document.createTextNode(`Daftar Tamu (${gTotal})`));
+      const addBtn = h("button", { class: "btn-primary", onclick: () => openModal("guest", { id: "", name: "", side: SIDES[0], rsvp: "pending", table: "", notes: "" }) });
+      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
+      topRow.append(ttl, addBtn);
+      card.appendChild(topRow);
+
+      // Search
+      const srch = h("input", { type: "text", class: "inp", placeholder: "Cari nama tamu...", value: state.guestSearch });
+      srch.style.marginBottom = "8px";
+      srch.addEventListener("input", e => { state.guestSearch = e.target.value; renderContent(); });
+      card.appendChild(srch);
+
+      // Filter tabs
+      const filters = div(""); filters.style.cssText = "display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;";
+      [["all", "Semua"], ["confirmed", "Hadir"], ["declined", "Menolak"], ["pending", "Belum"]].forEach(([f, l]) => {
+        const btn = h("button", { onclick: () => { state.guestFilter = f; renderContent(); } });
+        btn.style.cssText = `padding:5px 12px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;border:0.5px solid ${state.guestFilter === f ? "var(--pk)" : "var(--pb)"};background:${state.guestFilter === f ? "var(--pk)" : "var(--pl)"};color:${state.guestFilter === f ? "#fff" : "var(--pd)"};`;
+        btn.textContent = l;
+        filters.appendChild(btn);
+      });
+      card.appendChild(filters);
+
+      const filtered = d.guests.filter(g => {
+        return (state.guestFilter === "all" || g.rsvp === state.guestFilter) && (!state.guestSearch || g.name.toLowerCase().includes(state.guestSearch.toLowerCase()));
+      });
+
+      if (filtered.length === 0) {
+        const empty = div(""); empty.style.cssText = "text-align:center;padding:2rem;color:var(--pm);font-size:13px;";
+        empty.innerHTML = `<i class="ti ti-users" style="font-size:28px;display:block;margin-bottom:8px;color:var(--pb)"></i>${gTotal === 0 ? "Belum ada tamu. Tambahkan di atas." : "Tidak ada hasil."}`;
+        card.appendChild(empty);
+      } else {
+        const hdr = div(""); hdr.style.cssText = "display:grid;grid-template-columns:1fr auto auto;gap:8px;font-size:10px;color:var(--pm);text-transform:uppercase;padding-bottom:6px;border-bottom:0.5px solid var(--pb);margin-bottom:2px;";
+        ["Nama", "RSVP", ""].forEach(txt => { const s = document.createElement("span"); s.textContent = txt; hdr.appendChild(s); });
+        card.appendChild(hdr);
+        filtered.forEach(g => {
+          const row = div(""); row.style.cssText = "display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--pb);";
+          const nameCol = div("");
+          const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:500;"; name.textContent = g.name;
+          const side = div(""); side.style.cssText = "font-size:11px;color:var(--pm);margin-top:1px;"; side.textContent = g.side;
+          nameCol.append(name, side);
+          const rsvpSel = h("select");
+          rsvpSel.style.cssText = `font-size:11px;padding:4px 8px;border-radius:99px;font-weight:500;border:none;cursor:pointer;appearance:none;background:${RSVP_MAP[g.rsvp].bg};color:${RSVP_MAP[g.rsvp].color};font-family:'DM Sans',sans-serif;`;
+          [["confirmed", "✓ Hadir"], ["declined", "✗ Tidak"], ["pending", "? Belum"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (g.rsvp === v) o.selected = true; rsvpSel.appendChild(o); });
+          rsvpSel.addEventListener("change", e => { g.rsvp = e.target.value; scheduleSave(); renderContent(); });
+          const acts = div(""); acts.style.cssText = "display:flex;gap:6px;";
+          const eb = h("button", { onclick: () => openModal("guest", { ...g }) }); eb.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; eb.appendChild(icon("pencil", { fontSize: "15px", color: "var(--pm)" }));
+          const db = h("button", { onclick: () => { state.data.guests = state.data.guests.filter(x => x.id !== g.id); scheduleSave(); renderContent(); } }); db.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; db.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          acts.append(eb, db);
+          row.append(nameCol, rsvpSel, acts);
+          card.appendChild(row);
+        });
+      }
+      c.appendChild(card);
+    }
+
+    // ── Vendor ─────────────────────────────────────────────────
+    function renderVendor(c) {
+      const card = div("card");
+      const topRow = div(""); topRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
+      const ttl = div("card-title"); ttl.style.marginBottom = "0"; ttl.append(icon("building-store"), document.createTextNode(`Vendor (${state.data.vendors.length})`));
+      const addBtn = h("button", { class: "btn-primary", onclick: () => openModal("vendor", { id: "", name: "", type: "", status: "pending", contact: "" }) });
+      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
+      topRow.append(ttl, addBtn);
+      card.appendChild(topRow);
+
+      if (!state.data.vendors.length) {
+        const empty = div(""); empty.style.cssText = "text-align:center;padding:2rem;color:var(--pm);font-size:13px;";
+        empty.innerHTML = `<i class="ti ti-building-store" style="font-size:28px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada vendor.`;
+        card.appendChild(empty);
+      } else {
+        state.data.vendors.forEach(v => {
+          const row = div(""); row.style.cssText = "padding:12px 0;border-bottom:0.5px solid var(--pb);";
+          const top = div(""); top.style.cssText = "display:flex;align-items:center;gap:8px;margin-bottom:3px;";
+          const name = div(""); name.style.cssText = "flex:1;font-size:14px;font-weight:500;color:var(--pd);"; name.textContent = v.name;
+          const badge = div("badge"); badge.style.cssText = `background:${VSTATUS[v.status].bg};color:${VSTATUS[v.status].color};`; badge.textContent = VSTATUS[v.status].label;
+          const eb = h("button", { onclick: () => openModal("vendor", { ...v }) }); eb.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; eb.appendChild(icon("pencil", { fontSize: "15px", color: "var(--pm)" }));
+          const db = h("button", { onclick: () => { state.data.vendors = state.data.vendors.filter(x => x.id !== v.id); scheduleSave(); renderContent(); } }); db.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; db.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          top.append(name, badge, eb, db);
+          row.appendChild(top);
+          const type = div(""); type.style.cssText = "font-size:12px;color:var(--pm);"; type.textContent = v.type;
+          row.appendChild(type);
+          if (v.contact) { const ct = div(""); ct.style.cssText = "font-size:12px;color:var(--pm);margin-top:2px;"; ct.innerHTML = `<i class="ti ti-phone" style="font-size:11px"></i> ${v.contact}`; row.appendChild(ct); }
+          card.appendChild(row);
+        });
+      }
+      c.appendChild(card);
+    }
+
+    // ── Budget ─────────────────────────────────────────────────
+    function renderBudget(c) {
+
+      // Export button row
+      const expRow = div(""); expRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+      const expTitle = div(""); expTitle.style.cssText = "font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--pm);"; expTitle.textContent = "Anggaran Pernikahan";
+      const expBtn = h("button", { class: "btn-ghost", onclick: exportXlsx }); expBtn.append(icon("download"), document.createTextNode("Export"));
+      expRow.append(expTitle, expBtn);
+      c.appendChild(expRow);
+
+      // Cat tabs
+      const tabs = div("cat-tabs");
+      CATS.forEach(cat => {
+        const e = catSum(cat, "estimasi");
+        const btn = h("button", { class: "cat-tab" + (state.activeCat === cat ? " active" : ""), onclick: () => { state.activeCat = cat; renderContent(); } });
+        btn.textContent = cat + (e > 0 ? ` ${(e / 1000000).toFixed(1)}M` : "");
+        tabs.appendChild(btn);
+      });
+      c.appendChild(tabs);
+
+      // Items card
+      const card = div("card");
+      const topRow = div(""); topRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+      const ttl = div("card-title"); ttl.style.marginBottom = "0"; ttl.append(icon("tag"), document.createTextNode(state.activeCat));
+      topRow.append(ttl); card.appendChild(topRow);
+
+      // 3-box summary for active category
+      const catE = catSum(state.activeCat, "estimasi");
+      const catHg = catSum(state.activeCat, "harga");
+      const catDb = catSum(state.activeCat, "dibayar");
+      const catSisa = catHg - catDb;
+      const boxes3 = div(""); boxes3.style.cssText = "display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;";
+      [["Estimasi", catE, "var(--pk)"], ["Harga Asli", catHg, "#b87090"], ["Dibayar", catDb, "var(--green)"]].forEach(([l, v, color]) => {
+        const box = div("sum-box");
+        const lbl = div("sum-box-label"); lbl.textContent = l;
+        const val = div("sum-box-val"); val.style.color = color; val.style.fontSize = v > 9999999 ? "12px" : "16px"; val.textContent = v > 0 ? fmtRp(v) : "–";
+        box.append(lbl, val); boxes3.appendChild(box);
+      });
+      card.appendChild(boxes3);
+      if (catHg > 0) {
+        const sisaRow = div(""); sisaRow.style.cssText = "display:flex;justify-content:flex-end;margin-bottom:12px;margin-top:-6px;";
+        const sisaPill = div(""); sisaPill.style.cssText = `font-size:11px;font-weight:600;padding:3px 12px;border-radius:99px;background:${catSisa <= 0 ? "var(--green-bg)" : "var(--orange-bg)"};color:${catSisa <= 0 ? "var(--green)" : "var(--orange)"};`;
+        sisaPill.textContent = catSisa <= 0 ? "✓ Lunas" : `Sisa ${fmtRp(catSisa)}`;
+        sisaRow.appendChild(sisaPill); card.appendChild(sisaRow);
+      }
+      const divider = div(""); divider.style.cssText = "height:0.5px;background:var(--pb);margin-bottom:12px;";
+      card.appendChild(divider);
+
+      const items = state.data.budget[state.activeCat] || [];
+      if (!items.length) {
+        const empty = div(""); empty.style.cssText = "text-align:center;padding:1.5rem;color:var(--pm);font-size:13px;";
+        empty.innerHTML = `<i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada item. Tambahkan di bawah.`;
+        card.appendChild(empty);
+      } else {
+        const scroll = div(""); scroll.style.overflowX = "auto";
+        const hdr = div("budget-header");
+        ["Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 0 && i < 4) s.style.textAlign = "right"; hdr.appendChild(s); });
+        scroll.appendChild(hdr);
+
+        items.forEach(item => {
+          const row = div("budget-row");
+
+          const nameCol = div("");
+          nameCol.style.cssText = "display:flex;flex-direction:column;gap:2px;overflow:hidden;";
+          const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
+          nameCol.appendChild(name);
+
+          if (item.options && item.options.length > 0) {
+            const selWrap = div("");
+            selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
+            const sel = h("select");
+            sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;max-width:105px;text-overflow:ellipsis;overflow:hidden;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
+
+            item.options.forEach(opt => {
+              const o = document.createElement("option");
+              o.value = opt.id;
+              o.textContent = opt.name + (opt.estimasi ? ` (${(opt.estimasi / 1000000).toFixed(1)}jt)` : "");
+              if (item.activeOptionId === opt.id) o.selected = true;
+              sel.appendChild(o);
+            });
+
+            sel.addEventListener("change", e => {
+              const optId = e.target.value;
+              const selectedOpt = item.options.find(o => o.id === optId);
+              if (selectedOpt) {
+                item.activeOptionId = optId;
+                item.estimasi = selectedOpt.estimasi || 0;
+                item.harga = selectedOpt.harga || 0;
+                item.dibayar = selectedOpt.dibayar || 0;
+                scheduleSave();
+                renderContent();
+              }
+            });
+
+            const manageBtn = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
+            manageBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;";
+            manageBtn.appendChild(icon("settings", { fontSize: 12, color: "var(--pm)" }));
+
+            selWrap.append(sel, manageBtn);
+            nameCol.appendChild(selWrap);
+          } else {
+            const addOptLink = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
+            addOptLink.style.cssText = "background:none;border:none;color:var(--pm);font-size:10px;cursor:pointer;padding:2px 0;text-align:left;display:block;text-decoration:underline;font-family:'DM Sans',sans-serif;";
+            addOptLink.textContent = "+ Opsi Vendor";
+            nameCol.appendChild(addOptLink);
+          }
+
+          ["estimasi", "harga", "dibayar"].forEach(f => {
+            const inp = h("input", { type: "number", class: "inp sm", value: item[f] || "", placeholder: "0" });
+            inp.style.textAlign = "right";
+            if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) inp.style.borderColor = "var(--green)";
+            inp.addEventListener("change", e => {
+              const val = Number(e.target.value) || 0;
+              item[f] = val;
+              if (item.options && item.options.length > 0) {
+                const activeOpt = item.options.find(o => o.id === item.activeOptionId);
+                if (activeOpt) {
+                  activeOpt[f] = val;
+                }
+              }
+              scheduleSave();
+              renderContent();
+            });
+            row.appendChild(inp);
+          });
+
+          const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
+          del.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          row.prepend(nameCol); row.appendChild(del);
+          scroll.appendChild(row);
+
+          const sisa = (Number(item.harga) || 0) - (Number(item.dibayar) || 0);
+          if (Number(item.harga) > 0 && Number(item.dibayar) > 0) {
+            const sl2 = div("sisa"); sl2.style.color = sisa > 0 ? "var(--orange)" : "var(--green)"; sl2.textContent = sisa > 0 ? `Sisa: ${fmtRp(sisa)}` : "✓ Lunas"; sl2.style.minWidth = "340px";
+            scroll.appendChild(sl2);
+          }
+        });
+
+        // Totals
+        const tot = div("budget-total");
+        const tl = document.createElement("span"); tl.textContent = "Total"; tl.style.color = "var(--pd)";
+        ["estimasi", "harga", "dibayar"].forEach((f, i) => {
+          const s = document.createElement("span");
+          s.textContent = fmtRp(catSum(state.activeCat, f));
+          s.style.textAlign = "right";
+          s.style.color = ["var(--pk)", "#b87090", "var(--green)"][i];
+          tot.appendChild(s);
+        });
+        tot.prepend(tl);
+        const dummy = document.createElement("span"); tot.appendChild(dummy);
+        scroll.appendChild(tot);
+        card.appendChild(scroll);
+      }
+
+      // Add item
+      const addSec = div(""); addSec.style.cssText = "border-top:0.5px solid var(--pb);margin-top:12px;padding-top:12px;";
+      const addLbl = div(""); addLbl.style.cssText = "font-size:12px;color:var(--pm);margin-bottom:8px;font-weight:500;"; addLbl.textContent = `Tambah item ke ${state.activeCat}`;
+      const nameInp = h("input", { type: "text", class: "inp", placeholder: "Nama item (mis. Tas C&K)" }); nameInp.style.marginBottom = "8px";
+      const estInp = h("input", { type: "number", class: "inp", placeholder: "Estimasi harga (Rp)" }); estInp.style.marginBottom = "8px";
+      const addBtn = h("button", { class: "btn-primary", onclick: () => { const n = nameInp.value.trim(); if (!n) return; (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push({ id: uid(), name: n, estimasi: Number(estInp.value) || 0, harga: 0, dibayar: 0 }); nameInp.value = ""; estInp.value = ""; scheduleSave(); renderContent(); } });
+      addBtn.style.width = "100%"; addBtn.style.justifyContent = "center";
+      addBtn.append(icon("plus"), document.createTextNode("Tambah Item"));
+      nameInp.addEventListener("keydown", e => { if (e.key === "Enter") estInp.focus(); });
+      estInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
+      addSec.append(addLbl, nameInp, estInp, addBtn);
+      card.appendChild(addSec);
+      c.appendChild(card);
+    }
+
+    // ── Dana ───────────────────────────────────────────────────
+    function renderDana(c) {
+      const dana = state.data.dana || [];
+      const totalD = totalDana();
+      const totalE = totalOf("estimasi");
+      const totalH = totalOf("harga");
+      const selisihE = totalD - totalE;
+      const selisihH = totalD - totalH;
+
+      // Header summary
+      const sumCard = div("card");
+      const sumTitle = div(""); sumTitle.style.cssText = "font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--pm);margin-bottom:10px;"; sumTitle.textContent = "Ringkasan Keuangan";
+      sumCard.appendChild(sumTitle);
+
+      // Big number: total dana
+      const bigRow = div(""); bigRow.style.cssText = "text-align:center;margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid var(--pb);";
+      const bigLabel = div(""); bigLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:5px;";
+      bigLabel.innerHTML = `<i class="ti ti-piggy-bank" style="font-size:14px"></i> Total Dana Tersedia`;
+      const bigNum = div(""); bigNum.style.cssText = "font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--green);font-weight:500;line-height:1.1;"; bigNum.textContent = totalD > 0 ? fmtRp(totalD) : "Rp 0";
+      bigRow.append(bigLabel, bigNum);
+      sumCard.appendChild(bigRow);
+
+      // 2x2 grid: estimasi vs harga asli, selisih
+      const g4 = div(""); g4.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;";
+      [
+        ["Estimasi Budget", totalE, "var(--pk)"],
+        ["Harga Asli", totalH, "#b87090"],
+      ].forEach(([l, v, color]) => {
+        const box = div("sum-box");
+        const lbl = div("sum-box-label"); lbl.textContent = l;
+        const val = div("sum-box-val"); val.style.color = color; val.style.fontSize = v > 9999999 ? "13px" : "16px"; val.textContent = v > 0 ? fmtRp(v) : "–";
+        box.append(lbl, val); g4.appendChild(box);
+      });
+      sumCard.appendChild(g4);
+
+      // Selisih pills
+      const pillRow = div(""); pillRow.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;";
+      [["vs Estimasi", selisihE], ["vs Harga Asli", selisihH]].forEach(([label, val]) => {
+        const pill = div("");
+        const isPlus = val >= 0;
+        pill.style.cssText = `padding:10px 12px;border-radius:10px;background:${isPlus ? "var(--green-bg)" : "var(--red-bg)"};`;
+        const pl = div(""); pl.style.cssText = "font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;"; pl.style.color = isPlus ? "var(--green)" : "var(--red)"; pl.textContent = label;
+        const pv = div(""); pv.style.cssText = `font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:${isPlus ? "var(--green)" : "var(--red)"};`;
+        pv.textContent = (isPlus ? "+" : "-") + fmtRp(Math.abs(val));
+        pill.append(pl, pv); pillRow.appendChild(pill);
+      });
+      sumCard.appendChild(pillRow);
+
+      // Progress: dana vs estimasi
+      if (totalE > 0) {
+        const pct = Math.min(100, Math.round(totalD / totalE * 100));
+        const plbl = div(""); plbl.style.cssText = "display:flex;justify-content:space-between;font-size:11px;color:var(--pm);margin-bottom:4px;";
+        plbl.innerHTML = `<span>Dana terkumpul vs estimasi</span><span>${pct}%</span>`;
+        sumCard.append(plbl, progBar(pct, selisihE >= 0 ? "var(--green)" : "var(--orange)"));
+      }
+      c.appendChild(sumCard);
+
+      // Dana list card
+      const listCard = div("card");
+      const topRow = div(""); topRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
+      const ttl = div("card-title"); ttl.style.marginBottom = "0";
+      ttl.innerHTML = `<i class="ti ti-piggy-bank"></i> Sumber Dana (${dana.length})`;
+      const addBtn = h("button", { class: "btn-primary", onclick: () => openModal("dana", { id: "", nama: "", jumlah: "", keterangan: "" }) });
+      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
+      topRow.append(ttl, addBtn);
+      listCard.appendChild(topRow);
+
+      if (!dana.length) {
+        const empty = div(""); empty.style.cssText = "text-align:center;padding:2rem;color:var(--pm);font-size:13px;";
+        empty.innerHTML = `<i class="ti ti-piggy-bank" style="font-size:32px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada dana. Tambahkan sumber uang kamu.`;
+        listCard.appendChild(empty);
+      } else {
+        // Header
+        const hdr = div(""); hdr.style.cssText = "display:grid;grid-template-columns:1fr auto auto;gap:8px;font-size:10px;color:var(--pm);text-transform:uppercase;padding-bottom:6px;border-bottom:0.5px solid var(--pb);";
+        ["Sumber", "Jumlah", ""].forEach(t => { const s = document.createElement("span"); s.textContent = t; hdr.appendChild(s); });
+        listCard.appendChild(hdr);
+
+        dana.forEach((item, idx) => {
+          const row = div(""); row.style.cssText = "display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--pb);";
+          const nameCol = div("");
+          const nm = div(""); nm.style.cssText = "font-size:13px;font-weight:500;color:var(--pd);"; nm.textContent = item.nama;
+          nameCol.appendChild(nm);
+          if (item.keterangan) { const kt = div(""); kt.style.cssText = "font-size:11px;color:var(--pm);margin-top:1px;"; kt.textContent = item.keterangan; nameCol.appendChild(kt); }
+          const jml = div(""); jml.style.cssText = "font-size:13px;font-weight:600;color:var(--green);white-space:nowrap;"; jml.textContent = fmtRp(Number(item.jumlah) || 0);
+          const acts = div(""); acts.style.display = "flex"; acts.style.gap = "4px";
+          const eb = h("button", { onclick: () => openModal("dana", { ...item }) }); eb.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; eb.appendChild(icon("pencil", { fontSize: "15px", color: "var(--pm)" }));
+          const db = h("button", { onclick: () => { state.data.dana = state.data.dana.filter(x => x.id !== item.id); scheduleSave(); renderContent(); } }); db.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; db.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          acts.append(eb, db);
+          row.append(nameCol, jml, acts);
+          listCard.appendChild(row);
+        });
+
+        // Total row
+        const totRow = div(""); totRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding-top:10px;margin-top:2px;font-weight:600;";
+        const tl = div(""); tl.style.cssText = "font-size:13px;color:var(--pd);"; tl.textContent = "Total";
+        const tv = div(""); tv.style.cssText = "font-size:14px;color:var(--green);font-family:'Cormorant Garamond',serif;"; tv.textContent = fmtRp(totalD);
+        totRow.append(tl, tv);
+        listCard.appendChild(totRow);
+      }
+      c.appendChild(listCard);
+
+      // Tips card
+      const tips = div("card");
+      tips.style.background = "var(--pl)"; tips.style.border = "0.5px solid var(--pb)";
+      tips.innerHTML = `<div style="font-size:11px;color:var(--pm);line-height:1.7"><strong style="color:var(--pd);display:flex;align-items:center;gap:5px;margin-bottom:6px"><i class="ti ti-bulb"></i> Tips sumber dana</strong>
+  🏦 Tabungan berdua<br>
+  💝 Uang dari orang tua / keluarga<br>
+  🎁 Sumbangan / amplop lamaran<br>
+  💼 Bonus / THR<br>
+  📦 Jual barang / investasi cair</div>`;
+      c.appendChild(tips);
+    }
+
+    // ── Modals ─────────────────────────────────────────────────
+    function openModal(type, form = {}) { state.modal = type; state.modalForm = { ...form }; renderModal(); }
+    function closeModal() { state.modal = null; state.modalForm = {}; const m = document.getElementById("modal-container"); if (m) m.remove(); }
+
+    function renderModal() {
+      let existing = document.getElementById("modal-container");
+      if (existing) existing.remove();
+      const bg = div("modal-bg"); bg.id = "modal-container";
+      bg.addEventListener("click", e => { if (e.target === bg) closeModal(); });
+      const sheet = div("modal-sheet");
+      const handle = div("modal-handle");
+      sheet.appendChild(handle);
+
+      const titles = { info: "Edit Info Pernikahan", vendor: state.modalForm.id ? "Edit Vendor" : "Tambah Vendor", guest: state.modalForm.id ? "Edit Tamu" : "Tambah Tamu", tl: "Edit Milestone", dana: state.modalForm.id ? "Edit Sumber Dana" : "Tambah Sumber Dana", budget_options: "Kelola Opsi Vendor", lainnya_menu: "Menu Lainnya" };
+      const title = div("modal-title"); title.textContent = titles[state.modal] || "";
+      sheet.appendChild(title);
+
+      const body = div("modal-body");
+
+      if (state.modal === "info") renderInfoModal(body);
+      else if (state.modal === "vendor") renderVendorModal(body);
+      else if (state.modal === "guest") renderGuestModal(body);
+      else if (state.modal === "tl") renderTlModal(body);
+      else if (state.modal === "dana") renderDanaModal(body);
+      else if (state.modal === "budget_options") renderBudgetOptionsModal(body);
+      else if (state.modal === "lainnya_menu") renderLainnyaMenuModal(body);
+
+      sheet.appendChild(body);
+      bg.appendChild(sheet);
+      document.body.appendChild(bg);
+    }
+
+    function field(label, input) {
+      const wrap = div("modal-field");
+      const lbl = div("modal-label"); lbl.textContent = label;
+      wrap.append(lbl, input);
+      return wrap;
+    }
+
+    function btnRow(saveLabel, onSave) {
+      const row = div(""); row.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;";
+      const s = h("button", { class: "btn-primary", onclick: onSave }); s.style.justifyContent = "center"; s.style.width = "100%"; s.textContent = saveLabel;
+      const c = h("button", { class: "btn-secondary", onclick: closeModal }); c.textContent = "Batal";
+      row.append(s, c); return row;
+    }
+
+    function renderInfoModal(body) {
+      const dateInp = h("input", { type: "date", class: "inp", value: state.modalForm.date || "" });
+      const locInp = h("input", { type: "text", class: "inp", placeholder: "Lokasi pernikahan", value: state.modalForm.location || "" });
+      body.append(field("Tanggal Pernikahan", dateInp), field("Lokasi", locInp), btnRow("Simpan", () => {
+        state.data.info = { date: dateInp.value, location: locInp.value }; scheduleSave(); closeModal(); renderHeader(); renderContent();
+      }));
+    }
+
+    function renderVendorModal(body) {
+      const nameInp = h("input", { type: "text", class: "inp", placeholder: "Nama vendor", value: state.modalForm.name || "" });
+      const typeInp = h("input", { type: "text", class: "inp", placeholder: "Venue, Catering, dll.", value: state.modalForm.type || "" });
+      const statSel = h("select", { class: "inp" });
+      [["confirmed", "Confirmed"], ["pending", "Pending"], ["searching", "Searching"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (state.modalForm.status === v) o.selected = true; statSel.appendChild(o); });
+      const contactInp = h("input", { type: "text", class: "inp", placeholder: "No. HP (opsional)", value: state.modalForm.contact || "" });
+      body.append(field("Nama Vendor", nameInp), field("Kategori", typeInp), field("Status", statSel), field("Kontak", contactInp), btnRow("Simpan", () => {
+        const form = { id: state.modalForm.id || uid(), name: nameInp.value.trim(), type: typeInp.value.trim(), status: statSel.value, contact: contactInp.value.trim() };
+        if (!form.name) return;
+        if (state.modalForm.id) { state.data.vendors = state.data.vendors.map(v => v.id === form.id ? form : v); }
+        else { state.data.vendors.push(form); }
+        scheduleSave(); closeModal(); renderContent();
+      }));
+    }
+
+    function renderGuestModal(body) {
+      const nameInp = h("input", { type: "text", class: "inp", placeholder: "Nama lengkap", value: state.modalForm.name || "" });
+      const sideSel = h("select", { class: "inp" });
+      SIDES.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s; if (state.modalForm.side === s) o.selected = true; sideSel.appendChild(o); });
+      const rsvpSel = h("select", { class: "inp" });
+      [["confirmed", "Hadir"], ["declined", "Tidak Hadir"], ["pending", "Belum Konfirmasi"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (state.modalForm.rsvp === v) o.selected = true; rsvpSel.appendChild(o); });
+      const tableInp = h("input", { type: "text", class: "inp", placeholder: "Mis. Meja 5", value: state.modalForm.table || "" });
+      const notesInp = h("input", { type: "text", class: "inp", placeholder: "Mis. vegetarian, keluarga dekat", value: state.modalForm.notes || "" });
+      body.append(field("Nama Tamu", nameInp), field("Pihak", sideSel), field("RSVP", rsvpSel), field("Nomor Meja (opsional)", tableInp), field("Catatan (opsional)", notesInp), btnRow("Simpan", () => {
+        const form = { id: state.modalForm.id || uid(), name: nameInp.value.trim(), side: sideSel.value, rsvp: rsvpSel.value, table: tableInp.value.trim(), notes: notesInp.value.trim() };
+        if (!form.name) return;
+        if (state.modalForm.id) { state.data.guests = state.data.guests.map(g => g.id === form.id ? form : g); }
+        else { state.data.guests.push(form); }
+        scheduleSave(); closeModal(); renderContent();
+      }));
+    }
+
+    function renderTlModal(body) {
+      const monthInp = h("input", { type: "text", class: "inp", placeholder: "Bulan (mis. Mar 2026)", value: state.modalForm.month || "" });
+      const taskInp = h("input", { type: "text", class: "inp", placeholder: "Nama milestone", value: state.modalForm.task || "" });
+      body.append(field("Bulan", monthInp), field("Milestone", taskInp), btnRow("Simpan", () => {
+        const id = state.modalForm.id; const mo = monthInp.value.trim(); const ta = taskInp.value.trim();
+        if (!mo || !ta) return;
+        state.data.timeline = state.data.timeline.map(t => t.id === id ? { ...t, month: mo, task: ta } : t);
+        scheduleSave(); closeModal(); renderContent();
+      }));
+    }
+
+    function renderDanaModal(body) {
+      const namaInp = h("input", { type: "text", class: "inp", placeholder: "Mis. Tabungan berdua, Dari orang tua...", value: state.modalForm.nama || "" });
+      const jumlahInp = h("input", { type: "number", class: "inp", placeholder: "Jumlah (Rp)", value: state.modalForm.jumlah || "" });
+      const ketInp = h("input", { type: "text", class: "inp", placeholder: "Keterangan (opsional)", value: state.modalForm.keterangan || "" });
+      body.append(
+        field("Nama Sumber Dana", namaInp),
+        field("Jumlah (Rp)", jumlahInp),
+        field("Keterangan (opsional)", ketInp),
+        btnRow("Simpan", () => {
+          const nama = namaInp.value.trim(); if (!nama) return;
+          const form = { id: state.modalForm.id || uid(), nama, jumlah: Number(jumlahInp.value) || 0, keterangan: ketInp.value.trim() };
+          if (!state.data.dana) state.data.dana = [];
+          if (state.modalForm.id) { state.data.dana = state.data.dana.map(d => d.id === form.id ? form : d); }
+          else { state.data.dana.push(form); }
+          scheduleSave(); closeModal(); renderContent();
+        })
+      );
+    }
+
+    // ── Export XLSX ────────────────────────────────────────────
+    function exportXlsx() {
+      const wb = XLSX.utils.book_new();
+      const d = state.data;
+
+      const sumRows = [["RINGKASAN ANGGARAN PERNIKAHAN HARIS & ALYA", "", "", "", ""], [""], ["Kategori", "Estimasi (Rp)", "Harga Asli (Rp)", "Dibayar (Rp)", "Sisa (Rp)"]];
+      CATS.forEach(cat => { const e = catSum(cat, "estimasi"), h2 = catSum(cat, "harga"), db = catSum(cat, "dibayar"); sumRows.push([cat, e, h2, db, h2 - db]); });
+      sumRows.push([""], ["GRAND TOTAL", totalOf("estimasi"), totalOf("harga"), totalOf("dibayar"), totalOf("harga") - totalOf("dibayar")]);
+      const wsSummary = XLSX.utils.aoa_to_sheet(sumRows); wsSummary["!cols"] = [{ wch: 22 }, { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
+      XLSX.utils.book_append_sheet(wb, wsSummary, "Ringkasan Budget");
+
+      CATS.forEach(cat => {
+        const items = d.budget[cat] || [];
+        const rows = [["Item", "Estimasi (Rp)", "Harga Asli (Rp)", "Dibayar (Rp)", "Sisa (Rp)"], ...items.map(i => [i.name, Number(i.estimasi) || 0, Number(i.harga) || 0, Number(i.dibayar) || 0, (Number(i.harga) || 0) - (Number(i.dibayar) || 0)]), [""], ["TOTAL", catSum(cat, "estimasi"), catSum(cat, "harga"), catSum(cat, "dibayar"), catSum(cat, "harga") - catSum(cat, "dibayar")]];
+        const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = [{ wch: 32 }, { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
+        XLSX.utils.book_append_sheet(wb, ws, cat);
+      });
+
+      const ckRows = [["CHECKLIST PERNIKAHAN", ""], [""], ["No", "Tugas", "Status"], ...d.checklist.map((i, idx) => [idx + 1, i.text, i.done ? "✓ Selesai" : "○ Belum"]), [""], ["DOKUMEN KUA", ""], [""], ["No", "Dokumen", "Status"], ...d.kua.map((i, idx) => [idx + 1, i.text, i.done ? "✓ Selesai" : "○ Belum"])];
+      const wsCk = XLSX.utils.aoa_to_sheet(ckRows); wsCk["!cols"] = [{ wch: 5 }, { wch: 40 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, wsCk, "Checklist");
+
+      const tlRows = [["MILESTONE", ""], [""], ["Bulan", "Milestone"], ...d.timeline.map(t => [t.month, t.task]), [displayDate(), "💍 Hari Pernikahan"]];
+      const wsTl = XLSX.utils.aoa_to_sheet(tlRows); wsTl["!cols"] = [{ wch: 18 }, { wch: 35 }];
+      XLSX.utils.book_append_sheet(wb, wsTl, "Timeline");
+
+      const vRows = [["VENDOR", "", "", ""], [""], ["Nama", "Kategori", "Status", "Kontak"], ...d.vendors.map(v => [v.name, v.type, VSTATUS[v.status].label, v.contact || ""])];
+      const wsV = XLSX.utils.aoa_to_sheet(vRows); wsV["!cols"] = [{ wch: 28 }, { wch: 18 }, { wch: 14 }, { wch: 22 }];
+      XLSX.utils.book_append_sheet(wb, wsV, "Vendor");
+
+      const gRows = [["DAFTAR TAMU", "", "", "", ""], [""], ["Nama", "Pihak", "RSVP", "Meja", "Catatan"], ...d.guests.map(g => [g.name, g.side, RSVP_MAP[g.rsvp].label, g.table || "", g.notes || ""])];
+      const wsG = XLSX.utils.aoa_to_sheet(gRows); wsG["!cols"] = [{ wch: 28 }, { wch: 22 }, { wch: 14 }, { wch: 10 }, { wch: 28 }];
+      XLSX.utils.book_append_sheet(wb, wsG, "Daftar Tamu");
+
+      // Dana sheet
+      const danaList = d.dana || [];
+      const totalD = danaList.reduce((s, i) => s + (Number(i.jumlah) || 0), 0);
+      const totalEst = totalOf("estimasi");
+      const totalHarga = totalOf("harga");
+      const danaRows = [
+        ["RINGKASAN KEUANGAN HARIS & ALYA", "", ""], [""],
+        ["Sumber Dana", "Jumlah (Rp)", "Keterangan"],
+        ...danaList.map(i => [i.nama, Number(i.jumlah) || 0, i.keterangan || ""]),
+        [""],
+        ["TOTAL DANA TERSEDIA", totalD, ""],
+        [""],
+        ["Total Estimasi Budget", totalEst, ""],
+        ["Total Harga Asli", totalHarga, ""],
+        [""],
+        ["Selisih Dana vs Estimasi", totalD - totalEst, totalD >= totalEst ? "✓ Cukup" : "⚠ Kurang"],
+        ["Selisih Dana vs Harga Asli", totalD - totalHarga, totalD >= totalHarga ? "✓ Cukup" : "⚠ Kurang"],
+      ];
+      const wsDana = XLSX.utils.aoa_to_sheet(danaRows); wsDana["!cols"] = [{ wch: 30 }, { wch: 20 }, { wch: 18 }];
+      XLSX.utils.book_append_sheet(wb, wsDana, "Dana & Keuangan");
+
+      XLSX.writeFile(wb, "Pernikahan_Haris_Alya.xlsx");
+    }
+
+    function renderBudgetOptionsModal(body) {
+      const { item, cat } = state.modalForm;
+      if (!item) return;
+
+      // Let's create a local copy of options to allow canceling changes
+      let options = JSON.parse(JSON.stringify(item.options || []));
+      let activeOptionId = item.activeOptionId || "";
+
+      // Pre-populate using the current item's values if there are no options yet
+      if (options.length === 0) {
+        const defaultOptId = uid();
+        options.push({
+          id: defaultOptId,
+          name: "Vendor Utama",
+          estimasi: item.estimasi || 0,
+          harga: item.harga || 0,
+          dibayar: item.dibayar || 0
+        });
+        activeOptionId = defaultOptId;
+      }
+
+      const listContainer = div("");
+      listContainer.style.cssText = "max-height:360px;overflow-y:auto;padding-right:4px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px;";
+
+      function renderOptionsList() {
+        listContainer.innerHTML = "";
+        options.forEach((opt, idx) => {
+          const optRow = div("card");
+          optRow.style.cssText = "padding:12px;margin-bottom:0;position:relative;border:0.5px solid var(--pb);";
+          if (opt.id === activeOptionId) {
+            optRow.style.borderColor = "var(--pk)";
+            optRow.style.background = "var(--pl)";
+          }
+
+          // Title & Active Radio
+          const top = div("");
+          top.style.cssText = "display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;";
+
+          const labelWrap = h("label");
+          labelWrap.style.cssText = "display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--pd);cursor:pointer;";
+
+          const radio = h("input", { type: "radio", name: "active_vendor_option", value: opt.id });
+          if (opt.id === activeOptionId) radio.checked = true;
+          radio.addEventListener("change", () => {
+            activeOptionId = opt.id;
+            renderOptionsList();
+          });
+
+          labelWrap.append(radio, document.createTextNode(`Opsi ${idx + 1}: ${opt.id === activeOptionId ? '★ Aktif' : ''}`));
+
+          const delBtn = h("button", {
+            onclick: () => {
+              if (options.length <= 1) {
+                alert("Harus ada minimal satu opsi vendor.");
+                return;
+              }
+              options = options.filter(o => o.id !== opt.id);
+              if (activeOptionId === opt.id) {
+                activeOptionId = options[0].id;
+              }
+              renderOptionsList();
+            }
+          });
+          delBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;";
+          delBtn.appendChild(icon("trash", { fontSize: "14px", color: "var(--pm)" }));
+
+          top.append(labelWrap, delBtn);
+          optRow.appendChild(top);
+
+          // Fields
+          const nameInp = h("input", { type: "text", class: "inp sm", placeholder: "Nama Vendor", value: opt.name || "" });
+          nameInp.style.marginBottom = "8px";
+          nameInp.addEventListener("input", e => { opt.name = e.target.value; });
+
+          const grid3 = div("");
+          grid3.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;";
+
+          const est = h("input", { type: "number", class: "inp sm", placeholder: "Estimasi", value: opt.estimasi || "" });
+          est.addEventListener("input", e => { opt.estimasi = Number(e.target.value) || 0; });
+
+          const hrg = h("input", { type: "number", class: "inp sm", placeholder: "Harga", value: opt.harga || "" });
+          hrg.addEventListener("input", e => { opt.harga = Number(e.target.value) || 0; });
+
+          const db = h("input", { type: "number", class: "inp sm", placeholder: "Bayar", value: opt.dibayar || "" });
+          db.addEventListener("input", e => { opt.dibayar = Number(e.target.value) || 0; });
+
+          grid3.append(
+            field("Estimasi", est),
+            field("Harga Asli", hrg),
+            field("Dibayar", db)
+          );
+
+          optRow.append(nameInp, grid3);
+          listContainer.appendChild(optRow);
+        });
+      }
+
+      renderOptionsList();
+      body.appendChild(listContainer);
+
+      // Add Option Button
+      const addBtn = h("button", { class: "btn-secondary" });
+      addBtn.style.cssText = "width:100%;margin-bottom:12px;justify-content:center;display:flex;align-items:center;gap:6px;";
+      addBtn.append(icon("plus"), document.createTextNode("Tambah Opsi Vendor Baru"));
+      addBtn.onclick = () => {
+        options.push({
+          id: uid(),
+          name: `Vendor Baru ${options.length + 1}`,
+          estimasi: 0,
+          harga: 0,
+          dibayar: 0
+        });
+        renderOptionsList();
+        setTimeout(() => { listContainer.scrollTop = listContainer.scrollHeight; }, 50);
+      };
+      body.appendChild(addBtn);
+
+      // Save / Cancel Buttons
+      body.appendChild(btnRow("Simpan Perubahan", () => {
+        item.options = options;
+        item.activeOptionId = activeOptionId;
+
+        const selectedOpt = options.find(o => o.id === activeOptionId);
+        if (selectedOpt) {
+          item.estimasi = selectedOpt.estimasi || 0;
+          item.harga = selectedOpt.harga || 0;
+          item.dibayar = selectedOpt.dibayar || 0;
+        }
+
+        scheduleSave();
+        closeModal();
+        renderContent();
+      }));
+    }
+
+    function renderLainnyaMenuModal(body) {
+      const grid = div("");
+      grid.style.cssText = "display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:8px 0 20px;";
+
+      const menuItems = [
+        { page: "timeline", label: "Timeline", icon: "timeline", color: "var(--pk)", bg: "var(--pl)" },
+        { page: "vendor", label: "Vendor", icon: "building-store", color: "#b87090", bg: "#fcedf2" },
+        { page: "dana", label: "Dana", icon: "piggy-bank", color: "var(--green)", bg: "var(--green-bg)" }
+      ];
+
+      menuItems.forEach(item => {
+        const box = h("button", {
+          onclick: () => {
+            state.page = item.page;
+            closeModal();
+            renderContent();
+            renderNav();
+          }
+        });
+        box.style.cssText = `display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 8px;border:none;border-radius:16px;background:${item.bg};color:${item.color};cursor:pointer;transition:transform 0.15s, opacity 0.15s;`;
+
+        box.addEventListener("touchstart", () => { box.style.transform = "scale(0.94)"; });
+        box.addEventListener("touchend", () => { box.style.transform = "scale(1)"; });
+        box.addEventListener("mousedown", () => { box.style.transform = "scale(0.94)"; });
+        box.addEventListener("mouseup", () => { box.style.transform = "scale(1)"; });
+
+        const ic = document.createElement("i");
+        ic.className = `ti ti-${item.icon}`;
+        ic.style.fontSize = "28px";
+
+        const lbl = div("");
+        lbl.style.cssText = "font-size:12.5px;font-weight:600;color:var(--pd);";
+        lbl.textContent = item.label;
+
+        box.append(ic, lbl);
+        grid.appendChild(box);
+      });
+
+      body.appendChild(grid);
+    }
+
+    // ── Start ──────────────────────────────────────────────────
+    load();
+  </script>
+</body>
+
+</html>
