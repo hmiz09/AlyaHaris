@@ -1496,8 +1496,19 @@
 
           const nameCol = div("");
           nameCol.style.cssText = "display:flex;flex-direction:column;gap:2px;overflow:hidden;";
+          
+          const nameRow = div("");
+          nameRow.style.cssText = "display:flex;align-items:center;gap:6px;overflow:hidden;";
+          
           const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
-          nameCol.appendChild(name);
+          nameRow.appendChild(name);
+          
+          if (item.link) {
+            const lk = h("a", { href: item.link, target: "_blank", style: "display:inline-flex;align-items:center;color:#ff5722;text-decoration:none;" });
+            lk.appendChild(icon("shopping-cart", { fontSize: "13px" }));
+            nameRow.appendChild(lk);
+          }
+          nameCol.appendChild(nameRow);
 
           if (item.options && item.options.length > 0) {
             const selWrap = div("");
@@ -1591,12 +1602,14 @@
       const addLbl = div(""); addLbl.style.cssText = "font-size:12px;color:var(--pm);margin-bottom:8px;font-weight:500;"; addLbl.textContent = `Tambah item ke ${state.activeCat}`;
       const nameInp = h("input", { type: "text", class: "inp", placeholder: "Nama item (mis. Tas C&K)" }); nameInp.style.marginBottom = "8px";
       const estInp = h("input", { type: "number", class: "inp", placeholder: "Estimasi harga (Rp)" }); estInp.style.marginBottom = "8px";
-      const addBtn = h("button", { class: "btn-primary", onclick: () => { const n = nameInp.value.trim(); if (!n) return; (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push({ id: uid(), name: n, estimasi: Number(estInp.value) || 0, harga: 0, dibayar: 0 }); nameInp.value = ""; estInp.value = ""; scheduleSave(); renderContent(); } });
+      const linkInp = h("input", { type: "text", class: "inp", placeholder: "Link Shopee (opsional)" }); linkInp.style.marginBottom = "8px";
+      const addBtn = h("button", { class: "btn-primary", onclick: () => { const n = nameInp.value.trim(); if (!n) return; (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push({ id: uid(), name: n, estimasi: Number(estInp.value) || 0, harga: 0, dibayar: 0, link: linkInp.value.trim() }); nameInp.value = ""; estInp.value = ""; linkInp.value = ""; scheduleSave(); renderContent(); } });
       addBtn.style.width = "100%"; addBtn.style.justifyContent = "center";
       addBtn.append(icon("plus"), document.createTextNode("Tambah Item"));
       nameInp.addEventListener("keydown", e => { if (e.key === "Enter") estInp.focus(); });
-      estInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
-      addSec.append(addLbl, nameInp, estInp, addBtn);
+      estInp.addEventListener("keydown", e => { if (e.key === "Enter") linkInp.focus(); });
+      linkInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
+      addSec.append(addLbl, nameInp, estInp, linkInp, addBtn);
       card.appendChild(addSec);
       c.appendChild(card);
     }
@@ -1892,6 +1905,14 @@
       const { item, cat } = state.modalForm;
       if (!item) return;
 
+      const linkLabel = div("");
+      linkLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
+      linkLabel.textContent = "Link Shopee / Pembelian";
+      const mainLinkInp = h("input", { type: "text", class: "inp", placeholder: "https://shopee.co.id/...", value: item.link || "" });
+      mainLinkInp.style.marginBottom = "14px";
+      body.appendChild(linkLabel);
+      body.appendChild(mainLinkInp);
+
       // Let's create a local copy of options to allow canceling changes
       let options = JSON.parse(JSON.stringify(item.options || []));
       let activeOptionId = item.activeOptionId || "";
@@ -2007,6 +2028,7 @@
 
       // Save / Cancel Buttons
       body.appendChild(btnRow("Simpan Perubahan", () => {
+        item.link = mainLinkInp.value.trim();
         item.options = options;
         item.activeOptionId = activeOptionId;
 
