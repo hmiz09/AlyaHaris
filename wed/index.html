@@ -1644,11 +1644,21 @@
           }
 
           ["estimasi", "harga", "dibayar"].forEach(f => {
-            const inp = h("input", { type: "number", class: "inp sm", value: item[f] || "", placeholder: "0" });
+            const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", value: item[f] ? Number(item[f]).toLocaleString("id-ID") : "", placeholder: "0" });
             inp.style.textAlign = "right";
             if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) inp.style.borderColor = "var(--green)";
+            
+            inp.addEventListener("focus", e => {
+              const clean = e.target.value.replace(/\D/g, "");
+              e.target.value = clean || "";
+            });
+            inp.addEventListener("blur", e => {
+              const clean = e.target.value.replace(/\D/g, "");
+              e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
+            });
+            
             inp.addEventListener("change", e => {
-              const val = Number(e.target.value) || 0;
+              const val = Number(e.target.value.replace(/\D/g, "")) || 0;
               item[f] = val;
               if (item.options && item.options.length > 0) {
                 const activeOpt = item.options.find(o => o.id === item.activeOptionId);
@@ -1699,8 +1709,16 @@
       const addSec = div(""); addSec.style.cssText = "border-top:0.5px solid var(--pb);margin-top:12px;padding-top:12px;";
       const addLbl = div(""); addLbl.style.cssText = "font-size:12px;color:var(--pm);margin-bottom:8px;font-weight:500;"; addLbl.textContent = `Tambah item ke ${state.activeCat}`;
       const nameInp = h("input", { type: "text", class: "inp", placeholder: "Nama item (mis. Tas C&K)" }); nameInp.style.marginBottom = "8px";
-      const estInp = h("input", { type: "number", class: "inp", placeholder: "Estimasi harga (Rp)" }); estInp.style.marginBottom = "8px";
-      const addBtn = h("button", { class: "btn-primary", onclick: () => { const n = nameInp.value.trim(); if (!n) return; (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push({ id: uid(), name: n, estimasi: Number(estInp.value) || 0, harga: 0, dibayar: 0 }); nameInp.value = ""; estInp.value = ""; scheduleSave(); renderContent(); } });
+      const estInp = h("input", { type: "text", inputmode: "numeric", class: "inp", placeholder: "Estimasi harga (Rp)" });
+      estInp.addEventListener("focus", e => {
+        const clean = e.target.value.replace(/\D/g, "");
+        e.target.value = clean || "";
+      });
+      estInp.addEventListener("blur", e => {
+        const clean = e.target.value.replace(/\D/g, "");
+        e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
+      }); estInp.style.marginBottom = "8px";
+      const addBtn = h("button", { class: "btn-primary", onclick: () => { const n = nameInp.value.trim(); if (!n) return; (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push({ id: uid(), name: n, estimasi: Number(estInp.value.replace(/\D/g, "")) || 0, harga: 0, dibayar: 0 }); nameInp.value = ""; estInp.value = ""; scheduleSave(); renderContent(); } });
       addBtn.style.width = "100%"; addBtn.style.justifyContent = "center";
       addBtn.append(icon("plus"), document.createTextNode("Tambah Item"));
       nameInp.addEventListener("keydown", e => { if (e.key === "Enter") estInp.focus(); });
@@ -1922,7 +1940,15 @@
 
     function renderDanaModal(body) {
       const namaInp = h("input", { type: "text", class: "inp", placeholder: "Mis. Tabungan berdua, Dari orang tua...", value: state.modalForm.nama || "" });
-      const jumlahInp = h("input", { type: "number", class: "inp", placeholder: "Jumlah (Rp)", value: state.modalForm.jumlah || "" });
+      const jumlahInp = h("input", { type: "text", inputmode: "numeric", class: "inp", placeholder: "Jumlah (Rp)", value: state.modalForm.jumlah ? Number(state.modalForm.jumlah).toLocaleString("id-ID") : "" });
+      jumlahInp.addEventListener("focus", e => {
+        const clean = e.target.value.replace(/\D/g, "");
+        e.target.value = clean || "";
+      });
+      jumlahInp.addEventListener("blur", e => {
+        const clean = e.target.value.replace(/\D/g, "");
+        e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
+      });
       const ketInp = h("input", { type: "text", class: "inp", placeholder: "Keterangan (opsional)", value: state.modalForm.keterangan || "" });
       body.append(
         field("Nama Sumber Dana", namaInp),
@@ -1930,7 +1956,7 @@
         field("Keterangan (opsional)", ketInp),
         btnRow("Simpan", () => {
           const nama = namaInp.value.trim(); if (!nama) return;
-          const form = { id: state.modalForm.id || uid(), nama, jumlah: Number(jumlahInp.value) || 0, keterangan: ketInp.value.trim() };
+          const form = { id: state.modalForm.id || uid(), nama, jumlah: Number(jumlahInp.value.replace(/\D/g, "")) || 0, keterangan: ketInp.value.trim() };
           if (!state.data.dana) state.data.dana = [];
           if (state.modalForm.id) { state.data.dana = state.data.dana.map(d => d.id === form.id ? form : d); }
           else { state.data.dana.push(form); }
@@ -2074,14 +2100,27 @@
           const grid3 = div("");
           grid3.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;";
 
-          const est = h("input", { type: "number", class: "inp sm", placeholder: "Estimasi", value: opt.estimasi || "" });
-          est.addEventListener("input", e => { opt.estimasi = Number(e.target.value) || 0; });
+          const makeFormattedInp = (placeholder, val, onUpdate) => {
+            const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", placeholder: placeholder, value: val ? Number(val).toLocaleString("id-ID") : "" });
+            inp.style.textAlign = "right";
+            inp.addEventListener("focus", e => {
+              const clean = e.target.value.replace(/\D/g, "");
+              e.target.value = clean || "";
+            });
+            inp.addEventListener("blur", e => {
+              const clean = e.target.value.replace(/\D/g, "");
+              e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
+            });
+            inp.addEventListener("input", e => {
+              const clean = e.target.value.replace(/\D/g, "");
+              onUpdate(Number(clean) || 0);
+            });
+            return inp;
+          };
 
-          const hrg = h("input", { type: "number", class: "inp sm", placeholder: "Harga", value: opt.harga || "" });
-          hrg.addEventListener("input", e => { opt.harga = Number(e.target.value) || 0; });
-
-          const db = h("input", { type: "number", class: "inp sm", placeholder: "Bayar", value: opt.dibayar || "" });
-          db.addEventListener("input", e => { opt.dibayar = Number(e.target.value) || 0; });
+          const est = makeFormattedInp("Estimasi", opt.estimasi, v => { opt.estimasi = v; });
+          const hrg = makeFormattedInp("Harga", opt.harga, v => { opt.harga = v; });
+          const db = makeFormattedInp("Bayar", opt.dibayar, v => { opt.dibayar = v; });
 
           grid3.append(
             field("Estimasi", est),
