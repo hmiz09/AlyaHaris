@@ -337,14 +337,19 @@
 
       .inp,
       select.inp,
-      .inp.sm,
-      select,
       input[type="text"],
       input[type="number"],
       input[type="url"],
       input[type="date"] {
         font-size: 16px !important;
       }
+    }
+
+    .budget-select {
+      max-width: 110px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
     /* Buttons */
@@ -836,6 +841,15 @@
       .rsvp-select {
         font-size: 15px !important;
         padding: 6px 12px !important;
+      }
+      .budget-select {
+        max-width: 220px !important;
+        font-size: 13px !important;
+        padding: 4px 20px 4px 8px !important;
+      }
+      .inp.sm {
+        font-size: 13px !important;
+        padding: 6px 8px !important;
       }
     }
   </style>
@@ -1607,6 +1621,18 @@
           const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
           nameRow.appendChild(name);
 
+          const editNameBtn = h("button", { onclick: () => {
+            const newName = prompt("Ubah nama item:", item.name);
+            if (newName && newName.trim()) {
+              item.name = newName.trim();
+              scheduleSave();
+              renderContent();
+            }
+          }});
+          editNameBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:inline-flex;align-items:center;margin-left:4px;flex-shrink:0;";
+          editNameBtn.appendChild(icon("pencil", { fontSize: "11px", color: "var(--pm)" }));
+          nameRow.appendChild(editNameBtn);
+
           if (item.link) {
             const lk = h("a", { href: item.link, target: "_blank", style: "display:inline-flex;align-items:center;color:#ff5722;text-decoration:none;" });
             lk.appendChild(icon("shopping-cart", { fontSize: "13px" }));
@@ -1618,7 +1644,8 @@
             const selWrap = div("");
             selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
             const sel = h("select");
-            sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;max-width:105px;text-overflow:ellipsis;overflow:hidden;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
+            sel.className = "budget-select";
+            sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
 
             item.options.forEach(opt => {
               const o = document.createElement("option");
@@ -2040,6 +2067,14 @@
       const { item, cat } = state.modalForm;
       if (!item) return;
 
+      const nameLabel = div("");
+      nameLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
+      nameLabel.textContent = "Nama Item / Deskripsi";
+      const mainNameInp = h("input", { type: "text", class: "inp", placeholder: "Nama Item", value: item.name || "" });
+      mainNameInp.style.marginBottom = "12px";
+      body.appendChild(nameLabel);
+      body.appendChild(mainNameInp);
+
       const linkLabel = div("");
       linkLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
       linkLabel.textContent = "Link Shopee / Pembelian";
@@ -2176,6 +2211,7 @@
 
       // Save / Cancel Buttons
       body.appendChild(btnRow("Simpan Perubahan", () => {
+        if (mainNameInp.value.trim()) item.name = mainNameInp.value.trim();
         item.link = mainLinkInp.value.trim();
         item.options = options;
         item.activeOptionId = activeOptionId;
