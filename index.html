@@ -2131,13 +2131,9 @@
 
           const delBtn = h("button", {
             onclick: () => {
-              if (options.length <= 1) {
-                alert("Harus ada minimal satu opsi vendor.");
-                return;
-              }
               options = options.filter(o => o.id !== opt.id);
               if (activeOptionId === opt.id) {
-                activeOptionId = options[0].id;
+                activeOptionId = options.length > 0 ? options[0].id : "";
               }
               renderOptionsList();
             }
