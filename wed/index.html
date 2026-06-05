@@ -737,6 +737,107 @@
       line-height: 1.2;
       font-weight: 500;
     }
+
+    /* Responsive Budget Table & Mobile Styling */
+    .budget-cell-label {
+      display: none;
+    }
+    .budget-cell-wrap {
+      width: 100%;
+    }
+    .rsvp-select {
+      font-size: 11.5px;
+      padding: 5px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    
+    @keyframes fadeInContent {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-content {
+      animation: fadeInContent 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @media (max-width: 500px) {
+      .budget-header {
+        display: none !important;
+      }
+      .budget-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 12px 10px !important;
+        min-width: 0 !important;
+        padding: 14px 12px !important;
+        background: #fdfafb !important;
+        border-radius: 12px !important;
+        border: 0.5px solid var(--pb) !important;
+        margin-bottom: 12px !important;
+        position: relative !important;
+      }
+      .budget-row > :nth-child(1) { /* nameCol */
+        grid-column: span 3 !important;
+        padding-right: 36px !important;
+      }
+      .budget-row > :nth-child(5) { /* delete button */
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        background: rgba(107, 45, 69, 0.04) !important;
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+      }
+      .budget-cell-wrap {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+      }
+      .budget-cell-label {
+        display: block !important;
+        font-size: 9px !important;
+        text-transform: uppercase !important;
+        color: var(--pm) !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.02em !important;
+      }
+      .budget-total {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 10px !important;
+        min-width: 0 !important;
+        padding: 12px !important;
+        background: var(--pl) !important;
+        border-radius: 12px !important;
+      }
+      .budget-total > :nth-child(1) { /* Label Total */
+        grid-column: span 3 !important;
+        border-bottom: 0.5px solid rgba(107, 45, 69, 0.1) !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 4px !important;
+      }
+      .budget-total > span {
+        text-align: left !important;
+      }
+      .budget-total > :nth-child(5) { /* dummy span */
+        display: none !important;
+      }
+      .rsvp-select {
+        font-size: 15px !important;
+        padding: 6px 12px !important;
+      }
+    }
   </style>
 </head>
 
@@ -1025,6 +1126,9 @@
 
     function renderContent() {
       const c = document.getElementById("content");
+      c.classList.remove("fade-in-content");
+      void c.offsetWidth;
+      c.classList.add("fade-in-content");
       c.innerHTML = "";
       const fns = { dashboard: renderDashboard, checklist: renderChecklist, timeline: renderTimeline, tamu: renderTamu, vendor: renderVendor, budget: renderBudget, dana: renderDana };
       (fns[state.page] || renderDashboard)(c);
@@ -1384,8 +1488,8 @@
           const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:500;"; name.textContent = g.name;
           const side = div(""); side.style.cssText = "font-size:11px;color:var(--pm);margin-top:1px;"; side.textContent = g.side;
           nameCol.append(name, side);
-          const rsvpSel = h("select");
-          rsvpSel.style.cssText = `font-size:11px;padding:4px 8px;border-radius:99px;font-weight:500;border:none;cursor:pointer;appearance:none;background:${RSVP_MAP[g.rsvp].bg};color:${RSVP_MAP[g.rsvp].color};font-family:'DM Sans',sans-serif;`;
+          const rsvpSel = h("select", { class: "rsvp-select" });
+          rsvpSel.style.cssText = `background:${RSVP_MAP[g.rsvp].bg};color:${RSVP_MAP[g.rsvp].color};`;
           [["confirmed", "✓ Hadir"], ["declined", "✗ Tidak"], ["pending", "? Belum"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (g.rsvp === v) o.selected = true; rsvpSel.appendChild(o); });
           rsvpSel.addEventListener("change", e => { g.rsvp = e.target.value; scheduleSave(); renderContent(); });
           const acts = div(""); acts.style.cssText = "display:flex;gap:6px;";
@@ -1555,7 +1659,12 @@
               scheduleSave();
               renderContent();
             });
-            row.appendChild(inp);
+            const fieldLbl = { estimasi: "Est", harga: "Asli", dibayar: "Bayar" }[f];
+            const wrap = div("budget-cell-wrap", [
+              h("span", { class: "budget-cell-label" }, [fieldLbl]),
+              inp
+            ]);
+            row.appendChild(wrap);
           });
 
           const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
