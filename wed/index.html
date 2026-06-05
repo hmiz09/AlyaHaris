@@ -936,6 +936,20 @@
     function catSum(cat, f) { return (state.data.budget[cat] || []).reduce((s, i) => s + (Number(i[f]) || 0), 0); }
     function totalOf(f) { return CATS.reduce((s, c) => s + catSum(c, f), 0); }
     function totalDana() { return (state.data.dana || []).reduce((s, i) => s + (Number(i.jumlah) || 0), 0); }
+    function getSubcats(cat) {
+      const items = state.data.budget[cat] || [];
+      const seen = new Set();
+      const ordered = [];
+      items.forEach(i => {
+        const sc = i.subcat || "Umum";
+        if (!seen.has(sc)) { seen.add(sc); ordered.push(sc); }
+      });
+      if (!seen.has("Umum")) ordered.push("Umum");
+      return ordered;
+    }
+    function subcatSum(cat, subcat, f) {
+      return (state.data.budget[cat] || []).filter(i => (i.subcat || "Umum") === subcat).reduce((s, i) => s + (Number(i[f]) || 0), 0);
+    }
 
     // ── Persist ────────────────────────────────────────────────
     async function load() {
@@ -1574,7 +1588,17 @@
       const card = div("card");
       const topRow = div(""); topRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
       const ttl = div("card-title"); ttl.style.marginBottom = "0"; ttl.append(icon("tag"), document.createTextNode(state.activeCat));
-      topRow.append(ttl); card.appendChild(topRow);
+      const addSubcatBtn = h("button", { class: "btn-ghost", onclick: () => {
+        const name = prompt("Nama sub-kategori baru:");
+        if (name && name.trim()) {
+          const items = state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || [];
+          items.push({ id: uid(), name: "Item baru", subcat: name.trim(), estimasi: 0, harga: 0, dibayar: 0 });
+          scheduleSave(); renderContent();
+        }
+      }});
+      addSubcatBtn.style.cssText = "padding:5px 10px;font-size:11px;min-height:28px;";
+      addSubcatBtn.append(icon("folder-plus", { fontSize: "13px" }), document.createTextNode("Sub-Kategori"));
+      topRow.append(ttl, addSubcatBtn); card.appendChild(topRow);
 
       // 3-box summary for active category
       const catE = catSum(state.activeCat, "estimasi");
@@ -1598,136 +1622,199 @@
       const divider = div(""); divider.style.cssText = "height:0.5px;background:var(--pb);margin-bottom:12px;";
       card.appendChild(divider);
 
-      const items = state.data.budget[state.activeCat] || [];
-      if (!items.length) {
+      const allItems = state.data.budget[state.activeCat] || [];
+      if (!allItems.length) {
         const empty = div(""); empty.style.cssText = "text-align:center;padding:1.5rem;color:var(--pm);font-size:13px;";
         empty.innerHTML = `<i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada item. Tambahkan di bawah.`;
         card.appendChild(empty);
       } else {
-        const scroll = div(""); scroll.style.overflowX = "auto";
-        const hdr = div("budget-header");
-        ["Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 0 && i < 4) s.style.textAlign = "right"; hdr.appendChild(s); });
-        scroll.appendChild(hdr);
+        const subcats = getSubcats(state.activeCat);
+        state._collapsedSubcats = state._collapsedSubcats || {};
 
-        items.forEach(item => {
-          const row = div("budget-row");
+        subcats.forEach(sc => {
+          const scItems = allItems.filter(i => (i.subcat || "Umum") === sc);
+          if (scItems.length === 0 && sc === "Umum") return;
 
-          const nameCol = div("");
-          nameCol.style.cssText = "display:flex;flex-direction:column;gap:2px;overflow:hidden;";
-          const nameRow = div("");
-          nameRow.style.cssText = "display:flex;align-items:center;gap:6px;overflow:hidden;";
-          const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
-          nameRow.appendChild(name);
+          const isCollapsed = state._collapsedSubcats[state.activeCat + "|" + sc];
+          const scKey = state.activeCat + "|" + sc;
 
-          const editNameBtn = h("button", { onclick: () => {
-            const newName = prompt("Ubah nama item:", item.name);
-            if (newName && newName.trim()) {
-              item.name = newName.trim();
-              scheduleSave();
-              renderContent();
-            }
-          }});
-          editNameBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:inline-flex;align-items:center;margin-left:4px;flex-shrink:0;";
-          editNameBtn.appendChild(icon("pencil", { fontSize: "11px", color: "var(--pm)" }));
-          nameRow.appendChild(editNameBtn);
+          const scHdr = div("");
+          scHdr.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin-bottom:8px;background:var(--pl);border-radius:10px;cursor:pointer;user-select:none;";
+          
+          const scLeft = div("");
+          scLeft.style.cssText = "display:flex;align-items:center;gap:8px;flex:1;min-width:0;";
+          const chevron = icon(isCollapsed ? "chevron-right" : "chevron-down", { fontSize: "14px", color: "var(--pm)" });
+          const scName = h("span"); scName.style.cssText = "font-size:12px;font-weight:700;color:var(--pd);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+          scName.textContent = sc;
+          const scCount = h("span"); scCount.style.cssText = "font-size:10px;color:var(--pm);flex-shrink:0;";
+          scCount.textContent = `${scItems.length} item`;
+          const scEst = subcatSum(state.activeCat, sc, "estimasi");
+          const scSumLabel = h("span"); scSumLabel.style.cssText = "font-size:10px;color:var(--pk);flex-shrink:0;font-weight:600;";
+          scSumLabel.textContent = scEst > 0 ? fmtRp(scEst) : "";
+          scLeft.append(chevron, scName, scCount, scSumLabel);
 
-          nameCol.appendChild(nameRow);
+          const scActions = div("");
+          scActions.style.cssText = "display:flex;align-items:center;gap:2px;flex-shrink:0;";
+          
+          if (sc !== "Umum") {
+            const renameBtn = h("button", { onclick: e => {
+              e.stopPropagation();
+              const newName = prompt("Ubah nama sub-kategori:", sc);
+              if (newName && newName.trim() && newName.trim() !== sc) {
+                allItems.forEach(i => { if ((i.subcat || "Umum") === sc) i.subcat = newName.trim(); });
+                scheduleSave(); renderContent();
+              }
+            }});
+            renameBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;";
+            renameBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pm)" }));
 
-          if (item.options && item.options.length > 0) {
-            const selWrap = div("");
-            selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
-            const sel = h("select");
-            sel.className = "budget-select";
-            sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
+            const delScBtn = h("button", { onclick: e => {
+              e.stopPropagation();
+              if (!confirm(`Hapus sub-kategori "${sc}"?\nSemua item di dalamnya akan dipindahkan ke "Umum".`)) return;
+              allItems.forEach(i => { if ((i.subcat || "Umum") === sc) delete i.subcat; });
+              scheduleSave(); renderContent();
+            }});
+            delScBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;";
+            delScBtn.appendChild(icon("trash", { fontSize: "12px", color: "var(--pm)" }));
+            scActions.append(renameBtn, delScBtn);
+          }
 
-            item.options.forEach(opt => {
-              const o = document.createElement("option");
-              o.value = opt.id;
-              o.textContent = opt.name + (opt.estimasi ? ` (${(opt.estimasi / 1000000).toFixed(1)}jt)` : "");
-              if (item.activeOptionId === opt.id) o.selected = true;
-              sel.appendChild(o);
-            });
+          scHdr.append(scLeft, scActions);
+          scHdr.addEventListener("click", () => {
+            state._collapsedSubcats[scKey] = !isCollapsed;
+            renderContent();
+          });
+          card.appendChild(scHdr);
 
-            sel.addEventListener("change", e => {
-              const optId = e.target.value;
-              const selectedOpt = item.options.find(o => o.id === optId);
-              if (selectedOpt) {
-                item.activeOptionId = optId;
-                item.estimasi = selectedOpt.estimasi || 0;
-                item.harga = selectedOpt.harga || 0;
-                item.dibayar = selectedOpt.dibayar || 0;
+          if (isCollapsed) return;
+
+          const scroll = div(""); scroll.style.overflowX = "auto";
+          const hdr = div("budget-header");
+          ["Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 0 && i < 4) s.style.textAlign = "right"; hdr.appendChild(s); });
+          scroll.appendChild(hdr);
+
+          scItems.forEach(item => {
+            const row = div("budget-row");
+
+            const nameCol = div("");
+            nameCol.style.cssText = "display:flex;flex-direction:column;gap:2px;overflow:hidden;";
+            const nameRow = div("");
+            nameRow.style.cssText = "display:flex;align-items:center;gap:6px;overflow:hidden;";
+            const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
+            nameRow.appendChild(name);
+
+            const editNameBtn = h("button", { onclick: () => {
+              const newName = prompt("Ubah nama item:", item.name);
+              if (newName && newName.trim()) {
+                item.name = newName.trim();
                 scheduleSave();
                 renderContent();
               }
-            });
+            }});
+            editNameBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:inline-flex;align-items:center;margin-left:4px;flex-shrink:0;";
+            editNameBtn.appendChild(icon("pencil", { fontSize: "11px", color: "var(--pm)" }));
+            nameRow.appendChild(editNameBtn);
 
-            const manageBtn = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
-            manageBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;";
-            manageBtn.appendChild(icon("settings", { fontSize: 12, color: "var(--pm)" }));
+            nameCol.appendChild(nameRow);
 
-            selWrap.append(sel, manageBtn);
-            nameCol.appendChild(selWrap);
-          } else {
-            const addOptLink = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
-            addOptLink.style.cssText = "background:none;border:none;color:var(--pm);font-size:10px;cursor:pointer;padding:2px 0;text-align:left;display:block;text-decoration:underline;font-family:'DM Sans',sans-serif;";
-            addOptLink.textContent = "+ Opsi Vendor";
-            nameCol.appendChild(addOptLink);
-          }
+            if (item.options && item.options.length > 0) {
+              const selWrap = div("");
+              selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
+              const sel = h("select");
+              sel.className = "budget-select";
+              sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
 
-          ["estimasi", "harga", "dibayar"].forEach(f => {
-            const fieldLbl = { estimasi: "Est", harga: "Asli", dibayar: "Bayar" }[f];
-            const val = item[f] ? Number(item[f]) : 0;
-            const colorMap = { estimasi: "var(--pd)", harga: "#b87090", dibayar: "var(--green)" };
+              item.options.forEach(opt => {
+                const o = document.createElement("option");
+                o.value = opt.id;
+                o.textContent = opt.name + (opt.estimasi ? ` (${(opt.estimasi / 1000000).toFixed(1)}jt)` : "");
+                if (item.activeOptionId === opt.id) o.selected = true;
+                sel.appendChild(o);
+              });
 
-            // Display span (default view)
-            const display = h("span");
-            display.style.cssText = `font-size:13px;font-weight:500;text-align:right;color:${colorMap[f]};cursor:pointer;padding:6px 8px;border-radius:8px;display:block;transition:background .15s;min-height:32px;line-height:20px;`;
-            display.textContent = val ? Number(val).toLocaleString("id-ID") : "—";
-            if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) {
-              display.style.background = "var(--green-bg)";
+              sel.addEventListener("change", e => {
+                const optId = e.target.value;
+                const selectedOpt = item.options.find(o => o.id === optId);
+                if (selectedOpt) {
+                  item.activeOptionId = optId;
+                  item.estimasi = selectedOpt.estimasi || 0;
+                  item.harga = selectedOpt.harga || 0;
+                  item.dibayar = selectedOpt.dibayar || 0;
+                  scheduleSave();
+                  renderContent();
+                }
+              });
+
+              const manageBtn = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
+              manageBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;";
+              manageBtn.appendChild(icon("settings", { fontSize: 12, color: "var(--pm)" }));
+
+              selWrap.append(sel, manageBtn);
+              nameCol.appendChild(selWrap);
+            } else {
+              const addOptLink = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
+              addOptLink.style.cssText = "background:none;border:none;color:var(--pm);font-size:10px;cursor:pointer;padding:2px 0;text-align:left;display:block;text-decoration:underline;font-family:'DM Sans',sans-serif;";
+              addOptLink.textContent = "+ Opsi Vendor";
+              nameCol.appendChild(addOptLink);
             }
 
-            display.addEventListener("click", () => {
-              const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", value: val ? String(val) : "", placeholder: "0" });
-              inp.style.cssText = "text-align:right;font-size:13px;padding:6px 8px;width:100%;";
-              wrap.replaceChild(inp, display);
-              inp.focus();
-              inp.select();
+            ["estimasi", "harga", "dibayar"].forEach(f => {
+              const fieldLbl = { estimasi: "Est", harga: "Asli", dibayar: "Bayar" }[f];
+              const val = item[f] ? Number(item[f]) : 0;
+              const colorMap = { estimasi: "var(--pd)", harga: "#b87090", dibayar: "var(--green)" };
 
-              const commit = () => {
-                const newVal = Number(inp.value.replace(/\D/g, "")) || 0;
-                item[f] = newVal;
-                if (item.options && item.options.length > 0) {
-                  const activeOpt = item.options.find(o => o.id === item.activeOptionId);
-                  if (activeOpt) activeOpt[f] = newVal;
-                }
-                scheduleSave();
-                renderContent();
-              };
-              inp.addEventListener("blur", commit);
-              inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
+              const display = h("span");
+              display.style.cssText = `font-size:13px;font-weight:500;text-align:right;color:${colorMap[f]};cursor:pointer;padding:6px 8px;border-radius:8px;display:block;transition:background .15s;min-height:32px;line-height:20px;`;
+              display.textContent = val ? Number(val).toLocaleString("id-ID") : "—";
+              if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) {
+                display.style.background = "var(--green-bg)";
+              }
+
+              display.addEventListener("click", () => {
+                const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", value: val ? String(val) : "", placeholder: "0" });
+                inp.style.cssText = "text-align:right;font-size:13px;padding:6px 8px;width:100%;";
+                wrap.replaceChild(inp, display);
+                inp.focus();
+                inp.select();
+
+                const commit = () => {
+                  const newVal = Number(inp.value.replace(/\D/g, "")) || 0;
+                  item[f] = newVal;
+                  if (item.options && item.options.length > 0) {
+                    const activeOpt = item.options.find(o => o.id === item.activeOptionId);
+                    if (activeOpt) activeOpt[f] = newVal;
+                  }
+                  scheduleSave();
+                  renderContent();
+                };
+                inp.addEventListener("blur", commit);
+                inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
+              });
+
+              const wrap = div("budget-cell-wrap", [
+                h("span", { class: "budget-cell-label" }, [fieldLbl]),
+                display
+              ]);
+              row.appendChild(wrap);
             });
 
-            const wrap = div("budget-cell-wrap", [
-              h("span", { class: "budget-cell-label" }, [fieldLbl]),
-              display
-            ]);
-            row.appendChild(wrap);
+            const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
+            del.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+            row.prepend(nameCol); row.appendChild(del);
+            scroll.appendChild(row);
+
+            const sisa = (Number(item.harga) || 0) - (Number(item.dibayar) || 0);
+            if (Number(item.harga) > 0 && Number(item.dibayar) > 0) {
+              const sl2 = div("sisa"); sl2.style.color = sisa > 0 ? "var(--orange)" : "var(--green)"; sl2.textContent = sisa > 0 ? `Sisa: ${fmtRp(sisa)}` : "✓ Lunas"; sl2.style.minWidth = "340px";
+              scroll.appendChild(sl2);
+            }
           });
 
-          const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
-          del.style.cssText = "background:none;border:none;cursor:pointer;padding:4px;"; del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
-          row.prepend(nameCol); row.appendChild(del);
-          scroll.appendChild(row);
+          card.appendChild(scroll);
+        }); // end subcats.forEach
 
-          const sisa = (Number(item.harga) || 0) - (Number(item.dibayar) || 0);
-          if (Number(item.harga) > 0 && Number(item.dibayar) > 0) {
-            const sl2 = div("sisa"); sl2.style.color = sisa > 0 ? "var(--orange)" : "var(--green)"; sl2.textContent = sisa > 0 ? `Sisa: ${fmtRp(sisa)}` : "✓ Lunas"; sl2.style.minWidth = "340px";
-            scroll.appendChild(sl2);
-          }
-        });
-
-        // Totals
+        // Grand Total for category
+        const scroll2 = div(""); scroll2.style.overflowX = "auto";
         const tot = div("budget-total");
         const tl = document.createElement("span"); tl.textContent = "Total"; tl.style.color = "var(--pd)";
         ["estimasi", "harga", "dibayar"].forEach((f, i) => {
@@ -1739,14 +1826,37 @@
         });
         tot.prepend(tl);
         const dummy = document.createElement("span"); tot.appendChild(dummy);
-        scroll.appendChild(tot);
-        card.appendChild(scroll);
+        scroll2.appendChild(tot);
+        card.appendChild(scroll2);
       }
 
       // Add item
       const addSec = div(""); addSec.style.cssText = "border-top:0.5px solid var(--pb);margin-top:12px;padding-top:12px;";
       const addLbl = div(""); addLbl.style.cssText = "font-size:12px;color:var(--pm);margin-bottom:8px;font-weight:500;"; addLbl.textContent = `Tambah item ke ${state.activeCat}`;
       const nameInp = h("input", { type: "text", class: "inp", placeholder: "Nama item (mis. Tas C&K)" }); nameInp.style.marginBottom = "8px";
+
+      // Sub-category select
+      const subcatSel = h("select", { class: "inp" }); subcatSel.style.marginBottom = "8px";
+      const currentSubcats = getSubcats(state.activeCat);
+      currentSubcats.forEach(sc => {
+        const opt = document.createElement("option"); opt.value = sc; opt.textContent = sc;
+        subcatSel.appendChild(opt);
+      });
+      const newScOpt = document.createElement("option"); newScOpt.value = "__new__"; newScOpt.textContent = "+ Sub-kategori baru...";
+      subcatSel.appendChild(newScOpt);
+      subcatSel.addEventListener("change", () => {
+        if (subcatSel.value === "__new__") {
+          const newName = prompt("Nama sub-kategori baru:");
+          if (newName && newName.trim()) {
+            const opt = document.createElement("option"); opt.value = newName.trim(); opt.textContent = newName.trim();
+            subcatSel.insertBefore(opt, newScOpt);
+            subcatSel.value = newName.trim();
+          } else {
+            subcatSel.value = currentSubcats[0] || "Umum";
+          }
+        }
+      });
+
       const estInp = h("input", { type: "text", inputmode: "numeric", class: "inp", placeholder: "Estimasi harga (Rp)" });
       estInp.addEventListener("focus", e => {
         const clean = e.target.value.replace(/\D/g, "");
@@ -1756,12 +1866,19 @@
         const clean = e.target.value.replace(/\D/g, "");
         e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
       }); estInp.style.marginBottom = "8px";
-      const addBtn = h("button", { class: "btn-primary", onclick: () => { const n = nameInp.value.trim(); if (!n) return; (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push({ id: uid(), name: n, estimasi: Number(estInp.value.replace(/\D/g, "")) || 0, harga: 0, dibayar: 0 }); nameInp.value = ""; estInp.value = ""; scheduleSave(); renderContent(); } });
+      const addBtn = h("button", { class: "btn-primary", onclick: () => {
+        const n = nameInp.value.trim(); if (!n) return;
+        const selectedSubcat = subcatSel.value === "Umum" ? undefined : subcatSel.value;
+        const newItem = { id: uid(), name: n, estimasi: Number(estInp.value.replace(/\D/g, "")) || 0, harga: 0, dibayar: 0 };
+        if (selectedSubcat) newItem.subcat = selectedSubcat;
+        (state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || []).push(newItem);
+        nameInp.value = ""; estInp.value = ""; scheduleSave(); renderContent();
+      }});
       addBtn.style.width = "100%"; addBtn.style.justifyContent = "center";
       addBtn.append(icon("plus"), document.createTextNode("Tambah Item"));
       nameInp.addEventListener("keydown", e => { if (e.key === "Enter") estInp.focus(); });
       estInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
-      addSec.append(addLbl, nameInp, estInp, addBtn);
+      addSec.append(addLbl, nameInp, subcatSel, estInp, addBtn);
       card.appendChild(addSec);
       c.appendChild(card);
     }
@@ -2016,8 +2133,8 @@
 
       CATS.forEach(cat => {
         const items = d.budget[cat] || [];
-        const rows = [["Item", "Estimasi (Rp)", "Harga Asli (Rp)", "Dibayar (Rp)", "Sisa (Rp)"], ...items.map(i => [i.name, Number(i.estimasi) || 0, Number(i.harga) || 0, Number(i.dibayar) || 0, (Number(i.harga) || 0) - (Number(i.dibayar) || 0)]), [""], ["TOTAL", catSum(cat, "estimasi"), catSum(cat, "harga"), catSum(cat, "dibayar"), catSum(cat, "harga") - catSum(cat, "dibayar")]];
-        const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = [{ wch: 32 }, { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
+        const rows = [["Sub-Kategori", "Item", "Estimasi (Rp)", "Harga Asli (Rp)", "Dibayar (Rp)", "Sisa (Rp)"], ...items.map(i => [i.subcat || "Umum", i.name, Number(i.estimasi) || 0, Number(i.harga) || 0, Number(i.dibayar) || 0, (Number(i.harga) || 0) - (Number(i.dibayar) || 0)]), [""], ["", "TOTAL", catSum(cat, "estimasi"), catSum(cat, "harga"), catSum(cat, "dibayar"), catSum(cat, "harga") - catSum(cat, "dibayar")]];
+        const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = [{ wch: 18 }, { wch: 32 }, { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
         XLSX.utils.book_append_sheet(wb, ws, cat);
       });
 
@@ -2072,6 +2189,21 @@
       mainNameInp.style.marginBottom = "12px";
       body.appendChild(nameLabel);
       body.appendChild(mainNameInp);
+
+      // Sub-category select in modal
+      const scLabel = div("");
+      scLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
+      scLabel.textContent = "Sub-Kategori";
+      const modalSubcatSel = h("select", { class: "inp" });
+      modalSubcatSel.style.marginBottom = "12px";
+      const modalSubcats = getSubcats(cat);
+      modalSubcats.forEach(sc => {
+        const opt = document.createElement("option"); opt.value = sc; opt.textContent = sc;
+        if ((item.subcat || "Umum") === sc) opt.selected = true;
+        modalSubcatSel.appendChild(opt);
+      });
+      body.appendChild(scLabel);
+      body.appendChild(modalSubcatSel);
 
       // Let's create a local copy of options to allow canceling changes
       let options = JSON.parse(JSON.stringify(item.options || []));
@@ -2198,6 +2330,8 @@
       // Save / Cancel Buttons
       body.appendChild(btnRow("Simpan Perubahan", () => {
         if (mainNameInp.value.trim()) item.name = mainNameInp.value.trim();
+        const newSubcat = modalSubcatSel.value;
+        if (newSubcat === "Umum") { delete item.subcat; } else { item.subcat = newSubcat; }
         item.options = options;
         item.activeOptionId = activeOptionId;
 
