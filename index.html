@@ -1682,35 +1682,42 @@
           }
 
           ["estimasi", "harga", "dibayar"].forEach(f => {
-            const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", value: item[f] ? Number(item[f]).toLocaleString("id-ID") : "", placeholder: "0" });
-            inp.style.textAlign = "right";
-            if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) inp.style.borderColor = "var(--green)";
-            
-            inp.addEventListener("focus", e => {
-              const clean = e.target.value.replace(/\D/g, "");
-              e.target.value = clean || "";
-            });
-            inp.addEventListener("blur", e => {
-              const clean = e.target.value.replace(/\D/g, "");
-              e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
-            });
-            
-            inp.addEventListener("change", e => {
-              const val = Number(e.target.value.replace(/\D/g, "")) || 0;
-              item[f] = val;
-              if (item.options && item.options.length > 0) {
-                const activeOpt = item.options.find(o => o.id === item.activeOptionId);
-                if (activeOpt) {
-                  activeOpt[f] = val;
-                }
-              }
-              scheduleSave();
-              renderContent();
-            });
             const fieldLbl = { estimasi: "Est", harga: "Asli", dibayar: "Bayar" }[f];
+            const val = item[f] ? Number(item[f]) : 0;
+            const colorMap = { estimasi: "var(--pd)", harga: "#b87090", dibayar: "var(--green)" };
+
+            // Display span (default view)
+            const display = h("span");
+            display.style.cssText = `font-size:13px;font-weight:500;text-align:right;color:${colorMap[f]};cursor:pointer;padding:6px 8px;border-radius:8px;display:block;transition:background .15s;min-height:32px;line-height:20px;`;
+            display.textContent = val ? Number(val).toLocaleString("id-ID") : "—";
+            if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) {
+              display.style.background = "var(--green-bg)";
+            }
+
+            display.addEventListener("click", () => {
+              const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", value: val ? String(val) : "", placeholder: "0" });
+              inp.style.cssText = "text-align:right;font-size:13px;padding:6px 8px;width:100%;";
+              wrap.replaceChild(inp, display);
+              inp.focus();
+              inp.select();
+
+              const commit = () => {
+                const newVal = Number(inp.value.replace(/\D/g, "")) || 0;
+                item[f] = newVal;
+                if (item.options && item.options.length > 0) {
+                  const activeOpt = item.options.find(o => o.id === item.activeOptionId);
+                  if (activeOpt) activeOpt[f] = newVal;
+                }
+                scheduleSave();
+                renderContent();
+              };
+              inp.addEventListener("blur", commit);
+              inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
+            });
+
             const wrap = div("budget-cell-wrap", [
               h("span", { class: "budget-cell-label" }, [fieldLbl]),
-              inp
+              display
             ]);
             row.appendChild(wrap);
           });
