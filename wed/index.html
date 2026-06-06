@@ -1717,9 +1717,12 @@
 
             nameCol.appendChild(nameRow);
 
+            const metaRow = div("");
+            metaRow.style.cssText = "display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;";
+
             if (item.options && item.options.length > 0) {
               const selWrap = div("");
-              selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
+              selWrap.style.cssText = "display:flex;align-items:center;gap:4px;";
               const sel = h("select");
               sel.className = "budget-select";
               sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
@@ -1750,13 +1753,58 @@
               manageBtn.appendChild(icon("settings", { fontSize: 12, color: "var(--pm)" }));
 
               selWrap.append(sel, manageBtn);
-              nameCol.appendChild(selWrap);
+              metaRow.appendChild(selWrap);
             } else {
               const addOptLink = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
-              addOptLink.style.cssText = "background:none;border:none;color:var(--pm);font-size:10px;cursor:pointer;padding:2px 0;text-align:left;display:block;text-decoration:underline;font-family:'DM Sans',sans-serif;";
+              addOptLink.style.cssText = "background:none;border:none;color:var(--pm);font-size:10px;cursor:pointer;padding:2px 0;text-align:left;display:inline-flex;align-items:center;text-decoration:underline;font-family:'DM Sans',sans-serif;";
               addOptLink.textContent = "+ Opsi Vendor";
-              nameCol.appendChild(addOptLink);
+              metaRow.appendChild(addOptLink);
             }
+
+            const subcatWrap = div("");
+            subcatWrap.style.cssText = "display:inline-flex;align-items:center;gap:3px;";
+            const subcatSel = h("select");
+            subcatSel.className = "budget-select";
+            subcatSel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
+
+            const currentSubcats = getSubcats(state.activeCat);
+            currentSubcats.forEach(sc => {
+              const o = document.createElement("option");
+              o.value = sc;
+              o.textContent = sc;
+              if ((item.subcat || "Umum") === sc) o.selected = true;
+              subcatSel.appendChild(o);
+            });
+            const newScOpt = document.createElement("option");
+            newScOpt.value = "__new__";
+            newScOpt.textContent = "+ Sub-kategori baru...";
+            subcatSel.appendChild(newScOpt);
+
+            subcatSel.addEventListener("change", e => {
+              const val = e.target.value;
+              if (val === "__new__") {
+                const newName = prompt("Nama sub-kategori baru:");
+                if (newName && newName.trim()) {
+                  item.subcat = newName.trim();
+                  scheduleSave();
+                  renderContent();
+                } else {
+                  subcatSel.value = item.subcat || "Umum";
+                }
+              } else {
+                if (val === "Umum") {
+                  delete item.subcat;
+                } else {
+                  item.subcat = val;
+                }
+                scheduleSave();
+                renderContent();
+              }
+            });
+
+            subcatWrap.append(icon("folder", { fontSize: "11px", color: "var(--pm)" }), subcatSel);
+            metaRow.appendChild(subcatWrap);
+            nameCol.appendChild(metaRow);
 
             ["estimasi", "harga", "dibayar"].forEach(f => {
               const fieldLbl = { estimasi: "Est", harga: "Asli", dibayar: "Bayar" }[f];
