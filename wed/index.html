@@ -138,6 +138,7 @@
       syncStatus: "nourl", // nourl|syncing|synced|error|local
       scriptUrl: "",
       activeCat: "Seserahan",
+      selectedBudgetIds: [],
       guestFilter: "all",
       guestSearch: "",
       editingCheckId: null,
@@ -318,6 +319,7 @@
       renderHeader();
       renderContent();
       renderNav();
+      renderBulkActionBar();
       if (state.modal) renderModal();
       else { const m = document.getElementById("modal-container"); if (m) m.remove(); }
     }
@@ -398,7 +400,7 @@
         const isActive = state.page === p;
         const btn = h("button", {
           class: btnBaseClass + (isActive ? ` ${activeBtnClass}` : ""),
-          onclick: () => { state.page = p; renderContent(); renderNav(); }
+          onclick: () => { state.page = p; state.selectedBudgetIds = []; renderContent(); renderNav(); }
         });
         const ic = icon(icon_name, { fontSize: "19px" });
         ic.className = `ti ti-${icon_name} ` + (isActive ? activeIconClass : iconClass);
@@ -844,7 +846,7 @@
         const e = catSum(cat, "estimasi");
         const btn = h("button", {
           class: `cat-tab p-[8px_16px] rounded-full text-[12.5px] font-semibold cursor-pointer border border-pb bg-pl text-pd truncate shrink-0 font-['DM_Sans',sans-serif] transition-all duration-200 ease-in-out active:scale-[0.96]${state.activeCat === cat ? " bg-pk border-pk text-white active" : ""}`,
-          onclick: () => { state.activeCat = cat; renderContent(); }
+          onclick: () => { state.activeCat = cat; state.selectedBudgetIds = []; renderContent(); }
         });
         btn.textContent = cat + (e > 0 ? ` ${(e / 1000000).toFixed(1)}M` : "");
         tabs.appendChild(btn);
@@ -923,6 +925,26 @@
 
           const scActions = div("flex items-center gap-0.5 shrink-0");
           
+          const allScSelected = scItems.length > 0 && scItems.every(i => (state.selectedBudgetIds || []).includes(i.id));
+          const selectAllBtn = h("button", {
+            onclick: e => {
+              e.stopPropagation();
+              state.selectedBudgetIds = state.selectedBudgetIds || [];
+              const scIds = scItems.map(i => i.id);
+              if (allScSelected) {
+                state.selectedBudgetIds = state.selectedBudgetIds.filter(id => !scIds.includes(id));
+              } else {
+                state.selectedBudgetIds = [...new Set([...state.selectedBudgetIds, ...scIds])];
+              }
+              renderContent();
+              renderBulkActionBar();
+            }
+          });
+          selectAllBtn.className = "bg-transparent border-none cursor-pointer p-1 flex items-center";
+          selectAllBtn.title = allScSelected ? "Batal pilih semua" : "Pilih semua";
+          selectAllBtn.appendChild(icon(allScSelected ? "square-minus" : "square-plus", { fontSize: "14px", color: "var(--pm)" }));
+          scActions.appendChild(selectAllBtn);
+
           if (sc !== "Umum") {
             const renameBtn = h("button", { onclick: e => {
               e.stopPropagation();
@@ -956,19 +978,35 @@
           if (isCollapsed) return; // skip rendering items if collapsed
 
           const scroll = div("overflow-x-auto");
-          const hdr = div("grid grid-cols-[2.2fr_1fr_1fr_1fr_28px] gap-1.5 text-[11px] text-pm uppercase tracking-wider pb-2 border-b border-pb min-w-[560px] xs:hidden");
-          ["Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 0 && i < 4) s.style.textAlign = "right"; hdr.appendChild(s); });
+          const hdr = div("grid grid-cols-[24px_2.2fr_1fr_1fr_1fr_28px] gap-1.5 text-[11px] text-pm uppercase tracking-wider pb-2 border-b border-pb min-w-[584px] xs:hidden");
+          ["", "Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 1 && i < 5) s.style.textAlign = "right"; hdr.appendChild(s); });
           scroll.appendChild(hdr);
 
           scItems.forEach(item => {
-            const row = div("grid grid-cols-[2.2fr_1fr_1fr_1fr_28px] gap-1.5 items-center py-2.5 border-b border-pb min-w-[560px] xs:grid xs:grid-cols-[1fr_auto] xs:grid-rows-auto xs:gap-0 xs:min-w-0 xs:py-2.5 xs:bg-transparent xs:rounded-none xs:border-none xs:border-b xs:border-pb/40 xs:mb-0 xs:relative");
+            const isSelected = (state.selectedBudgetIds || []).includes(item.id);
+            const chk = div(`w-[18px] h-[18px] rounded border ${isSelected ? 'bg-pk border-pk text-white' : 'border-pb bg-white'} flex items-center justify-center shrink-0 cursor-pointer xs:self-center xs:col-start-1 xs:row-start-1 xs:row-end-4`, [
+              isSelected && icon("check", { fontSize: "11px", color: "#fff" })
+            ]);
+            chk.addEventListener("click", (e) => {
+              e.stopPropagation();
+              state.selectedBudgetIds = state.selectedBudgetIds || [];
+              if (isSelected) {
+                state.selectedBudgetIds = state.selectedBudgetIds.filter(id => id !== item.id);
+              } else {
+                state.selectedBudgetIds.push(item.id);
+              }
+              renderContent();
+              renderBulkActionBar();
+            });
 
-            const nameCol = div("flex flex-col gap-0.5 overflow-hidden xs:col-start-1 xs:row-start-1 xs:row-end-4 xs:pr-3 xs:self-center");
+            const row = div("grid grid-cols-[24px_2.2fr_1fr_1fr_1fr_28px] gap-1.5 items-center py-2.5 border-b border-pb min-w-[584px] xs:grid xs:grid-cols-[28px_1fr_auto] xs:grid-rows-auto xs:gap-0 xs:min-w-0 xs:py-2.5 xs:bg-transparent xs:rounded-none xs:border-none xs:border-b xs:border-pb/40 xs:mb-0 xs:relative");
 
-            const nameRow = div("flex items-center gap-1.5 overflow-hidden cursor-pointer");
+            const nameCol = div("flex flex-col gap-0.5 min-w-0 xs:col-start-2 xs:row-start-1 xs:row-end-4 xs:pr-3 xs:self-center");
+
+            const nameRow = div("flex items-center gap-1.5 cursor-pointer");
             nameRow.addEventListener("click", () => openModal("budget_options", { item, cat: state.activeCat }));
 
-            const name = div("text-[13px] text-pd font-bold overflow-hidden text-ellipsis whitespace-nowrap"); name.textContent = item.name;
+            const name = div("text-[13px] text-pd font-bold break-words"); name.textContent = item.name;
             nameRow.appendChild(name);
 
             const chevronIcon = icon("chevron-right", { fontSize: "12px", color: "var(--pm)" });
@@ -1075,7 +1113,7 @@
                 inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
               });
 
-              const wrap = div("w-full xs:flex xs:flex-row xs:items-center xs:gap-1.5 xs:py-0.5 xs:justify-end xs:col-start-2 xs:row-start-" + (f === "estimasi" ? "1" : f === "harga" ? "2" : "3"), [
+              const wrap = div("w-full xs:flex xs:flex-row xs:items-center xs:gap-1.5 xs:py-0.5 xs:justify-end xs:col-start-3 xs:row-start-" + (f === "estimasi" ? "1" : f === "harga" ? "2" : "3"), [
                 h("span", { class: "hidden xs:block xs:text-[8.5px] xs:uppercase xs:text-pm xs:font-semibold xs:tracking-wider xs:shrink-0 xs:min-w-[28px] xs:text-right" }, [fieldLbl]),
                 display
               ]);
@@ -1084,7 +1122,9 @@
 
             const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
             del.className = "bg-transparent border-none cursor-pointer p-1 xs:hidden"; del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
-            row.prepend(nameCol); row.appendChild(del);
+            row.prepend(nameCol);
+            row.prepend(chk);
+            row.appendChild(del);
             scroll.appendChild(row);
 
             const sisa = (Number(item.harga) || 0) - (Number(item.dibayar) || 0);
@@ -1697,6 +1737,91 @@
       });
 
       body.appendChild(grid);
+    }
+
+    function renderBulkActionBar() {
+      const existing = document.getElementById("bulk-action-bar");
+      if (existing) existing.remove();
+
+      state.selectedBudgetIds = state.selectedBudgetIds || [];
+      if (state.selectedBudgetIds.length === 0) return;
+
+      const bar = div("fixed bottom-[74px] left-4 right-4 bg-white/95 backdrop-blur-md border border-pb rounded-2xl p-3 shadow-[0_8px_30px_rgba(107,45,69,0.12)] flex items-center justify-between gap-3 z-[90] animate-[slideUp_0.25s_ease-out]");
+      bar.id = "bulk-action-bar";
+
+      const left = div("text-xs font-bold text-pd");
+      left.textContent = `${state.selectedBudgetIds.length} item terpilih`;
+
+      const right = div("flex items-center gap-2");
+
+      const select = h("select", { class: "bg-pl border-none rounded-lg p-[6px_24px_6px_10px] text-xs font-bold text-pk cursor-pointer appearance-none bg-no-repeat bg-[right_8px_center]" });
+      select.style.backgroundImage = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23d4537e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\")";
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "Pindahkan ke...";
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      select.appendChild(placeholder);
+
+      const subcats = getSubcats(state.activeCat);
+      subcats.forEach(sc => {
+        const o = document.createElement("option");
+        o.value = sc;
+        o.textContent = sc;
+        select.appendChild(o);
+      });
+
+      const newOption = document.createElement("option");
+      newOption.value = "__NEW__";
+      newOption.textContent = "+ Sub-Kategori Baru...";
+      select.appendChild(newOption);
+
+      select.addEventListener("change", e => {
+        let targetSubcat = e.target.value;
+        if (!targetSubcat) return;
+
+        if (targetSubcat === "__NEW__") {
+          const name = prompt("Nama sub-kategori baru:");
+          if (name && name.trim()) {
+            targetSubcat = name.trim();
+          } else {
+            select.value = "";
+            return;
+          }
+        }
+
+        // Apply changes
+        const allItems = state.data.budget[state.activeCat] || [];
+        allItems.forEach(item => {
+          if (state.selectedBudgetIds.includes(item.id)) {
+            if (targetSubcat === "Umum") {
+              delete item.subcat;
+            } else {
+              item.subcat = targetSubcat;
+            }
+          }
+        });
+
+        state.selectedBudgetIds = [];
+        scheduleSave();
+        renderContent();
+        renderBulkActionBar();
+      });
+
+      const cancelBtn = h("button", {
+        class: "bg-transparent border-none cursor-pointer p-1 text-pm hover:text-pk transition-colors",
+        onclick: () => {
+          state.selectedBudgetIds = [];
+          renderContent();
+          renderBulkActionBar();
+        }
+      });
+      cancelBtn.appendChild(icon("x", { fontSize: "16px" }));
+
+      right.append(select, cancelBtn);
+      bar.append(left, right);
+      document.body.appendChild(bar);
     }
 
     // ── Start ──────────────────────────────────────────────────
