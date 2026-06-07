@@ -770,6 +770,24 @@
     .fade-in-content {
       animation: fadeInContent 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    .budget-cell-val {
+      font-size: 13px;
+      font-weight: 500;
+      text-align: right;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+      display: block;
+      transition: background .15s;
+      min-height: 32px;
+      line-height: 20px;
+    }
+    .budget-cell-inp {
+      text-align: right;
+      font-size: 13px;
+      padding: 6px 8px;
+      width: 100%;
+    }
 
     @media (max-width: 500px) {
       .budget-header {
@@ -781,11 +799,12 @@
         grid-template-rows: auto !important;
         gap: 0 !important;
         min-width: 0 !important;
-        padding: 14px 12px !important;
-        background: #fdfafb !important;
-        border-radius: 12px !important;
-        border: 0.5px solid var(--pb) !important;
-        margin-bottom: 12px !important;
+        padding: 10px 0 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        border: none !important;
+        border-bottom: 0.5px solid rgba(240, 205, 216, 0.4) !important;
+        margin-bottom: 0 !important;
         position: relative !important;
       }
       .budget-row > :nth-child(1) { /* nameCol */
@@ -806,36 +825,41 @@
         grid-column: 2 !important;
         grid-row: 3 !important;
       }
-      .budget-row > :nth-child(5) { /* delete button */
-        position: absolute !important;
-        top: 10px !important;
-        right: 10px !important;
-        background: rgba(107, 45, 69, 0.04) !important;
-        border-radius: 50% !important;
-        width: 28px !important;
-        height: 28px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
+      .budget-row > :nth-child(5) { /* delete button - hidden on mobile */
+        display: none !important;
       }
       .budget-cell-wrap {
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        gap: 8px !important;
-        padding: 2px 0 !important;
+        gap: 6px !important;
+        padding: 1px 0 !important;
         justify-content: flex-end !important;
       }
       .budget-cell-label {
         display: block !important;
-        font-size: 9px !important;
+        font-size: 8.5px !important;
         text-transform: uppercase !important;
         color: var(--pm) !important;
         font-weight: 600 !important;
-        letter-spacing: 0.02em !important;
+        letter-spacing: 0.05em !important;
         flex-shrink: 0 !important;
-        min-width: 30px !important;
+        min-width: 28px !important;
+        text-align: right !important;
+      }
+      .budget-cell-val {
+        font-size: 11px !important;
+        padding: 1px 4px !important;
+        min-height: 18px !important;
+        line-height: 14px !important;
+      }
+      .budget-cell-inp {
+        font-size: 11px !important;
+        padding: 1px 4px !important;
+        height: 18px !important;
+      }
+      .sisa {
+        display: none !important;
       }
       .budget-total {
         display: flex !important;
@@ -857,6 +881,24 @@
         text-align: right !important;
         padding: 4px 0 !important;
       }
+      .budget-total > :nth-child(2)::before {
+        content: "Estimasi";
+        font-weight: 500;
+        color: var(--pm);
+        font-size: 11px;
+      }
+      .budget-total > :nth-child(3)::before {
+        content: "Harga Asli";
+        font-weight: 500;
+        color: var(--pm);
+        font-size: 11px;
+      }
+      .budget-total > :nth-child(4)::before {
+        content: "Dibayar";
+        font-weight: 500;
+        color: var(--pm);
+        font-size: 11px;
+      }
       .budget-total > :nth-child(5) { /* dummy span */
         display: none !important;
       }
@@ -866,8 +908,8 @@
       }
       .budget-select {
         max-width: 220px !important;
-        font-size: 13px !important;
-        padding: 4px 20px 4px 8px !important;
+        font-size: 11px !important;
+        padding: 2px 18px 2px 6px !important;
       }
       .inp.sm {
         font-size: 13px !important;
@@ -1743,14 +1785,22 @@
             }
             nameCol.appendChild(nameRow);
 
-            if (item.options && item.options.length > 0) {
-              const selWrap = div("");
-              selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
+            // Check if item has actual custom vendor options
+            const optionsList = item.options || [];
+            const hasMultipleOptions = optionsList.length > 1;
+            const activeOpt = optionsList.find(o => o.id === item.activeOptionId) || optionsList[0];
+            const isDefaultName = name => !name || name === "Vendor Utama" || /^Vendor Baru \d+$/.test(name);
+            const hasSingleCustomVendor = optionsList.length === 1 && activeOpt && !isDefaultName(activeOpt.name);
+
+            const metaRow = div("");
+            metaRow.style.cssText = "display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px;";
+
+            if (hasMultipleOptions) {
               const sel = h("select");
               sel.className = "budget-select";
-              sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
+              sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid rgba(240, 205, 216, 0.6);border-radius:4px;background:#fff;color:var(--pm);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;cursor:pointer;";
 
-              item.options.forEach(opt => {
+              optionsList.forEach(opt => {
                 const o = document.createElement("option");
                 o.value = opt.id;
                 o.textContent = opt.name;
@@ -1770,13 +1820,32 @@
                   renderContent();
                 }
               });
+              metaRow.appendChild(sel);
+            } else if (hasSingleCustomVendor) {
+              const vLabel = h("span");
+              vLabel.style.cssText = "font-size:10px;color:var(--pm);font-weight:500;";
+              vLabel.textContent = activeOpt.name;
+              metaRow.appendChild(vLabel);
+            }
 
-              const manageBtn = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
-              manageBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;";
-              manageBtn.appendChild(icon("settings", { fontSize: 12, color: "var(--pm)" }));
+            const showSisa = Number(item.harga) > 0 && Number(item.dibayar) > 0;
+            if ((hasMultipleOptions || hasSingleCustomVendor) && showSisa) {
+              const dot = h("span");
+              dot.style.cssText = "font-size:10px;color:var(--pb);";
+              dot.textContent = "•";
+              metaRow.appendChild(dot);
+            }
 
-              selWrap.append(sel, manageBtn);
-              nameCol.appendChild(selWrap);
+            if (showSisa) {
+              const sisa = (Number(item.harga) || 0) - (Number(item.dibayar) || 0);
+              const sPill = h("span");
+              sPill.style.cssText = `font-size:9.5px;font-weight:600;color:${sisa > 0 ? "var(--orange)" : "var(--green)"};`;
+              sPill.textContent = sisa > 0 ? `Sisa: ${fmtRp(sisa)}` : "✓ Lunas";
+              metaRow.appendChild(sPill);
+            }
+
+            if (metaRow.children.length > 0) {
+              nameCol.appendChild(metaRow);
             }
 
             ["estimasi", "harga", "dibayar"].forEach(f => {
@@ -1784,7 +1853,7 @@
               const val = item[f] ? Number(item[f]) : 0;
               const colorMap = { estimasi: "var(--pd)", harga: "#b87090", dibayar: "var(--green)" };
 
-              const display = h("span");
+              const display = h("span", { class: "budget-cell-val" });
               display.style.cssText = `font-size:13px;font-weight:500;text-align:right;color:${colorMap[f]};cursor:pointer;padding:6px 8px;border-radius:8px;display:block;transition:background .15s;min-height:32px;line-height:20px;`;
               display.textContent = val ? Number(val).toLocaleString("id-ID") : "—";
               if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) {
@@ -1792,7 +1861,7 @@
               }
 
               display.addEventListener("click", () => {
-                const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm", value: val ? String(val) : "", placeholder: "0" });
+                const inp = h("input", { type: "text", inputmode: "numeric", class: "inp sm budget-cell-inp", value: val ? String(val) : "", placeholder: "0" });
                 inp.style.cssText = "text-align:right;font-size:13px;padding:6px 8px;width:100%;";
                 wrap.replaceChild(inp, display);
                 inp.focus();
@@ -2378,6 +2447,22 @@
         closeModal();
         renderContent();
       }));
+
+      // Delete Entire Item Button (styled red, outline or ghost)
+      const deleteItemBtn = h("button", {
+        class: "btn-secondary",
+        style: "width:100%;margin-top:12px;background:#fce8ef;color:var(--pk);border:0.5px solid var(--pb);justify-content:center;display:flex;align-items:center;gap:6px;",
+        onclick: () => {
+          if (confirm(`Hapus item "${item.name}" dari kategori ini?`)) {
+            state.data.budget[cat] = state.data.budget[cat].filter(i => i.id !== item.id);
+            scheduleSave();
+            closeModal();
+            renderContent();
+          }
+        }
+      });
+      deleteItemBtn.append(icon("trash", { fontSize: "14px", color: "var(--pk)" }), document.createTextNode("Hapus Item"));
+      body.appendChild(deleteItemBtn);
     }
 
     function renderLainnyaMenuModal(body) {
