@@ -1699,25 +1699,21 @@
             const nameCol = div("");
             nameCol.style.cssText = "display:flex;flex-direction:column;gap:2px;overflow:hidden;";
             const nameRow = div("");
-            nameRow.style.cssText = "display:flex;align-items:center;gap:6px;overflow:hidden;";
-            const name = div("");
-            name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;user-select:none;";
-            name.textContent = item.name;
-            name.addEventListener("click", () => openModal("budget_options", { item, cat: state.activeCat }));
-            name.addEventListener("mouseenter", () => { name.style.color = "var(--pk)"; name.style.textDecoration = "underline"; });
-            name.addEventListener("mouseleave", () => { name.style.color = "var(--pd)"; name.style.textDecoration = "none"; });
+            nameRow.style.cssText = "display:flex;align-items:center;gap:6px;overflow:hidden;cursor:pointer;";
+            nameRow.addEventListener("click", () => openModal("budget_options", { item, cat: state.activeCat }));
+
+            const name = div(""); name.style.cssText = "font-size:13px;color:var(--pd);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"; name.textContent = item.name;
             nameRow.appendChild(name);
 
-            const editIcon = h("span", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
-            editIcon.style.cssText = "cursor:pointer;display:inline-flex;align-items:center;padding:2px;flex-shrink:0;margin-left:2px;";
-            editIcon.appendChild(icon("pencil", { fontSize: "11px", color: "var(--pm)" }));
-            nameRow.appendChild(editIcon);
+            const chevronIcon = icon("chevron-right", { fontSize: "12px", color: "var(--pm)" });
+            chevronIcon.style.flexShrink = "0";
+            nameRow.appendChild(chevronIcon);
 
             nameCol.appendChild(nameRow);
 
             if (item.options && item.options.length > 0) {
               const selWrap = div("");
-              selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:4px;";
+              selWrap.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
               const sel = h("select");
               sel.className = "budget-select";
               sel.style.cssText = "font-size:10px;padding:2px 16px 2px 4px;border:0.5px solid var(--pb);border-radius:4px;background:#fff;color:var(--pd);font-family:'DM Sans',sans-serif;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;";
@@ -1743,7 +1739,11 @@
                 }
               });
 
-              selWrap.appendChild(sel);
+              const manageBtn = h("button", { onclick: () => openModal("budget_options", { item, cat: state.activeCat }) });
+              manageBtn.style.cssText = "background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;";
+              manageBtn.appendChild(icon("settings", { fontSize: 12, color: "var(--pm)" }));
+
+              selWrap.append(sel, manageBtn);
               nameCol.appendChild(selWrap);
             }
 
@@ -2171,8 +2171,6 @@
       const { item, cat } = state.modalForm;
       if (!item) return;
 
-      let currentCat = cat;
-
       const nameLabel = div("");
       nameLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
       nameLabel.textContent = "Nama Item / Deskripsi";
@@ -2181,44 +2179,18 @@
       body.appendChild(nameLabel);
       body.appendChild(mainNameInp);
 
-      // Parent Category Select
-      const catLabel = div("");
-      catLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
-      catLabel.textContent = "Kategori Utama";
-      const modalCatSel = h("select", { class: "inp" });
-      modalCatSel.style.marginBottom = "12px";
-      CATS.forEach(c => {
-        const opt = document.createElement("option"); opt.value = c; opt.textContent = c;
-        if (c === currentCat) opt.selected = true;
-        modalCatSel.appendChild(opt);
-      });
-      body.appendChild(catLabel);
-      body.appendChild(modalCatSel);
-
       // Sub-category select in modal
       const scLabel = div("");
       scLabel.style.cssText = "font-size:11px;color:var(--pm);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;";
       scLabel.textContent = "Sub-Kategori";
       const modalSubcatSel = h("select", { class: "inp" });
       modalSubcatSel.style.marginBottom = "12px";
-
-      function updateSubcatOptions() {
-        modalSubcatSel.innerHTML = "";
-        const modalSubcats = getSubcats(currentCat);
-        modalSubcats.forEach(sc => {
-          const opt = document.createElement("option"); opt.value = sc; opt.textContent = sc;
-          if (currentCat === cat && (item.subcat || "Umum") === sc) opt.selected = true;
-          modalSubcatSel.appendChild(opt);
-        });
-      }
-
-      updateSubcatOptions();
-
-      modalCatSel.addEventListener("change", e => {
-        currentCat = e.target.value;
-        updateSubcatOptions();
+      const modalSubcats = getSubcats(cat);
+      modalSubcats.forEach(sc => {
+        const opt = document.createElement("option"); opt.value = sc; opt.textContent = sc;
+        if ((item.subcat || "Umum") === sc) opt.selected = true;
+        modalSubcatSel.appendChild(opt);
       });
-
       body.appendChild(scLabel);
       body.appendChild(modalSubcatSel);
 
@@ -2357,14 +2329,6 @@
           item.estimasi = selectedOpt.estimasi || 0;
           item.harga = selectedOpt.harga || 0;
           item.dibayar = selectedOpt.dibayar || 0;
-        }
-
-        // Move to new category if category was changed
-        if (currentCat !== cat) {
-          state.data.budget[cat] = (state.data.budget[cat] || []).filter(i => i.id !== item.id);
-          state.data.budget[currentCat] = state.data.budget[currentCat] || [];
-          state.data.budget[currentCat].push(item);
-          state.activeCat = currentCat;
         }
 
         scheduleSave();
