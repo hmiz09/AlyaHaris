@@ -78,7 +78,7 @@
 
       html,
       body {
-        @apply h-full overflow-hidden overscroll-none antialiased;
+        @apply h-full overflow-hidden overscroll-none antialiased m-0 p-0;
         -moz-osx-font-smoothing: grayscale;
       }
 
@@ -241,7 +241,7 @@
 
     // Tailwind common class constants to minimize stylesheet blocks and duplication
     const CLS_CARD = "bg-white/70 backdrop-blur-xl border border-pb/60 rounded-[20px] p-5 mb-4 shadow-[0_8px_30px_rgba(107,45,69,0.03)] hover:shadow-[0_12px_40px_rgba(107,45,69,0.06)] hover:-translate-y-[1px] transition-all duration-300 ease-in-out";
-    const CLS_CARD_TITLE = "text-[11.5px] tracking-[0.15em] uppercase text-pm mb-3.5 flex items-center gap-2 font-bold";
+    const CLS_CARD_TITLE = "text-[13px] md:text-[14px] tracking-[0.15em] uppercase text-pd/85 mb-4 flex items-center gap-2 font-bold";
     const CLS_INP = "border border-pb rounded-xl p-[12px_16px] text-[15px] bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
     const CLS_INP_SM = "border border-pb rounded-xl p-[8px_12px] text-sm bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
     const CLS_BTN_PRIMARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-gradient-to-r from-pk to-pd text-white flex items-center gap-2 font-['DM_Sans',sans-serif] min-h-[44px] justify-center shadow-[0_4px_15px_rgba(220,75,118,0.2)] hover:shadow-[0_6px_20px_rgba(220,75,118,0.3)] hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
@@ -382,45 +382,68 @@
       const hdr = document.getElementById("header");
       const cd = countdown();
       hdr.innerHTML = "";
-      hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[16px_16px_18px] relative z-40";
 
-      const inner = div("max-w-4xl mx-auto w-full flex flex-col gap-2.5");
+      const isDashboard = state.page === "dashboard";
 
-      // Top row: sync badge (centered)
-      const topRow = div("flex justify-center items-center", [
-        h("span", { id: "sync-badge", class: "inline-flex items-center gap-[5px] p-[4px_12px] rounded-full text-[10px] font-semibold" })
-      ]);
-      inner.appendChild(topRow);
+      if (isDashboard) {
+        hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[16px_16px_18px] relative z-40 transition-all duration-300";
+        const inner = div("max-w-4xl mx-auto w-full flex flex-col gap-2.5");
 
-      // Title
-      const title = div("font-['Cormorant_Garamond',serif] italic text-[30px] text-pd leading-none text-center font-bold");
-      title.textContent = "Haris & Alya";
-      inner.appendChild(title);
+        // Top row: sync badge (centered)
+        const topRow = div("flex justify-center items-center", [
+          h("span", { id: "sync-badge", class: "inline-flex items-center gap-[5px] p-[4px_12px] rounded-full text-[10px] font-bold" })
+        ]);
+        inner.appendChild(topRow);
 
-      // Date + edit
-      const dateRow = div("flex items-center justify-center gap-1.5");
-      const dateText = h("span", { class: "text-[12px] text-pm font-semibold" });
-      dateText.textContent = displayDate();
-      const editBtn = h("button", { onclick: () => openModal("info"), class: "bg-transparent border-none cursor-pointer p-0.5" });
-      editBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pm)" }));
-      dateRow.append(dateText, editBtn);
-      inner.appendChild(dateRow);
+        // Title
+        const title = div("font-['Cormorant_Garamond',serif] italic text-[30px] text-pd leading-none text-center font-bold");
+        title.textContent = "Haris & Alya";
+        inner.appendChild(title);
 
-      // Location
-      const loc = div("flex items-center justify-center gap-1 text-[11px] text-pm font-semibold");
-      loc.appendChild(icon("map-pin", { fontSize: "12px" }));
-      loc.appendChild(document.createTextNode(state.data.info.location));
-      inner.appendChild(loc);
+        // Date + edit
+        const dateRow = div("flex items-center justify-center gap-1.5");
+        const dateText = h("span", { class: "text-[12px] text-pm font-semibold" });
+        dateText.textContent = displayDate();
+        const editBtn = h("button", { onclick: () => openModal("info"), class: "bg-transparent border-none cursor-pointer p-0.5" });
+        editBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pm)" }));
+        dateRow.append(dateText, editBtn);
+        inner.appendChild(dateRow);
 
-      // Countdown
-      const cdRow = div("flex justify-center gap-3 mt-1");
-      [["Days", cd.days], ["Weeks", cd.weeks], ["Months", cd.months]].forEach(([l, v]) => {
-        const box = div("text-center bg-white/95 border border-pb/70 rounded-2xl p-[10px_18px] min-w-[76px] shadow-[0_4px_15px_rgba(107,45,69,0.02)] hover:scale-[1.04] transition-transform duration-200");
-        const num = div("font-['Cormorant_Garamond',serif] text-[28px] font-bold text-pk leading-none"); num.textContent = v;
-        const lbl = div("text-[9px] text-pm tracking-wider uppercase mt-1 font-bold"); lbl.textContent = l;
-        box.append(num, lbl);
-        cdRow.appendChild(box);
-      });
+        // Location
+        const loc = div("flex items-center justify-center gap-1 text-[11px] text-pm font-semibold");
+        loc.appendChild(icon("map-pin", { fontSize: "12px" }));
+        loc.appendChild(document.createTextNode(state.data.info.location));
+        inner.appendChild(loc);
+
+        // Countdown
+        const cdRow = div("flex justify-center gap-3 mt-1");
+        [["Days", cd.days], ["Weeks", cd.weeks], ["Months", cd.months]].forEach(([l, v]) => {
+          const box = div("text-center bg-white/95 border border-pb/70 rounded-2xl p-[10px_18px] min-w-[76px] shadow-[0_4px_15px_rgba(107,45,69,0.02)] hover:scale-[1.04] transition-transform duration-200");
+          const num = div("font-['Cormorant_Garamond',serif] text-[28px] font-bold text-pk leading-none"); num.textContent = v;
+          const lbl = div("text-[9px] text-pm tracking-wider uppercase mt-1 font-bold"); lbl.textContent = l;
+          box.append(num, lbl);
+          cdRow.appendChild(box);
+        });
+        inner.appendChild(cdRow);
+        hdr.appendChild(inner);
+      } else {
+        // Compact header for other pages to save massive vertical space
+        hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[10px_16px] relative z-40 transition-all duration-300";
+        const inner = div("max-w-4xl mx-auto w-full flex items-center justify-between gap-4");
+
+        const title = div("font-['Cormorant_Garamond',serif] italic text-[20px] text-pd font-bold cursor-pointer");
+        title.textContent = "Haris & Alya 💍";
+        title.addEventListener("click", () => { state.page = "dashboard"; renderContent(); renderNav(); renderHeader(); });
+
+        const badgeCol = div("flex items-center");
+        badgeCol.appendChild(h("span", { id: "sync-badge", class: "inline-flex items-center gap-[5px] p-[4px_12px] rounded-full text-[10px] font-bold" }));
+
+        inner.append(title, badgeCol);
+        hdr.appendChild(inner);
+      }
+
+      updateSyncBadge();
+    });
       inner.appendChild(cdRow);
       hdr.appendChild(inner);
 
@@ -450,7 +473,7 @@
         const isActive = state.page === p;
         const btn = h("button", {
           class: btnBaseClass + (isActive ? ` ${activeBtnClass}` : ""),
-          onclick: () => { state.page = p; state.selectedBudgetIds = []; renderContent(); renderNav(); }
+          onclick: () => { state.page = p; state.selectedBudgetIds = []; renderContent(); renderNav(); renderHeader(); }
         });
         const ic = icon(icon_name, { fontSize: "19px" });
         ic.className = `ti ti-${icon_name} ` + (isActive ? activeIconClass : iconClass);
@@ -498,61 +521,51 @@
 
       const totalDanaVal = totalDana();
 
-      // Ringkasan Keuangan card
+      // 1. Ringkasan Keuangan card
       const rkCard = div(CLS_CARD);
       const rkTtl = div(CLS_CARD_TITLE);
       rkTtl.append(icon("piggy-bank"), document.createTextNode("Ringkasan Keuangan"));
       rkCard.appendChild(rkTtl);
 
-      // Financial balance grid
       const fGrid = div("grid grid-cols-2 gap-2.5 mb-3");
-
-      const boxDana = div("bg-pl rounded-[12px] p-[10px_8px] text-center");
-      const lblDana = div("text-[9px] text-pm uppercase tracking-wider mb-1 font-semibold"); lblDana.textContent = "Dana Dimiliki";
-      const valDana = div("font-['Cormorant_Garamond',serif] text-[17px] leading-[1.2] font-medium"); valDana.style.color = "var(--green)"; valDana.textContent = totalDanaVal > 0 ? fmtRp(totalDanaVal) : "Rp 0";
+      const boxDana = div("bg-pl/50 rounded-[12px] p-[10px_8px] text-center border border-pb/30");
+      const lblDana = div("text-[9px] text-pm uppercase tracking-wider mb-1 font-bold"); lblDana.textContent = "Dana Dimiliki";
+      const valDana = div("font-['Cormorant_Garamond',serif] leading-[1.2] font-semibold text-green text-[16px]"); valDana.textContent = totalDanaVal > 0 ? fmtRp(totalDanaVal) : "Rp 0";
       boxDana.append(lblDana, valDana);
 
-      const boxEst = div("bg-pl rounded-[12px] p-[10px_8px] text-center");
-      const lblEst = div("text-[9px] text-pm uppercase tracking-wider mb-1 font-semibold"); lblEst.textContent = "Budget Dibutuhkan";
-      const valEst = div("font-['Cormorant_Garamond',serif] text-[17px] leading-[1.2] font-medium"); valEst.style.color = "var(--pk)"; valEst.textContent = totalEst > 0 ? fmtRp(totalEst) : "Rp 0";
+      const boxEst = div("bg-pl/50 rounded-[12px] p-[10px_8px] text-center border border-pb/30");
+      const lblEst = div("text-[9px] text-pm uppercase tracking-wider mb-1 font-bold"); lblEst.textContent = "Budget Dibutuhkan";
+      const valEst = div("font-['Cormorant_Garamond',serif] leading-[1.2] font-semibold text-pk text-[16px]"); valEst.textContent = totalEst > 0 ? fmtRp(totalEst) : "Rp 0";
       boxEst.append(lblEst, valEst);
-
       fGrid.append(boxDana, boxEst);
       rkCard.appendChild(fGrid);
 
-      // Progress bar inside financial card
       const pct = totalEst > 0 ? Math.min(100, Math.round(totalDanaVal / totalEst * 100)) : 0;
-      const plbl = div("flex justify-between text-[11px] text-pm mb-1 mt-0.5");
+      const plbl = div("flex justify-between text-[11px] text-pm mb-1 font-semibold");
       plbl.innerHTML = `<span>Dana Terkumpul</span><strong>${pct}%</strong>`;
       rkCard.append(plbl, progBar(pct, totalDanaVal >= totalEst ? "var(--green)" : "var(--orange)"));
 
-      const space = div("h-3");
-      rkCard.appendChild(space);
+      const space = div("h-3"); rkCard.appendChild(space);
 
-      // Progress and status
       const diffVal = totalDanaVal - totalEst;
-      const statusWrap = div("flex justify-between items-center p-[10px_12px] rounded-[10px] text-[12px] font-semibold");
+      const statusWrap = div("flex justify-between items-center p-2.5 rounded-[10px] text-xs font-bold");
       if (diffVal >= 0) {
-        statusWrap.style.background = "var(--green-bg)";
-        statusWrap.style.color = "var(--green)";
+        statusWrap.className += " bg-green-bg text-green";
         statusWrap.innerHTML = `<span><i class="ti ti-circle-check"></i> Dana Cukup</span><span>+${fmtRp(diffVal)}</span>`;
       } else {
-        statusWrap.style.background = "var(--red-bg)";
-        statusWrap.style.color = "var(--red)";
+        statusWrap.className += " bg-red-bg text-red";
         statusWrap.innerHTML = `<span><i class="ti ti-alert-circle"></i> Dana Kurang</span><span>-${fmtRp(Math.abs(diffVal))}</span>`;
       }
       rkCard.appendChild(statusWrap);
 
-      // Breakdown of funding sources
-      const rkBreakdown = div("mt-3 flex flex-col gap-2 text-[12px]");
-
-      const breakdownHeader = div("flex justify-between font-semibold text-pm text-[10px] uppercase tracking-wider border-b border-pb pb-1");
+      const rkBreakdown = div("mt-3 flex flex-col gap-2 text-xs border-t border-pb/40 pt-3");
+      const breakdownHeader = div("flex justify-between font-bold text-pm text-[9.5px] uppercase tracking-wider border-b border-pb/30 pb-1");
       breakdownHeader.innerHTML = "<span>Sumber Dana</span><span>Jumlah</span>";
       rkBreakdown.appendChild(breakdownHeader);
 
       if (d.dana && d.dana.length > 0) {
         d.dana.forEach(src => {
-          const row = div("flex justify-between text-pd");
+          const row = div("flex justify-between text-pd font-medium");
           row.innerHTML = `<span>${src.nama}</span><strong>${fmtRp(src.jumlah)}</strong>`;
           rkBreakdown.appendChild(row);
         });
@@ -563,78 +576,85 @@
       }
       rkCard.appendChild(rkBreakdown);
 
-      c.appendChild(rkCard);
-
-      // Vendors + Budget side by side
-      const grid2 = div("grid grid-cols-2 gap-2.5 mb-3.5");
-      // Vendors
-      const vc = div(CLS_CARD); vc.style.marginBottom = "0";
-      const vt = div("text-[11px] tracking-[0.14em] uppercase text-pm mb-3 flex items-center gap-1.5 font-semibold justify-between");
-      const vtl = div("flex items-center gap-1.5");
-      vtl.append(icon("building-store"), document.createTextNode("Vendors"));
+      // 2. Vendors List Card
+      const vc = div(CLS_CARD);
+      const vt = div("flex justify-between items-center mb-3");
+      const vtl = div(CLS_CARD_TITLE); vtl.style.marginBottom = "0"; vtl.append(icon("building-store"), document.createTextNode("Vendors"));
       const vadd = h("button", { class: "bg-transparent border-none cursor-pointer p-1", onclick: () => openModal("vendor", { id: "", name: "", type: "", status: "pending", contact: "" }) });
       vadd.appendChild(icon("plus", { fontSize: "14px", color: "var(--pm)" }));
       vt.append(vtl, vadd);
       vc.appendChild(vt);
-      d.vendors.forEach(v => {
-        const row = div("flex items-center gap-1.5 py-1.5 border-b border-pb");
-        const name = div("flex-1 text-[12px] font-medium text-pd"); name.textContent = v.name;
-        const badge = div("text-[10px] p-[2px_7px] rounded-full font-semibold truncate"); badge.style.background = VSTATUS[v.status].bg; badge.style.color = VSTATUS[v.status].color; badge.textContent = VSTATUS[v.status].label;
-        row.append(name, badge);
-        vc.appendChild(row);
-      });
-      grid2.appendChild(vc);
 
-      // Budget breakdown
-      const bc = div(CLS_CARD); bc.style.marginBottom = "0";
-      const bct = div("text-[11px] tracking-[0.14em] uppercase text-pm mb-3 flex items-center gap-1.5 font-semibold"); bct.append(icon("chart-pie"), document.createTextNode("Budget"));
+      if (d.vendors.length > 0) {
+        d.vendors.forEach(v => {
+          const row = div("flex items-center gap-1.5 py-1.5 border-b border-pb/40");
+          const name = div("flex-1 text-[12px] font-bold text-pd truncate"); name.textContent = v.name;
+          const badge = div("badge text-[9.5px] p-[2px_7px] rounded-full"); badge.style.background = VSTATUS[v.status].bg; badge.style.color = VSTATUS[v.status].color; badge.textContent = VSTATUS[v.status].label;
+          row.append(name, badge);
+          vc.appendChild(row);
+        });
+      } else {
+        const empty = div("text-center text-pm italic text-xs py-2");
+        empty.textContent = "Belum ada vendor.";
+        vc.appendChild(empty);
+      }
+
+      // 3. Budget breakdown Card
+      const bc = div(CLS_CARD);
+      const bct = div(CLS_CARD_TITLE); bct.append(icon("chart-pie"), document.createTextNode("Budget"));
       bc.appendChild(bct);
       CATS.forEach(cat => {
         const e = catSum(cat, "estimasi");
         const pct = totalEst ? Math.round(e / totalEst * 100) : 0;
-        const row = div("mb-1.75");
-        const lrow = div("flex justify-between text-[11px] mb-0.5");
+        const row = div("mb-2.5");
+        const lrow = div("flex justify-between text-[11px] mb-0.5 font-semibold");
         const ln = div("text-pd"); ln.textContent = cat;
         const lv = div("text-pm"); lv.textContent = e > 0 ? fmtRp(e) : "–";
         lrow.append(ln, lv);
-        const pb = progBar(pct, "var(--pk)", "h-1");
+        const pb = progBar(pct);
+        pb.style.height = "4px";
         row.append(lrow, pb);
         bc.appendChild(row);
       });
-      grid2.appendChild(bc);
-      c.appendChild(grid2);
 
-      // Timeline
+      // 4. Timeline (Milestones) Card
       const tlc = div(CLS_CARD);
       const tlt = div(CLS_CARD_TITLE); tlt.append(icon("calendar-event"), document.createTextNode("Milestones"));
       tlc.appendChild(tlt);
       d.timeline.forEach((t, i) => {
         const row = div("flex gap-2.5 pb-2.5");
         const left = div("flex flex-col items-center w-3");
-        const dot = div("w-3 h-3 rounded-full bg-white border-2 border-pb shrink-0 mt-1" + (i === 0 ? " bg-pk border-pk" : ""));
-        const line = div("w-[2px] bg-pb flex-1 min-h-[24px] mt-1");
+        const dot = div("tl-dot" + (i === 0 ? " active" : ""));
+        const line = div("tl-line");
         left.append(dot);
         if (i < d.timeline.length - 1) left.appendChild(line);
-        const right = div("");
-        const mo = div("text-[10px] text-pm uppercase"); mo.textContent = t.month;
-        const tk = div("text-[13px] text-pd font-medium"); tk.textContent = t.task;
+        const right = div("flex-1 min-w-0");
+        const mo = div("text-[9px] text-pm uppercase font-bold tracking-wider"); mo.textContent = t.month;
+        const tk = div("text-[13px] text-pd font-semibold truncate"); tk.textContent = t.task;
         right.append(mo, tk);
         row.append(left, right);
         tlc.appendChild(row);
       });
       const bigDay = div("flex gap-2.5 items-center");
-      const bigDot = div("w-3.5 h-3.5 rounded-full bg-pk shrink-0");
-      const bigText = div("font-['Cormorant_Garamond',serif] italic text-[15px] text-pk"); bigText.textContent = "Hari Pernikahan 💍";
+      const bigDot = div("tl-dot active"); bigDot.style.width = "14px"; bigDot.style.height = "14px"; bigDot.style.borderRadius = "50%"; bigDot.style.background = "var(--pk)";
+      const bigText = div("font-['Cormorant_Garamond',serif] italic text-[15px] text-pk font-bold"); bigText.textContent = "Hari Pernikahan 💍";
       bigDay.append(bigDot, bigText);
       tlc.appendChild(bigDay);
-      c.appendChild(tlc);
 
-      const quote = div("text-center font-['Cormorant_Garamond',serif] italic text-pm text-[15px] py-1 pb-2");
+      // Create a gorgeous 2-column desktop grid, collapsing to single vertical column on mobile
+      const desktopGrid = div("grid grid-cols-1 md:grid-cols-2 gap-6");
+      const leftCol = div("flex flex-col gap-6");
+      leftCol.append(rkCard, vc);
+      const rightCol = div("flex flex-col gap-6");
+      rightCol.append(bc, tlc);
+      desktopGrid.append(leftCol, rightCol);
+
+      c.appendChild(desktopGrid);
+
+      const quote = div("text-center font-['Cormorant_Garamond',serif] italic text-pm text-[15px] p-[12px_0_8px] font-medium");
       quote.textContent = '"Two souls, one heart, one perfect day." 🌸';
       c.appendChild(quote);
-    }
-
-    // ── Checklist ──────────────────────────────────────────────
+    } else {
     function renderChecklist(c) {
       const d = state.data;
       const tasksDone = d.checklist.filter(t => t.done).length;
@@ -642,26 +662,77 @@
       const kuaDone = d.kua.filter(k => k.done).length;
       const kuaPct = d.kua.length ? Math.round(kuaDone / d.kua.length * 100) : 0;
 
-      // Persiapan card
+      // 1. Persiapan card
       const ck = div(CLS_CARD);
-      const ct = div("text-[11px] tracking-[0.14em] uppercase text-pm mb-3 flex items-center gap-1.5 font-semibold justify-between");
-      const ctl = div("flex items-center gap-1.5");
+      const ct = div("flex justify-between items-center mb-3.5");
+      const ctl = div(CLS_CARD_TITLE); ctl.style.marginBottom = "0";
       ctl.append(icon("checklist"), document.createTextNode(`Persiapan — ${tasksDone}/${d.checklist.length}`));
-      const pct_lbl = div("text-[12px] text-pm"); pct_lbl.textContent = taskPct + "%";
+      const pct_lbl = div("text-[12px] text-pm font-bold"); pct_lbl.textContent = taskPct + "%";
       ct.append(ctl, pct_lbl);
       ck.appendChild(ct);
       ck.appendChild(progBar(taskPct));
-      ck.appendChild(h("div", { class: "h-2" }));
+      ck.appendChild(h("div", { class: "h-3" }));
 
+      // Checklist items responsive grid
+      const checklistGrid = div("grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-1.5");
       d.checklist.forEach(item => {
         if (state.editingCheckId === item.id) {
-          const inp = h("input", { type: "text", class: CLS_INP, value: item.text });
+          const inp = h("input", { type: "text", class: CLS_INP_SM, value: item.text });
           inp.style.marginBottom = "4px";
           inp.addEventListener("blur", () => { if (inp.value.trim()) item.text = inp.value.trim(); state.editingCheckId = null; scheduleSave(); renderContent(); });
           inp.addEventListener("keydown", e => { if (e.key === "Enter") { if (inp.value.trim()) item.text = inp.value.trim(); state.editingCheckId = null; scheduleSave(); renderContent(); } if (e.key === "Escape") { state.editingCheckId = null; renderContent(); } });
-          ck.appendChild(inp);
+          checklistGrid.appendChild(inp);
           setTimeout(() => inp.focus(), 50);
         } else {
+          const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingCheckId = item.id; renderContent(); }, () => { state.data.checklist = state.data.checklist.filter(i => i.id !== item.id); scheduleSave(); renderContent(); });
+          checklistGrid.appendChild(row);
+        }
+      });
+      ck.appendChild(checklistGrid);
+
+      // Add task row (takes full width)
+      const addRow = div("add-row mt-3 pt-3 border-t border-pb/40");
+      const newInp = h("input", { type: "text", class: CLS_INP, placeholder: "Tambah tugas baru..." });
+      const addBtn = h("button", { class: CLS_BTN_PRIMARY, onclick: () => { const v = newInp.value.trim(); if (!v) return; d.checklist.push({ id: uid(), text: v, done: false }); newInp.value = ""; scheduleSave(); renderContent(); } });
+      addBtn.style.flexShrink = "0";
+      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
+      newInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
+      addRow.append(newInp, addBtn);
+      ck.appendChild(addRow);
+
+      // 2. KUA card
+      const kc = div(CLS_CARD);
+      const kct = div("flex justify-between items-center mb-3.5");
+      const kctl = div(CLS_CARD_TITLE); kctl.style.marginBottom = "0";
+      kctl.append(icon("file-certificate"), document.createTextNode(`Dokumen KUA — ${kuaDone}/${d.kua.length}`));
+      const kpct_lbl = div("text-[12px] text-pm font-bold"); kpct_lbl.textContent = kuaPct + "%";
+      kct.append(kctl, kpct_lbl);
+      kc.appendChild(kct);
+      kc.appendChild(progBar(kuaPct, "#e8a0b8"));
+      kc.appendChild(h("div", { class: "h-3" }));
+
+      // KUA items responsive grid
+      const kuaGrid = div("grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-1.5");
+      d.kua.forEach(item => {
+        if (state.editingKuaId === item.id) {
+          const inp = h("input", { type: "text", class: CLS_INP_SM, value: item.text });
+          inp.addEventListener("blur", () => { if (inp.value.trim()) item.text = inp.value.trim(); state.editingKuaId = null; scheduleSave(); renderContent(); });
+          inp.addEventListener("keydown", e => { if (e.key === "Enter") { if (inp.value.trim()) item.text = inp.value.trim(); state.editingKuaId = null; scheduleSave(); renderContent(); } });
+          kuaGrid.appendChild(inp);
+          setTimeout(() => inp.focus(), 50);
+        } else {
+          const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingKuaId = item.id; renderContent(); }, null);
+          kuaGrid.appendChild(row);
+        }
+      });
+      kc.appendChild(kuaGrid);
+
+      const note = div("bg-pl/50 border border-pb/30 rounded-[10px] p-2.5 text-xs text-pm mt-3 flex items-center gap-1.5");
+      note.innerHTML = `<i class="ti ti-info-circle"></i> Klik ✏️ untuk edit. Konfirmasi ke KUA setempat.`;
+      kc.appendChild(note);
+
+      c.append(ck, kc);
+    } else {
           const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingCheckId = item.id; renderContent(); }, () => { state.data.checklist = state.data.checklist.filter(i => i.id !== item.id); scheduleSave(); renderContent(); });
           ck.appendChild(row);
         }
@@ -885,7 +956,7 @@
     function renderBudget(c) {
       // Export button row
       const expRow = div("flex justify-between items-center mb-3");
-      const expTitle = div("text-[10px] tracking-widest uppercase text-pm"); expTitle.textContent = "Anggaran Pernikahan";
+      const expTitle = div("text-[12px] md:text-[13px] font-bold tracking-wider uppercase text-pd/80"); expTitle.textContent = "Anggaran Pernikahan";
       const expBtn = h("button", { class: CLS_BTN_GHOST, onclick: exportXlsx }); expBtn.append(icon("download"), document.createTextNode("Export"));
       expRow.append(expTitle, expBtn);
       c.appendChild(expRow);
@@ -924,11 +995,11 @@
       const catHg = catSum(state.activeCat, "harga");
       const catDb = catSum(state.activeCat, "dibayar");
       const catSisa = catHg - catDb;
-      const boxes3 = div("grid grid-cols-3 gap-2 mb-3");
-      [["Estimasi", catE, "var(--pk)"], ["Harga Asli", catHg, "#b87090"], ["Dibayar", catDb, "var(--green)"]].forEach(([l, v, color]) => {
-        const box = div("bg-pl rounded-[12px] p-[10px_8px] text-center");
-        const lbl = div("text-[9px] text-pm uppercase tracking-wider mb-1 font-semibold"); lbl.textContent = l;
-        const val = div("font-['Cormorant_Garamond',serif] leading-[1.2] font-medium"); val.style.color = color; val.style.fontSize = v > 9999999 ? "12px" : "16px"; val.textContent = v > 0 ? fmtRp(v) : "–";
+      const boxes3 = div("grid grid-cols-3 gap-3 mb-4");
+      [["Estimasi", catE, "var(--pk)", "bg-pl/50"], ["Harga Asli", catHg, "#a34e70", "bg-pl/50"], ["Dibayar", catDb, "var(--green)", "bg-green-bg/70"]].forEach(([l, v, color, bgClass]) => {
+        const box = div(`${bgClass} border border-pb/45 rounded-2xl p-[12px_8px] text-center shadow-[0_2px_8px_rgba(107,45,69,0.01)]`);
+        const lbl = div("text-[10px] md:text-[11px] text-pd/70 uppercase tracking-wider mb-1.5 font-bold"); lbl.textContent = l;
+        const val = div("font-['Cormorant_Garamond',serif] leading-none font-bold text-[18px] md:text-[20px]"); val.style.color = color; val.textContent = v > 0 ? fmtRp(v) : "–";
         box.append(lbl, val); boxes3.appendChild(box);
       });
       card.appendChild(boxes3);
@@ -964,7 +1035,7 @@
           
           const scLeft = div("flex items-center gap-2 flex-1 min-w-0");
           const chevron = icon(isCollapsed ? "chevron-right" : "chevron-down", { fontSize: "14px", color: "var(--pm)" });
-          const scName = h("span", { class: "text-[12px] font-bold text-pd uppercase tracking-wider overflow-hidden text-ellipsis whitespace-nowrap" });
+          const scName = h("span", { class: "text-[13px] md:text-[14px] font-bold text-pd uppercase tracking-wider overflow-hidden text-ellipsis whitespace-nowrap" });
           scName.textContent = sc;
           const scCount = h("span", { class: "text-[10px] text-pm shrink-0" });
           scCount.textContent = `${scItems.length} item`;
@@ -1028,7 +1099,7 @@
           if (isCollapsed) return; // skip rendering items if collapsed
 
           const scroll = div("overflow-x-auto");
-          const hdr = div("grid grid-cols-[24px_2.2fr_1fr_1fr_1fr_28px] gap-1.5 text-[11px] text-pm uppercase tracking-wider pb-2 border-b border-pb min-w-[584px] xs:hidden");
+          const hdr = div("grid grid-cols-[24px_2.2fr_1fr_1fr_1fr_28px] gap-2.5 text-[12px] text-pd/70 font-bold uppercase tracking-wider pb-2.5 border-b border-pb min-w-[584px] xs:hidden");
           ["", "Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 1 && i < 5) s.style.textAlign = "right"; hdr.appendChild(s); });
           scroll.appendChild(hdr);
 
@@ -1056,7 +1127,7 @@
             const nameRow = div("flex items-center gap-1.5 cursor-pointer");
             nameRow.addEventListener("click", () => openModal("budget_options", { item, cat: state.activeCat }));
 
-            const name = div("text-[13px] text-pd font-bold break-words"); name.textContent = item.name;
+            const name = div("text-[14px] md:text-[15px] text-pd font-bold break-words"); name.textContent = item.name;
             nameRow.appendChild(name);
 
             const chevronIcon = icon("chevron-right", { fontSize: "12px", color: "var(--pm)" });
