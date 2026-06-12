@@ -19,12 +19,12 @@
       theme: {
         extend: {
           colors: {
-            pk: '#d4537e',
-            pl: '#fce8ef',
-            pm: '#c4849a',
-            pd: '#6b2d45',
-            pb: '#f0cdd8',
-            bg: '#fdf6f8'
+            pk: '#dc4b76',
+            pl: '#fff0f5',
+            pm: '#c87994',
+            pd: '#4a1224',
+            pb: '#f3d4e0',
+            bg: '#fffafd'
           },
           screens: {
             xs: { max: '500px' }
@@ -36,28 +36,44 @@
   <style type="text/tailwindcss">
     @layer base {
       :root {
-        --pk: #d4537e;
-        --pl: #fce8ef;
-        --pm: #c4849a;
-        --pd: #6b2d45;
-        --pb: #f0cdd8;
-        --bg: #fdf6f8;
+        --pk: #dc4b76;
+        --pl: #fff0f5;
+        --pm: #c87994;
+        --pd: #4a1224;
+        --pb: #f3d4e0;
+        --bg: #fffafd;
         --white: #fff;
-        --green: #2e7d52;
-        --green-bg: #e9f7ef;
-        --orange: #a05f00;
-        --orange-bg: #fff4e5;
-        --red: #993556;
-        --red-bg: #fce8ef;
-        --radius: 16px;
-        --radius-sm: 10px;
-        --shadow: 0 4px 20px rgba(107, 45, 69, .04);
-        --glass-bg: rgba(255, 255, 255, 0.88);
+        --green: #257849;
+        --green-bg: #e8f7ee;
+        --orange: #9c5c00;
+        --orange-bg: #fff3e3;
+        --red: #a32d52;
+        --red-bg: #fde8ee;
+        --radius: 20px;
+        --radius-sm: 12px;
+        --shadow: 0 8px 30px rgba(107, 45, 69, .03);
+        --glass-bg: rgba(255, 255, 255, 0.82);
       }
 
       * {
         @apply box-border m-0 p-0;
         -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Elegant Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--pb);
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--pm);
       }
 
       html,
@@ -67,13 +83,13 @@
       }
 
       body {
-        @apply bg-[#fdf6f8] text-[#6b2d45] text-sm font-['DM_Sans',sans-serif];
+        @apply bg-gradient-to-tr from-[#fff0f5] via-[#fffafd] to-[#fdeef3] text-pd text-sm font-['DM_Sans',sans-serif] min-h-screen;
       }
     }
 
     /* Fallback/Custom components not easily represented by standard utility classes */
     select.inp {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4849a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c87994' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     }
 
     .cat-tabs {
@@ -84,9 +100,51 @@
       display: none;
     }
 
+    /* Floating Petals Falling Animations - Dynamic & Romantic */
     .petal {
-      @apply absolute text-[18px] opacity-[0.15] pointer-events-none;
-      animation: fp 6s ease-in-out infinite;
+      @apply absolute text-[18px] opacity-[0.25] pointer-events-none z-10;
+    }
+
+    .p1 {
+      animation: fall1 8s linear infinite;
+      top: -20px;
+    }
+    .p2 {
+      animation: fall2 11s linear infinite;
+      top: -20px;
+    }
+    .p3 {
+      animation: fall3 9s linear infinite;
+      top: -20px;
+    }
+    .p4 {
+      animation: fall4 13s linear infinite;
+      top: -20px;
+    }
+
+    @keyframes fall1 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
+      10% { opacity: 0.4; }
+      90% { opacity: 0.4; }
+      100% { transform: translate(120px, 80vh) rotate(360deg) scale(0.8); opacity: 0; }
+    }
+    @keyframes fall2 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translate(-80px, 80vh) rotate(-180deg) scale(1); opacity: 0; }
+    }
+    @keyframes fall3 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(0.9); opacity: 0; }
+      10% { opacity: 0.35; }
+      90% { opacity: 0.35; }
+      100% { transform: translate(70px, 80vh) rotate(270deg) scale(0.9); opacity: 0; }
+    }
+    @keyframes fall4 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1.1); opacity: 0; }
+      10% { opacity: 0.25; }
+      90% { opacity: 0.25; }
+      100% { transform: translate(-100px, 80vh) rotate(420deg) scale(1.1); opacity: 0; }
     }
 
     .spin {
@@ -95,7 +153,7 @@
     }
 
     @keyframes fadeInContent {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
     @keyframes fadeIn {
@@ -105,10 +163,6 @@
     @keyframes slideUp {
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
-    }
-    @keyframes fp {
-      0%, 100% { transform: translateY(0) rotate(0deg) }
-      50% { transform: translateY(-8px) rotate(15deg) }
     }
     @keyframes spin {
       to { transform: rotate(360deg) }
@@ -186,13 +240,13 @@
     let loaded = false;
 
     // Tailwind common class constants to minimize stylesheet blocks and duplication
-    const CLS_CARD = "bg-white border border-pb rounded-[16px] p-4 mb-3.5 shadow-[0_4px_20px_rgba(107,45,69,0.04)]";
-    const CLS_CARD_TITLE = "text-[11px] tracking-[0.14em] uppercase text-pm mb-3 flex items-center gap-1.5 font-semibold";
-    const CLS_INP = "border border-pb rounded-[10px] p-[12px_14px] text-[15px] bg-white text-pd w-full font-['DM_Sans',sans-serif] transition-colors duration-200 focus:outline-none focus:border-pk focus:ring-3 focus:ring-pk/10 appearance-none";
-    const CLS_INP_SM = "border border-pb rounded-[10px] p-[8px_10px] text-sm bg-white text-pd w-full font-['DM_Sans',sans-serif] transition-colors duration-200 focus:outline-none focus:border-pk focus:ring-3 focus:ring-pk/10 appearance-none";
-    const CLS_BTN_PRIMARY = "border-none rounded-[10px] p-[12px_20px] text-sm font-medium cursor-pointer bg-pk text-white flex items-center gap-2 font-['DM_Sans',sans-serif] min-h-[44px] justify-center active:scale-[0.96] appearance-none";
-    const CLS_BTN_SECONDARY = "border-none rounded-[10px] p-[12px_20px] text-sm font-medium cursor-pointer bg-pl text-pk font-['DM_Sans',sans-serif] min-h-[44px] justify-center active:scale-[0.96] appearance-none";
-    const CLS_BTN_GHOST = "border border-pb rounded-[10px] p-[9px_14px] text-[13px] cursor-pointer bg-white text-pm flex items-center gap-1.5 font-['DM_Sans',sans-serif] min-h-[38px] active:scale-[0.96] appearance-none";
+    const CLS_CARD = "bg-white/70 backdrop-blur-xl border border-pb/60 rounded-[20px] p-5 mb-4 shadow-[0_8px_30px_rgba(107,45,69,0.03)] hover:shadow-[0_12px_40px_rgba(107,45,69,0.06)] hover:-translate-y-[1px] transition-all duration-300 ease-in-out";
+    const CLS_CARD_TITLE = "text-[11.5px] tracking-[0.15em] uppercase text-pm mb-3.5 flex items-center gap-2 font-bold";
+    const CLS_INP = "border border-pb rounded-xl p-[12px_16px] text-[15px] bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
+    const CLS_INP_SM = "border border-pb rounded-xl p-[8px_12px] text-sm bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
+    const CLS_BTN_PRIMARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-gradient-to-r from-pk to-pd text-white flex items-center gap-2 font-['DM_Sans',sans-serif] min-h-[44px] justify-center shadow-[0_4px_15px_rgba(220,75,118,0.2)] hover:shadow-[0_6px_20px_rgba(220,75,118,0.3)] hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
+    const CLS_BTN_SECONDARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-pk/8 text-pk font-['DM_Sans',sans-serif] min-h-[44px] justify-center hover:bg-pk/12 hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
+    const CLS_BTN_GHOST = "border border-pb rounded-xl p-[9px_14px] text-[13px] font-semibold cursor-pointer bg-white text-pm flex items-center gap-1.5 font-['DM_Sans',sans-serif] min-h-[38px] hover:border-pm hover:bg-pl/50 hover:text-pk active:scale-[0.95] transition-all duration-200 ease-in-out appearance-none";
 
     // ── Computed ───────────────────────────────────────────────
     function countdown() {
@@ -328,53 +382,47 @@
       const hdr = document.getElementById("header");
       const cd = countdown();
       hdr.innerHTML = "";
-      hdr.className = "shrink-0 bg-white border-b border-pb p-[12px_16px_14px] relative overflow-hidden";
+      hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[16px_16px_18px] relative z-40";
 
-      // petals
-      [["🌸", 10, 20, "0s"], ["🌷", 5, null, "1.5s"], ["🌸", null, null, "2.5s"]].forEach(([e, t, l, d]) => {
-        const p = document.createElement("span");
-        p.className = "petal";
-        p.textContent = e;
-        p.style.cssText = `top:${t || "auto"}px;left:${l != null ? l + "px" : "auto"};right:${l == null ? "30px" : "auto"};bottom:auto;animation-delay:${d}`;
-        hdr.appendChild(p);
-      });
+      const inner = div("max-w-4xl mx-auto w-full flex flex-col gap-2.5");
 
       // Top row: sync badge (centered)
-      const topRow = div("flex justify-center items-center mb-2.5", [
+      const topRow = div("flex justify-center items-center", [
         h("span", { id: "sync-badge", class: "inline-flex items-center gap-[5px] p-[4px_12px] rounded-full text-[10px] font-semibold" })
       ]);
-      hdr.appendChild(topRow);
+      inner.appendChild(topRow);
 
       // Title
-      const title = div("font-['Cormorant_Garamond',serif] italic text-[28px] text-pd leading-none text-center");
+      const title = div("font-['Cormorant_Garamond',serif] italic text-[30px] text-pd leading-none text-center font-bold");
       title.textContent = "Haris & Alya";
-      hdr.appendChild(title);
+      inner.appendChild(title);
 
       // Date + edit
-      const dateRow = div("flex items-center justify-center gap-1.5 mt-1");
-      const dateText = h("span", { class: "text-[12px] text-[#b87090]" });
+      const dateRow = div("flex items-center justify-center gap-1.5");
+      const dateText = h("span", { class: "text-[12px] text-pm font-semibold" });
       dateText.textContent = displayDate();
       const editBtn = h("button", { onclick: () => openModal("info"), class: "bg-transparent border-none cursor-pointer p-0.5" });
-      editBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pb)" }));
+      editBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pm)" }));
       dateRow.append(dateText, editBtn);
-      hdr.appendChild(dateRow);
+      inner.appendChild(dateRow);
 
       // Location
-      const loc = div("flex items-center justify-center gap-1 text-[11px] text-pm mt-0.5");
+      const loc = div("flex items-center justify-center gap-1 text-[11px] text-pm font-semibold");
       loc.appendChild(icon("map-pin", { fontSize: "12px" }));
       loc.appendChild(document.createTextNode(state.data.info.location));
-      hdr.appendChild(loc);
+      inner.appendChild(loc);
 
       // Countdown
-      const cdRow = div("flex justify-center gap-2.5 mt-2.5");
+      const cdRow = div("flex justify-center gap-3 mt-1");
       [["Days", cd.days], ["Weeks", cd.weeks], ["Months", cd.months]].forEach(([l, v]) => {
-        const box = div("text-center bg-white border border-pb rounded-[14px] p-[10px_18px] min-w-[72px] shadow-[0_4px_20px_rgba(107,45,69,0.04)]");
-        const num = div("font-['Cormorant_Garamond',serif] text-[28px] font-medium text-[#b8426a] leading-none"); num.textContent = v;
-        const lbl = div("text-[9px] text-pm tracking-widest uppercase mt-1 font-semibold"); lbl.textContent = l;
+        const box = div("text-center bg-white/95 border border-pb/70 rounded-2xl p-[10px_18px] min-w-[76px] shadow-[0_4px_15px_rgba(107,45,69,0.02)] hover:scale-[1.04] transition-transform duration-200");
+        const num = div("font-['Cormorant_Garamond',serif] text-[28px] font-bold text-pk leading-none"); num.textContent = v;
+        const lbl = div("text-[9px] text-pm tracking-wider uppercase mt-1 font-bold"); lbl.textContent = l;
         box.append(num, lbl);
         cdRow.appendChild(box);
       });
-      hdr.appendChild(cdRow);
+      inner.appendChild(cdRow);
+      hdr.appendChild(inner);
 
       updateSyncBadge();
     }
@@ -382,6 +430,8 @@
     function renderNav() {
       const nav = document.getElementById("nav");
       nav.innerHTML = "";
+      nav.className = "fixed bottom-0 md:bottom-4 left-0 right-0 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl bg-white/85 backdrop-blur-xl border-t md:border border-pb flex p-[6px] md:rounded-2xl z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)] md:shadow-[0_8px_30px_rgba(107,45,69,0.08)] gap-1";
+
       const primaryItems = [
         ["dashboard", "layout-dashboard", "Home"],
         ["checklist", "checklist", "Checklist"],
@@ -389,12 +439,12 @@
         ["tamu", "users", "Tamu"]
       ];
 
-      const btnBaseClass = "flex-1 flex flex-col items-center justify-center gap-[3px] p-[8px_4px] border-none bg-transparent cursor-pointer rounded-[12px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] font-['DM_Sans',sans-serif] min-h-[48px] active:scale-[0.96]";
+      const btnBaseClass = "flex-1 flex flex-col items-center justify-center gap-[3px] p-[8px_4px] border-none bg-transparent cursor-pointer rounded-[14px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] font-['DM_Sans',sans-serif] min-h-[48px] active:scale-[0.96] hover:bg-pk/4";
       const activeBtnClass = "bg-[rgba(212,83,126,0.08)]";
       const iconClass = "text-[19px] text-pm transition-colors duration-200";
-      const activeIconClass = "text-pk";
-      const spanClass = "text-[9.5px] text-pm font-medium tracking-wide transition-colors duration-200";
-      const activeSpanClass = "text-pk";
+      const activeIconClass = "text-pk font-bold";
+      const spanClass = "text-[9.5px] text-pm font-bold tracking-wide transition-colors duration-200";
+      const activeSpanClass = "text-pk font-bold";
 
       primaryItems.forEach(([p, icon_name, label]) => {
         const isActive = state.page === p;
@@ -428,7 +478,7 @@
       const c = document.getElementById("content");
       c.classList.remove("fade-in-content");
       void c.offsetWidth;
-      c.className = "flex-1 overflow-y-auto p-[16px_16px_90px] animate-[fadeInContent_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards]";
+      c.className = "flex-1 overflow-y-auto p-[16px_16px_90px] md:p-[20px_24px_120px] w-full max-w-4xl mx-auto animate-[fadeInContent_0.35s_cubic-bezier(0.16,1,0.3,1)_forwards]";
       c.innerHTML = "";
       const fns = { dashboard: renderDashboard, checklist: renderChecklist, timeline: renderTimeline, tamu: renderTamu, vendor: renderVendor, budget: renderBudget, dana: renderDana };
       (fns[state.page] || renderDashboard)(c);
@@ -1746,7 +1796,7 @@
       state.selectedBudgetIds = state.selectedBudgetIds || [];
       if (state.selectedBudgetIds.length === 0) return;
 
-      const bar = div("fixed bottom-[74px] left-4 right-4 bg-white/95 backdrop-blur-md border border-pb rounded-2xl p-3 shadow-[0_8px_30px_rgba(107,45,69,0.12)] flex items-center justify-between gap-3 z-[90] animate-[slideUp_0.25s_ease-out]");
+      const bar = div("fixed bottom-[74px] md:bottom-[86px] left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl bg-white/95 backdrop-blur-md border border-pb rounded-2xl p-3 shadow-[0_8px_30px_rgba(107,45,69,0.12)] flex items-center justify-between gap-3 z-[90] animate-[slideUp_0.25s_ease-out]");
       bar.id = "bulk-action-bar";
 
       const left = div("text-xs font-bold text-pd");
