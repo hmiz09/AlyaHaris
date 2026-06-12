@@ -443,11 +443,6 @@
       }
 
       updateSyncBadge();
-    });
-      inner.appendChild(cdRow);
-      hdr.appendChild(inner);
-
-      updateSyncBadge();
     }
 
     function renderNav() {
@@ -654,7 +649,8 @@
       const quote = div("text-center font-['Cormorant_Garamond',serif] italic text-pm text-[15px] p-[12px_0_8px] font-medium");
       quote.textContent = '"Two souls, one heart, one perfect day." 🌸';
       c.appendChild(quote);
-    } else {
+    }
+
     function renderChecklist(c) {
       const d = state.data;
       const tasksDone = d.checklist.filter(t => t.done).length;
@@ -732,51 +728,6 @@
       kc.appendChild(note);
 
       c.append(ck, kc);
-    } else {
-          const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingCheckId = item.id; renderContent(); }, () => { state.data.checklist = state.data.checklist.filter(i => i.id !== item.id); scheduleSave(); renderContent(); });
-          ck.appendChild(row);
-        }
-      });
-
-      // Add task
-      const addRow = div("flex gap-2 items-center pt-3.5 border-t border-pb mt-1.5");
-      const newInp = h("input", { type: "text", class: CLS_INP_SM, placeholder: "Tambah tugas baru..." });
-      const addBtn = h("button", { class: CLS_BTN_PRIMARY, onclick: () => { const v = newInp.value.trim(); if (!v) return; d.checklist.push({ id: uid(), text: v, done: false }); newInp.value = ""; scheduleSave(); renderContent(); } });
-      addBtn.style.flexShrink = "0";
-      addBtn.append(icon("plus"), document.createTextNode("Tambah"));
-      newInp.addEventListener("keydown", e => { if (e.key === "Enter") addBtn.click(); });
-      addRow.append(newInp, addBtn);
-      ck.appendChild(addRow);
-      c.appendChild(ck);
-
-      // KUA card
-      const kc = div(CLS_CARD);
-      const kct = div("text-[11px] tracking-[0.14em] uppercase text-pm mb-3 flex items-center gap-1.5 font-semibold justify-between");
-      const kctl = div("flex items-center gap-1.5");
-      kctl.append(icon("file-certificate"), document.createTextNode(`Dokumen KUA — ${kuaDone}/${d.kua.length}`));
-      const kpct_lbl = div("text-[12px] text-pm"); kpct_lbl.textContent = kuaPct + "%";
-      kct.append(kctl, kpct_lbl);
-      kc.appendChild(kct);
-      kc.appendChild(progBar(kuaPct, "#e8a0b8"));
-      kc.appendChild(h("div", { class: "h-2" }));
-
-      d.kua.forEach(item => {
-        if (state.editingKuaId === item.id) {
-          const inp = h("input", { type: "text", class: CLS_INP, value: item.text });
-          inp.addEventListener("blur", () => { if (inp.value.trim()) item.text = inp.value.trim(); state.editingKuaId = null; scheduleSave(); renderContent(); });
-          inp.addEventListener("keydown", e => { if (e.key === "Enter") { if (inp.value.trim()) item.text = inp.value.trim(); state.editingKuaId = null; scheduleSave(); renderContent(); } });
-          kc.appendChild(inp);
-          setTimeout(() => inp.focus(), 50);
-        } else {
-          const row = makeCheckRow(item, () => { item.done = !item.done; scheduleSave(); renderContent(); }, () => { state.editingKuaId = item.id; renderContent(); }, null);
-          kc.appendChild(row);
-        }
-      });
-
-      const note = div("bg-pl rounded-[8px] p-[10px_12px] text-[12px] text-pm mt-2.5");
-      note.innerHTML = `<i class="ti ti-info-circle"></i> Klik ✏️ untuk edit. Konfirmasi ke KUA setempat.`;
-      kc.appendChild(note);
-      c.appendChild(kc);
     }
 
     function makeCheckRow(item, onToggle, onEdit, onDelete) {
