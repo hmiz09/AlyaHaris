@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+      :root {
+        --pk: #dc4b76;
+        --pl: #fff0f5;
+        --pm: #c87994;
+        --pd: #4a1224;
+        --pb: #f3d4e0;
+        --bg: #fffafd;
+        --white: #fff;
+        --green: #257849;
+        --green-bg: #e8f7ee;
+        --orange: #9c5c00;
+        --orange-bg: #fff3e3;
+        --red: #a32d52;
+        --red-bg: #fde8ee;
+        --radius: 20px;
+        --radius-sm: 12px;
+        --shadow: 0 8px 30px rgba(107, 45, 69, .03);
+        --glass-bg: rgba(255, 255, 255, 0.82);
+      }
+
+      * {
+        @apply box-border m-0 p-0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Elegant Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--pb);
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--pm);
+      }
+
+      html,
+      body {
+        @apply h-full overflow-hidden overscroll-none antialiased m-0 p-0;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        @apply bg-gradient-to-tr from-[#fff0f5] via-[#fffafd] to-[#fdeef3] text-pd text-sm font-['DM_Sans',sans-serif] min-h-screen;
+      }
+    }
+
+    /* Fallback/Custom components not easily represented by standard utility classes */
+    select.inp {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c87994' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+
+    .cat-tabs {
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cat-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Floating Petals Falling Animations - Dynamic & Romantic */
+    .petal {
+      @apply absolute text-[18px] opacity-[0.25] pointer-events-none z-10;
+    }
+
+    .p1 {
+      animation: fall1 8s linear infinite;
+      top: -20px;
+    }
+    .p2 {
+      animation: fall2 11s linear infinite;
+      top: -20px;
+    }
+    .p3 {
+      animation: fall3 9s linear infinite;
+      top: -20px;
+    }
+    .p4 {
+      animation: fall4 13s linear infinite;
+      top: -20px;
+    }
+
+    @keyframes fall1 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
+      10% { opacity: 0.4; }
+      90% { opacity: 0.4; }
+      100% { transform: translate(120px, 80vh) rotate(360deg) scale(0.8); opacity: 0; }
+    }
+    @keyframes fall2 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translate(-80px, 80vh) rotate(-180deg) scale(1); opacity: 0; }
+    }
+    @keyframes fall3 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(0.9); opacity: 0; }
+      10% { opacity: 0.35; }
+      90% { opacity: 0.35; }
+      100% { transform: translate(70px, 80vh) rotate(270deg) scale(0.9); opacity: 0; }
+    }
+    @keyframes fall4 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1.1); opacity: 0; }
+      10% { opacity: 0.25; }
+      90% { opacity: 0.25; }
+      100% { transform: translate(-100px, 80vh) rotate(420deg) scale(1.1); opacity: 0; }
+    }
+
+    .spin {
+      @apply inline-block;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes fadeInContent {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg) }
+    }
+

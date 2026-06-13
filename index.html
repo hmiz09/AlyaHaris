@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#fdf6f8" />
@@ -13,161 +13,8 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap"
     rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            pk: '#dc4b76',
-            pl: '#fff0f5',
-            pm: '#c87994',
-            pd: '#4a1224',
-            pb: '#f3d4e0',
-            bg: '#fffafd'
-          },
-          screens: {
-            xs: { max: '500px' }
-          }
-        }
-      }
-    }
-  </script>
-  <style type="text/tailwindcss">
-    @layer base {
-      :root {
-        --pk: #dc4b76;
-        --pl: #fff0f5;
-        --pm: #c87994;
-        --pd: #4a1224;
-        --pb: #f3d4e0;
-        --bg: #fffafd;
-        --white: #fff;
-        --green: #257849;
-        --green-bg: #e8f7ee;
-        --orange: #9c5c00;
-        --orange-bg: #fff3e3;
-        --red: #a32d52;
-        --red-bg: #fde8ee;
-        --radius: 20px;
-        --radius-sm: 12px;
-        --shadow: 0 8px 30px rgba(107, 45, 69, .03);
-        --glass-bg: rgba(255, 255, 255, 0.82);
-      }
-
-      * {
-        @apply box-border m-0 p-0;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      /* Elegant Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: var(--pb);
-        border-radius: 99px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: var(--pm);
-      }
-
-      html,
-      body {
-        @apply h-full overflow-hidden overscroll-none antialiased m-0 p-0;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        @apply bg-gradient-to-tr from-[#fff0f5] via-[#fffafd] to-[#fdeef3] text-pd text-sm font-['DM_Sans',sans-serif] min-h-screen;
-      }
-    }
-
-    /* Fallback/Custom components not easily represented by standard utility classes */
-    select.inp {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c87994' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    }
-
-    .cat-tabs {
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-    .cat-tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* Floating Petals Falling Animations - Dynamic & Romantic */
-    .petal {
-      @apply absolute text-[18px] opacity-[0.25] pointer-events-none z-10;
-    }
-
-    .p1 {
-      animation: fall1 8s linear infinite;
-      top: -20px;
-    }
-    .p2 {
-      animation: fall2 11s linear infinite;
-      top: -20px;
-    }
-    .p3 {
-      animation: fall3 9s linear infinite;
-      top: -20px;
-    }
-    .p4 {
-      animation: fall4 13s linear infinite;
-      top: -20px;
-    }
-
-    @keyframes fall1 {
-      0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
-      10% { opacity: 0.4; }
-      90% { opacity: 0.4; }
-      100% { transform: translate(120px, 80vh) rotate(360deg) scale(0.8); opacity: 0; }
-    }
-    @keyframes fall2 {
-      0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0; }
-      10% { opacity: 0.3; }
-      90% { opacity: 0.3; }
-      100% { transform: translate(-80px, 80vh) rotate(-180deg) scale(1); opacity: 0; }
-    }
-    @keyframes fall3 {
-      0% { transform: translate(0, 0) rotate(0deg) scale(0.9); opacity: 0; }
-      10% { opacity: 0.35; }
-      90% { opacity: 0.35; }
-      100% { transform: translate(70px, 80vh) rotate(270deg) scale(0.9); opacity: 0; }
-    }
-    @keyframes fall4 {
-      0% { transform: translate(0, 0) rotate(0deg) scale(1.1); opacity: 0; }
-      10% { opacity: 0.25; }
-      90% { opacity: 0.25; }
-      100% { transform: translate(-100px, 80vh) rotate(420deg) scale(1.1); opacity: 0; }
-    }
-
-    .spin {
-      @apply inline-block;
-      animation: spin .8s linear infinite;
-    }
-
-    @keyframes fadeInContent {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg) }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/tailwind.css" />
+  
 </head>
 
 <body>
@@ -246,7 +93,8 @@
     const CLS_INP_SM = "border border-pb rounded-xl p-[8px_12px] text-sm bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
     const CLS_BTN_PRIMARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-gradient-to-r from-pk to-pd text-white flex items-center gap-2 font-['DM_Sans',sans-serif] min-h-[44px] justify-center shadow-[0_4px_15px_rgba(220,75,118,0.2)] hover:shadow-[0_6px_20px_rgba(220,75,118,0.3)] hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
     const CLS_BTN_SECONDARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-pk/8 text-pk font-['DM_Sans',sans-serif] min-h-[44px] justify-center hover:bg-pk/12 hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
-    const CLS_BTN_GHOST = "border border-pb rounded-xl p-[9px_14px] text-[13px] font-semibold cursor-pointer bg-white text-pm flex items-center gap-1.5 font-['DM_Sans',sans-serif] min-h-[38px] hover:border-pm hover:bg-pl/50 hover:text-pk active:scale-[0.95] transition-all duration-200 ease-in-out appearance-none";
+    const CLS_BTN_GHOST = "border border-pb rounded-xl p-[9px_14px] text-[13px] font-semibold cursor-pointer bg-white text-pm flex items-center gap-1.5 font-['DM_Sans',sans-serif] min-h-[44px] hover:border-pm hover:bg-pl/50 hover:text-pk active:scale-[0.95] transition-all duration-200 ease-in-out appearance-none";
+    const CLS_ICON_BTN = "inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl border-none bg-transparent cursor-pointer text-pm hover:bg-pl/70 hover:text-pk active:scale-[0.95] transition-all duration-200";
 
     // ── Computed ───────────────────────────────────────────────
     function countdown() {
@@ -277,6 +125,34 @@
     }
 
     // ── Persist ────────────────────────────────────────────────
+    function mergeData(d) {
+      if (!d || typeof d !== "object") return;
+      state.data = {
+        ...state.data,
+        ...d,
+        budget: { ...state.data.budget, ...(d.budget || {}) },
+        guests: d.guests || [],
+        dana: d.dana || []
+      };
+    }
+
+    function loadLocalData() {
+      try {
+        const r = localStorage.getItem("ha_data_v7");
+        if (r) mergeData(JSON.parse(r));
+      } catch (e) { }
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeout = 3500) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeout);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
     async function load() {
       let url = "";
       if (typeof GSHEET_SCRIPT_URL !== "undefined" && GSHEET_SCRIPT_URL) {
@@ -285,24 +161,23 @@
         try { const r = localStorage.getItem("gscript_url_v1"); if (r) url = r; } catch (e) { }
       }
       state.scriptUrl = url;
-      if (url) {
-        state.syncStatus = "syncing";
-        try {
-          const res = await fetch(url);
-          const parsed = JSON.parse(await res.text());
-          if (parsed && Object.keys(parsed).length > 0) {
-            state.data = { ...state.data, ...parsed, budget: { ...state.data.budget, ...(parsed.budget || {}) }, guests: parsed.guests || [], dana: parsed.dana || [] };
-          }
-          state.syncStatus = "synced";
-        } catch (e) {
-          state.syncStatus = "error";
-          try { const r = localStorage.getItem("ha_data_v7"); if (r) { const d = JSON.parse(r); state.data = { ...state.data, ...d, budget: { ...state.data.budget, ...(d.budget || {}) }, guests: d.guests || [], dana: d.dana || [] }; } } catch (e2) { }
-        }
-      } else {
-        state.syncStatus = "nourl";
-        try { const r = localStorage.getItem("ha_data_v7"); if (r) { const d = JSON.parse(r); state.data = { ...state.data, ...d, budget: { ...state.data.budget, ...(d.budget || {}) }, guests: d.guests || [], dana: d.dana || [] }; } } catch (e) { }
-      }
+      loadLocalData();
+      state.syncStatus = url ? "syncing" : "nourl";
       loaded = true;
+      render();
+
+      if (!url) return;
+      try {
+        const res = await fetchWithTimeout(url);
+        const parsed = JSON.parse(await res.text());
+        if (parsed && Object.keys(parsed).length > 0) {
+          mergeData(parsed);
+          try { localStorage.setItem("ha_data_v7", JSON.stringify(state.data)); } catch (e) { }
+        }
+        state.syncStatus = "synced";
+      } catch (e) {
+        state.syncStatus = "error";
+      }
       render();
     }
 
@@ -318,7 +193,7 @@
       if (!state.scriptUrl) { state.syncStatus = "local"; updateSyncBadge(); return; }
       state.syncStatus = "syncing"; updateSyncBadge();
       try {
-        await fetch(state.scriptUrl, { method: "POST", body: json });
+        await fetchWithTimeout(state.scriptUrl, { method: "POST", body: json }, 6000);
         state.syncStatus = "synced";
       } catch (e) { state.syncStatus = "error"; }
       updateSyncBadge();
@@ -341,6 +216,11 @@
     };
     const div = (cls, children = [], attrs = {}) => h("div", { class: cls, ...attrs }, children);
     const icon = (name, extra = {}) => { const i = document.createElement("i"); i.className = `ti ti-${name}`; Object.assign(i.style, extra); return i; };
+    const iconBtn = (name, label, onclick, color = "var(--pm)") => {
+      const btn = h("button", { class: CLS_ICON_BTN, "aria-label": label, title: label, onclick });
+      btn.appendChild(icon(name, { fontSize: "17px", color }));
+      return btn;
+    };
 
     function progBar(pct, color = "var(--pk)", heightClass = "h-[6px]") {
       const wrap = div(`${heightClass} bg-pl rounded-full overflow-hidden`);
@@ -359,8 +239,8 @@
         syncing: { icon: "ti-refresh", color: "#a05f00", bg: "#fff4e5", label: "Menyimpan...", spin: true },
         synced: { icon: "ti-cloud-check", color: "#2e7d52", bg: "#e9f7ef", label: "Tersimpan" },
         error: { icon: "ti-cloud-x", color: "#993556", bg: "var(--red-bg)", label: "Gagal simpan" },
-        local: { icon: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
-        nourl: { icon: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
+        local: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
+        nourl: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
       };
       const c = cfg[state.syncStatus] || cfg.nourl;
       el.style.background = c.bg; el.style.color = c.color;
@@ -386,8 +266,8 @@
       const isDashboard = state.page === "dashboard";
 
       if (isDashboard) {
-        hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[16px_16px_18px] relative z-40 transition-all duration-300";
-        const inner = div("max-w-4xl mx-auto w-full flex flex-col gap-2.5");
+        hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[12px_16px_14px] md:p-[16px_16px_18px] relative z-40 transition-all duration-300";
+        const inner = div("max-w-4xl mx-auto w-full flex flex-col gap-2 md:gap-2.5");
 
         // Top row: sync badge (centered)
         const topRow = div("flex justify-center items-center", [
@@ -396,7 +276,7 @@
         inner.appendChild(topRow);
 
         // Title
-        const title = div("font-['Cormorant_Garamond',serif] italic text-[30px] text-pd leading-none text-center font-bold");
+        const title = div("font-['Cormorant_Garamond',serif] italic text-[28px] md:text-[30px] text-pd leading-none text-center font-bold");
         title.textContent = "Haris & Alya";
         inner.appendChild(title);
 
@@ -404,8 +284,8 @@
         const dateRow = div("flex items-center justify-center gap-1.5");
         const dateText = h("span", { class: "text-[12px] text-pm font-semibold" });
         dateText.textContent = displayDate();
-        const editBtn = h("button", { onclick: () => openModal("info"), class: "bg-transparent border-none cursor-pointer p-0.5" });
-        editBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pm)" }));
+        const editBtn = h("button", { onclick: () => openModal("info"), class: "inline-flex items-center justify-center min-w-[44px] min-h-[44px] bg-transparent border-none cursor-pointer rounded-full hover:bg-pl", "aria-label": "Edit info pernikahan", title: "Edit info pernikahan" });
+        editBtn.appendChild(icon("pencil", { fontSize: "13px", color: "var(--pm)" }));
         dateRow.append(dateText, editBtn);
         inner.appendChild(dateRow);
 
@@ -416,10 +296,10 @@
         inner.appendChild(loc);
 
         // Countdown
-        const cdRow = div("flex justify-center gap-3 mt-1");
+        const cdRow = div("flex justify-center gap-2.5 md:gap-3 mt-0.5 md:mt-1");
         [["Days", cd.days], ["Weeks", cd.weeks], ["Months", cd.months]].forEach(([l, v]) => {
-          const box = div("text-center bg-white/95 border border-pb/70 rounded-2xl p-[10px_18px] min-w-[76px] shadow-[0_4px_15px_rgba(107,45,69,0.02)] hover:scale-[1.04] transition-transform duration-200");
-          const num = div("font-['Cormorant_Garamond',serif] text-[28px] font-bold text-pk leading-none"); num.textContent = v;
+          const box = div("text-center bg-white/95 border border-pb/70 rounded-2xl p-[8px_14px] md:p-[10px_18px] min-w-[70px] md:min-w-[76px] shadow-[0_4px_15px_rgba(107,45,69,0.02)] hover:scale-[1.04] transition-transform duration-200");
+          const num = div("font-['Cormorant_Garamond',serif] text-[25px] md:text-[28px] font-bold text-pk leading-none"); num.textContent = v;
           const lbl = div("text-[9px] text-pm tracking-wider uppercase mt-1 font-bold"); lbl.textContent = l;
           box.append(num, lbl);
           cdRow.appendChild(box);
@@ -432,7 +312,7 @@
         const inner = div("max-w-4xl mx-auto w-full flex items-center justify-between gap-4");
 
         const title = div("font-['Cormorant_Garamond',serif] italic text-[20px] text-pd font-bold cursor-pointer");
-        title.textContent = "Haris & Alya 💍";
+        title.textContent = "Haris & Alya";
         title.addEventListener("click", () => { state.page = "dashboard"; renderContent(); renderNav(); renderHeader(); });
 
         const badgeCol = div("flex items-center");
@@ -448,7 +328,7 @@
     function renderNav() {
       const nav = document.getElementById("nav");
       nav.innerHTML = "";
-      nav.className = "fixed bottom-0 md:bottom-4 left-0 right-0 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl bg-white/85 backdrop-blur-xl border-t md:border border-pb flex p-[6px] md:rounded-2xl z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)] md:shadow-[0_8px_30px_rgba(107,45,69,0.08)] gap-1";
+      nav.className = "fixed bottom-0 left-0 right-0 md:bottom-auto md:left-auto md:right-6 md:top-5 md:w-[520px] bg-white/85 backdrop-blur-xl border-t md:border border-pb flex p-[6px_calc(6px+env(safe-area-inset-right))_calc(6px+env(safe-area-inset-bottom))_calc(6px+env(safe-area-inset-left))] md:p-[6px] md:rounded-2xl z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)] md:shadow-[0_8px_30px_rgba(107,45,69,0.08)] gap-1";
 
       const primaryItems = [
         ["dashboard", "layout-dashboard", "Home"],
@@ -468,6 +348,7 @@
         const isActive = state.page === p;
         const btn = h("button", {
           class: btnBaseClass + (isActive ? ` ${activeBtnClass}` : ""),
+          "aria-label": label,
           onclick: () => { state.page = p; state.selectedBudgetIds = []; renderContent(); renderNav(); renderHeader(); }
         });
         const ic = icon(icon_name, { fontSize: "19px" });
@@ -482,6 +363,7 @@
       const isLainnyaActive = ["timeline", "vendor", "dana"].includes(state.page);
       const lainnyaBtn = h("button", {
         class: btnBaseClass + (isLainnyaActive ? ` ${activeBtnClass}` : ""),
+        "aria-label": "Menu lainnya",
         onclick: () => { openModal("lainnya_menu"); }
       });
       const ic = icon("dots", { fontSize: "19px" });
@@ -496,7 +378,7 @@
       const c = document.getElementById("content");
       c.classList.remove("fade-in-content");
       void c.offsetWidth;
-      c.className = "flex-1 overflow-y-auto p-[16px_16px_90px] md:p-[20px_24px_120px] w-full max-w-4xl mx-auto animate-[fadeInContent_0.35s_cubic-bezier(0.16,1,0.3,1)_forwards]";
+      c.className = "flex-1 overflow-y-auto p-[16px_16px_96px] md:p-[22px_24px_40px] w-full max-w-4xl mx-auto animate-[fadeInContent_0.35s_cubic-bezier(0.16,1,0.3,1)_forwards]";
       c.innerHTML = "";
       const fns = { dashboard: renderDashboard, checklist: renderChecklist, timeline: renderTimeline, tamu: renderTamu, vendor: renderVendor, budget: renderBudget, dana: renderDana };
       (fns[state.page] || renderDashboard)(c);
@@ -575,8 +457,7 @@
       const vc = div(CLS_CARD);
       const vt = div("flex justify-between items-center mb-3");
       const vtl = div(CLS_CARD_TITLE); vtl.style.marginBottom = "0"; vtl.append(icon("building-store"), document.createTextNode("Vendors"));
-      const vadd = h("button", { class: "bg-transparent border-none cursor-pointer p-1", onclick: () => openModal("vendor", { id: "", name: "", type: "", status: "pending", contact: "" }) });
-      vadd.appendChild(icon("plus", { fontSize: "14px", color: "var(--pm)" }));
+      const vadd = iconBtn("plus", "Tambah vendor", () => openModal("vendor", { id: "", name: "", type: "", status: "pending", contact: "" }));
       vt.append(vtl, vadd);
       vc.appendChild(vt);
 
@@ -737,11 +618,11 @@
       circle.addEventListener("click", onToggle);
       const txt = div("flex-1 text-sm text-pd leading-[1.4]" + (item.done ? " text-pm line-through" : "")); txt.textContent = item.text; txt.style.flex = "1";
       txt.addEventListener("click", onToggle);
-      const actions = div("flex gap-3 shrink-0");
-      const editBtn = h("button", { onclick: onEdit }); editBtn.className = "bg-transparent border-none cursor-pointer p-1"; editBtn.appendChild(icon("pencil", { fontSize: "14px", color: "var(--pb)" }));
+      const actions = div("flex gap-1 shrink-0");
+      const editBtn = iconBtn("pencil", `Edit ${item.text}`, onEdit, "var(--pb)");
       actions.appendChild(editBtn);
       if (onDelete) {
-        const delBtn = h("button", { onclick: onDelete }); delBtn.className = "bg-transparent border-none cursor-pointer p-1"; delBtn.appendChild(icon("trash", { fontSize: "14px", color: "var(--pb)" }));
+        const delBtn = iconBtn("trash", `Hapus ${item.text}`, onDelete, "var(--pb)");
         actions.appendChild(delBtn);
       }
       row.append(circle, txt, actions);
@@ -766,8 +647,8 @@
         const tk = div("text-[13px] text-pd font-medium"); tk.textContent = t.task;
         right.append(mo, tk);
         const acts = div("flex gap-1.5 ml-auto pl-2 shrink-0");
-        const editBtn = h("button", { onclick: () => openModal("tl", { ...t }) }); editBtn.className = "bg-transparent border-none cursor-pointer p-1"; editBtn.appendChild(icon("pencil", { fontSize: "14px", color: "var(--pm)" }));
-        const delBtn = h("button", { onclick: () => { state.data.timeline = state.data.timeline.filter(x => x.id !== t.id); scheduleSave(); renderContent(); } }); delBtn.className = "bg-transparent border-none cursor-pointer p-1"; delBtn.appendChild(icon("trash", { fontSize: "14px", color: "var(--pb)" }));
+        const editBtn = iconBtn("pencil", `Edit milestone ${t.task}`, () => openModal("tl", { ...t }));
+        const delBtn = iconBtn("trash", `Hapus milestone ${t.task}`, () => { state.data.timeline = state.data.timeline.filter(x => x.id !== t.id); scheduleSave(); renderContent(); }, "var(--pb)");
         acts.append(editBtn, delBtn);
         row.append(left, right, acts);
         card.appendChild(row);
@@ -826,7 +707,8 @@
       const filters = div("flex gap-1.5 overflow-x-auto pb-1 mb-2.5");
       [["all", "Semua"], ["confirmed", "Hadir"], ["declined", "Menolak"], ["pending", "Belum"]].forEach(([f, l]) => {
         const btn = h("button", { onclick: () => { state.guestFilter = f; renderContent(); } });
-        btn.style.cssText = `padding:5px 12px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;border:0.5px solid ${state.guestFilter === f ? "var(--pk)" : "var(--pb)"};background:${state.guestFilter === f ? "var(--pk)" : "var(--pl)"};color:${state.guestFilter === f ? "#fff" : "var(--pd)"};`;
+        btn.setAttribute("aria-label", `Filter tamu ${l}`);
+        btn.style.cssText = `padding:7px 14px;min-height:44px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;border:0.5px solid ${state.guestFilter === f ? "var(--pk)" : "var(--pb)"};background:${state.guestFilter === f ? "var(--pk)" : "var(--pl)"};color:${state.guestFilter === f ? "#fff" : "var(--pd)"};`;
         btn.textContent = l;
         filters.appendChild(btn);
       });
@@ -850,16 +732,16 @@
           const name = div("text-[13px] text-pd font-semibold"); name.textContent = g.name;
           const side = div("text-[11px] text-pm mt-0.25"); side.textContent = g.side;
           nameCol.append(name, side);
-          const rsvpSel = h("select", { class: "text-[11.5px] p-[5px_10px] rounded-full font-semibold border-none cursor-pointer transition-all duration-200 font-['DM_Sans',sans-serif] appearance-none xs:text-[15px] xs:p-[6px_12px]" });
+          const rsvpSel = h("select", { class: "text-[11.5px] p-[7px_12px] min-h-[44px] rounded-full font-semibold border-none cursor-pointer transition-all duration-200 font-['DM_Sans',sans-serif] appearance-none xs:text-[15px] xs:p-[6px_12px]", "aria-label": `Ubah RSVP ${g.name}` });
           rsvpSel.style.cssText = `background:${RSVP_MAP[g.rsvp].bg};color:${RSVP_MAP[g.rsvp].color};`;
           [["confirmed", "✓ Hadir"], ["declined", "✗ Tidak"], ["pending", "? Belum"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (g.rsvp === v) o.selected = true; rsvpSel.appendChild(o); });
           rsvpSel.addEventListener("change", e => { g.rsvp = e.target.value; scheduleSave(); renderContent(); });
-          const acts = div("flex gap-1.5");
-          const eb = h("button", { onclick: () => openModal("guest", { ...g }) }); eb.className = "bg-transparent border-none cursor-pointer p-1"; eb.appendChild(icon("pencil", { fontSize: "15px", color: "var(--pm)" }));
-          const db = h("button", { onclick: () => { state.data.guests = state.data.guests.filter(x => x.id !== g.id); scheduleSave(); renderContent(); } }); db.className = "bg-transparent border-none cursor-pointer p-1"; db.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          const acts = div("flex gap-1");
+          const eb = iconBtn("pencil", `Edit tamu ${g.name}`, () => openModal("guest", { ...g }));
+          const db = iconBtn("trash", `Hapus tamu ${g.name}`, () => { state.data.guests = state.data.guests.filter(x => x.id !== g.id); scheduleSave(); renderContent(); }, "var(--pb)");
           acts.append(eb, db);
           row.append(nameCol, rsvpSel, acts);
-          row.style.gridTemplateColumns = "1fr auto 56px";
+          row.style.gridTemplateColumns = "1fr auto 92px";
           row.style.gap = "8px";
           row.style.alignItems = "center";
           row.style.padding = "12px 0";
@@ -890,8 +772,8 @@
           const top = div("flex items-center gap-2 mb-0.75");
           const name = div("flex-1 text-[14px] font-medium text-pd"); name.textContent = v.name;
           const badge = div("text-[11px] p-[4px_12px] rounded-full font-semibold truncate"); badge.style.background = VSTATUS[v.status].bg; badge.style.color = VSTATUS[v.status].color; badge.textContent = VSTATUS[v.status].label;
-          const eb = h("button", { onclick: () => openModal("vendor", { ...v }) }); eb.className = "bg-transparent border-none cursor-pointer p-1"; eb.appendChild(icon("pencil", { fontSize: "15px", color: "var(--pm)" }));
-          const db = h("button", { onclick: () => { state.data.vendors = state.data.vendors.filter(x => x.id !== v.id); scheduleSave(); renderContent(); } }); db.className = "bg-transparent border-none cursor-pointer p-1"; db.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          const eb = iconBtn("pencil", `Edit vendor ${v.name}`, () => openModal("vendor", { ...v }));
+          const db = iconBtn("trash", `Hapus vendor ${v.name}`, () => { state.data.vendors = state.data.vendors.filter(x => x.id !== v.id); scheduleSave(); renderContent(); }, "var(--pb)");
           top.append(name, badge, eb, db);
           row.appendChild(top);
           const type = div("text-[12px] text-pm"); type.textContent = v.type;
@@ -908,7 +790,7 @@
       // Export button row
       const expRow = div("flex justify-between items-center mb-3");
       const expTitle = div("text-[12px] md:text-[13px] font-bold tracking-wider uppercase text-pd/80"); expTitle.textContent = "Anggaran Pernikahan";
-      const expBtn = h("button", { class: CLS_BTN_GHOST, onclick: exportXlsx }); expBtn.append(icon("download"), document.createTextNode("Export"));
+      const expBtn = h("button", { class: CLS_BTN_GHOST, "aria-label": "Export data ke XLSX", onclick: exportXlsx }); expBtn.append(icon("download"), document.createTextNode("Export"));
       expRow.append(expTitle, expBtn);
       c.appendChild(expRow);
 
@@ -917,7 +799,8 @@
       CATS.forEach(cat => {
         const e = catSum(cat, "estimasi");
         const btn = h("button", {
-          class: `cat-tab p-[8px_16px] rounded-full text-[12.5px] font-semibold cursor-pointer border border-pb bg-pl text-pd truncate shrink-0 font-['DM_Sans',sans-serif] transition-all duration-200 ease-in-out active:scale-[0.96]${state.activeCat === cat ? " bg-pk border-pk text-white active" : ""}`,
+          class: `cat-tab p-[8px_16px] min-h-[44px] rounded-full text-[12.5px] font-semibold cursor-pointer border border-pb bg-pl text-pd truncate shrink-0 font-['DM_Sans',sans-serif] transition-all duration-200 ease-in-out active:scale-[0.96]${state.activeCat === cat ? " bg-pk border-pk text-white active" : ""}`,
+          "aria-label": `Buka kategori budget ${cat}`,
           onclick: () => { state.activeCat = cat; state.selectedBudgetIds = []; renderContent(); }
         });
         btn.textContent = cat + (e > 0 ? ` ${(e / 1000000).toFixed(1)}M` : "");
@@ -937,7 +820,7 @@
           scheduleSave(); renderContent();
         }
       }});
-      addSubcatBtn.className = CLS_BTN_GHOST + " p-[5px_10px] text-[11px] min-h-[28px]";
+      addSubcatBtn.className = CLS_BTN_GHOST + " p-[8px_12px] text-[11px] min-h-[44px]";
       addSubcatBtn.append(icon("folder-plus", { fontSize: "13px" }), document.createTextNode("Sub-Kategori"));
       topRow.append(ttl, addSubcatBtn); card.appendChild(topRow);
 
@@ -982,9 +865,9 @@
           const scKey = state.activeCat + "|" + sc;
 
           // Sub-category header
-          const scHdr = div("flex items-center justify-between p-[8px_10px] mb-2 bg-pl rounded-[10px] cursor-pointer select-none");
+          const scHdr = div("flex items-center justify-between p-[8px_10px] mb-2 bg-pl rounded-[10px] cursor-pointer select-none xs:flex-wrap xs:gap-y-2");
           
-          const scLeft = div("flex items-center gap-2 flex-1 min-w-0");
+          const scLeft = div("flex items-center gap-2 flex-1 min-w-0 xs:w-full xs:flex-none");
           const chevron = icon(isCollapsed ? "chevron-right" : "chevron-down", { fontSize: "14px", color: "var(--pm)" });
           const scName = h("span", { class: "text-[13px] md:text-[14px] font-bold text-pd uppercase tracking-wider overflow-hidden text-ellipsis whitespace-nowrap" });
           scName.textContent = sc;
@@ -995,7 +878,7 @@
           scSumLabel.textContent = scEst > 0 ? fmtRp(scEst) : "";
           scLeft.append(chevron, scName, scCount, scSumLabel);
 
-          const scActions = div("flex items-center gap-0.5 shrink-0");
+          const scActions = div("flex items-center gap-0.5 shrink-0 xs:pl-6");
           
           const allScSelected = scItems.length > 0 && scItems.every(i => (state.selectedBudgetIds || []).includes(i.id));
           const selectAllBtn = h("button", {
@@ -1012,8 +895,9 @@
               renderBulkActionBar();
             }
           });
-          selectAllBtn.className = "bg-transparent border-none cursor-pointer p-1 flex items-center";
+          selectAllBtn.className = CLS_ICON_BTN;
           selectAllBtn.title = allScSelected ? "Batal pilih semua" : "Pilih semua";
+          selectAllBtn.setAttribute("aria-label", `${allScSelected ? "Batal pilih semua" : "Pilih semua"} item ${sc}`);
           selectAllBtn.appendChild(icon(allScSelected ? "square-minus" : "square-plus", { fontSize: "14px", color: "var(--pm)" }));
           scActions.appendChild(selectAllBtn);
 
@@ -1026,7 +910,9 @@
                 scheduleSave(); renderContent();
               }
             }});
-            renameBtn.className = "bg-transparent border-none cursor-pointer p-1 flex items-center";
+            renameBtn.className = CLS_ICON_BTN;
+            renameBtn.setAttribute("aria-label", `Ubah nama sub-kategori ${sc}`);
+            renameBtn.title = `Ubah nama sub-kategori ${sc}`;
             renameBtn.appendChild(icon("pencil", { fontSize: "12px", color: "var(--pm)" }));
 
             const delScBtn = h("button", { onclick: e => {
@@ -1035,7 +921,9 @@
               allItems.forEach(i => { if ((i.subcat || "Umum") === sc) delete i.subcat; });
               scheduleSave(); renderContent();
             }});
-            delScBtn.className = "bg-transparent border-none cursor-pointer p-1 flex items-center";
+            delScBtn.className = CLS_ICON_BTN;
+            delScBtn.setAttribute("aria-label", `Hapus sub-kategori ${sc}`);
+            delScBtn.title = `Hapus sub-kategori ${sc}`;
             delScBtn.appendChild(icon("trash", { fontSize: "12px", color: "var(--pm)" }));
             scActions.append(renameBtn, delScBtn);
           }
@@ -1050,15 +938,15 @@
           if (isCollapsed) return; // skip rendering items if collapsed
 
           const scroll = div("overflow-x-auto");
-          const hdr = div("grid grid-cols-[24px_2.2fr_1fr_1fr_1fr_28px] gap-2.5 text-[12px] text-pd/70 font-bold uppercase tracking-wider pb-2.5 border-b border-pb min-w-[584px] xs:hidden");
+          const hdr = div("grid grid-cols-[28px_2.2fr_1fr_1fr_1fr_44px] gap-2.5 text-[12px] text-pd/70 font-bold uppercase tracking-wider pb-2.5 border-b border-pb min-w-[616px] xs:hidden");
           ["", "Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 1 && i < 5) s.style.textAlign = "right"; hdr.appendChild(s); });
           scroll.appendChild(hdr);
 
           scItems.forEach(item => {
             const isSelected = (state.selectedBudgetIds || []).includes(item.id);
-            const chk = div(`w-[18px] h-[18px] rounded border ${isSelected ? 'bg-pk border-pk text-white' : 'border-pb bg-white'} flex items-center justify-center shrink-0 cursor-pointer xs:self-center xs:col-start-1 xs:row-start-1 xs:row-end-4`, [
+            const chk = div(`w-[22px] h-[22px] rounded border ${isSelected ? 'bg-pk border-pk text-white' : 'border-pb bg-white'} flex items-center justify-center shrink-0 cursor-pointer xs:self-center xs:col-start-1 xs:row-start-1 xs:row-end-4`, [
               isSelected && icon("check", { fontSize: "11px", color: "#fff" })
-            ]);
+            ], { role: "checkbox", "aria-checked": isSelected ? "true" : "false", "aria-label": `Pilih item ${item.name}` });
             chk.addEventListener("click", (e) => {
               e.stopPropagation();
               state.selectedBudgetIds = state.selectedBudgetIds || [];
@@ -1071,7 +959,7 @@
               renderBulkActionBar();
             });
 
-            const row = div("grid grid-cols-[24px_2.2fr_1fr_1fr_1fr_28px] gap-1.5 items-center py-2.5 border-b border-pb min-w-[584px] xs:grid xs:grid-cols-[28px_1fr_auto] xs:grid-rows-auto xs:gap-0 xs:min-w-0 xs:py-2.5 xs:bg-transparent xs:rounded-none xs:border-none xs:border-b xs:border-pb/40 xs:mb-0 xs:relative");
+            const row = div("grid grid-cols-[28px_2.2fr_1fr_1fr_1fr_44px] gap-1.5 items-center py-2.5 border-b border-pb min-w-[616px] xs:grid xs:grid-cols-[32px_1fr_auto] xs:grid-rows-auto xs:gap-0 xs:min-w-0 xs:py-2.5 xs:bg-transparent xs:rounded-none xs:border-none xs:border-b xs:border-pb/40 xs:mb-0 xs:relative");
 
             const nameCol = div("flex flex-col gap-0.5 min-w-0 xs:col-start-2 xs:row-start-1 xs:row-end-4 xs:pr-3 xs:self-center");
 
@@ -1193,7 +1081,10 @@
             });
 
             const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
-            del.className = "bg-transparent border-none cursor-pointer p-1 xs:hidden"; del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+            del.className = CLS_ICON_BTN + " xs:hidden";
+            del.setAttribute("aria-label", `Hapus item ${item.name}`);
+            del.title = `Hapus item ${item.name}`;
+            del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
             row.prepend(nameCol);
             row.prepend(chk);
             row.appendChild(del);
@@ -1371,8 +1262,8 @@
           if (item.keterangan) { const kt = div("text-[11px] text-pm mt-0.25"); kt.textContent = item.keterangan; nameCol.appendChild(kt); }
           const jml = div("text-[13px] font-semibold text-green whitespace-nowrap"); jml.textContent = fmtRp(Number(item.jumlah) || 0);
           const acts = div("flex gap-1");
-          const eb = h("button", { onclick: () => openModal("dana", { ...item }) }); eb.className = "bg-transparent border-none cursor-pointer p-1"; eb.appendChild(icon("pencil", { fontSize: "15px", color: "var(--pm)" }));
-          const db = h("button", { onclick: () => { state.data.dana = state.data.dana.filter(x => x.id !== item.id); scheduleSave(); renderContent(); } }); db.className = "bg-transparent border-none cursor-pointer p-1"; db.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+          const eb = iconBtn("pencil", `Edit dana ${item.nama}`, () => openModal("dana", { ...item }));
+          const db = iconBtn("trash", `Hapus dana ${item.nama}`, () => { state.data.dana = state.data.dana.filter(x => x.id !== item.id); scheduleSave(); renderContent(); }, "var(--pb)");
           acts.append(eb, db);
           row.append(nameCol, jml, acts);
           listCard.appendChild(row);
@@ -1406,16 +1297,19 @@
     function renderModal() {
       let existing = document.getElementById("modal-container");
       if (existing) existing.remove();
-      const bg = div("fixed inset-0 bg-[rgba(107,45,69,0.4)] backdrop-blur-[4px] z-[200] flex items-end justify-center p-0 animate-[fadeIn_0.2s_ease-out]"); bg.id = "modal-container";
+      const bg = div("fixed inset-0 bg-[rgba(107,45,69,0.4)] backdrop-blur-[4px] z-[200] flex items-end md:items-center justify-center p-0 md:p-6 animate-[fadeIn_0.2s_ease-out]"); bg.id = "modal-container";
       bg.addEventListener("click", e => { if (e.target === bg) closeModal(); });
-      const sheet = div("bg-white rounded-t-[24px] w-full max-h-[85dvh] overflow-y-auto pb-[calc(24px+env(safe-area-inset-bottom))] animate-[slideUp_0.28s_cubic-bezier(0.16,1,0.3,1)]");
+      const sheet = div("bg-white rounded-t-[24px] md:rounded-2xl w-full md:max-w-xl max-h-[85dvh] overflow-y-auto pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-6 shadow-[0_24px_80px_rgba(74,18,36,0.22)] animate-[slideUp_0.28s_cubic-bezier(0.16,1,0.3,1)]");
       sheet.style.webkitOverflowScrolling = "touch";
-      const handle = div("w-9 h-1.5 bg-pb rounded-full my-3 mx-auto");
+      const handle = div("w-9 h-1.5 bg-pb rounded-full my-3 mx-auto md:hidden");
       sheet.appendChild(handle);
 
       const titles = { info: "Edit Info Pernikahan", vendor: state.modalForm.id ? "Edit Vendor" : "Tambah Vendor", guest: state.modalForm.id ? "Edit Tamu" : "Tambah Tamu", tl: "Edit Milestone", dana: state.modalForm.id ? "Edit Sumber Dana" : "Tambah Sumber Dana", budget_options: "Kelola Opsi Vendor", lainnya_menu: "Menu Lainnya" };
-      const title = div("font-['Cormorant_Garamond',serif] italic text-2xl text-pd p-[0_20px_14px] border-b border-pb mb-4 font-medium"); title.textContent = titles[state.modal] || "";
-      sheet.appendChild(title);
+      const titleRow = div("flex items-center justify-between gap-3 p-[0_20px_14px] md:p-[18px_20px_14px] border-b border-pb mb-4");
+      const title = div("font-['Cormorant_Garamond',serif] italic text-2xl text-pd font-medium"); title.textContent = titles[state.modal] || "";
+      const closeBtn = iconBtn("x", "Tutup modal", closeModal);
+      titleRow.append(title, closeBtn);
+      sheet.appendChild(titleRow);
 
       const body = div("px-5");
 
@@ -1666,7 +1560,9 @@
               renderOptionsList();
             }
           });
-          delBtn.className = "bg-transparent border-none cursor-pointer p-1";
+          delBtn.className = CLS_ICON_BTN;
+          delBtn.setAttribute("aria-label", `Hapus opsi vendor ${opt.name || "tanpa nama"}`);
+          delBtn.title = `Hapus opsi vendor ${opt.name || "tanpa nama"}`;
           delBtn.appendChild(icon("trash", { fontSize: "14px", color: "var(--pm)" }));
 
           top.append(labelWrap, delBtn);
@@ -1818,7 +1714,7 @@
       state.selectedBudgetIds = state.selectedBudgetIds || [];
       if (state.selectedBudgetIds.length === 0) return;
 
-      const bar = div("fixed bottom-[74px] md:bottom-[86px] left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl bg-white/95 backdrop-blur-md border border-pb rounded-2xl p-3 shadow-[0_8px_30px_rgba(107,45,69,0.12)] flex items-center justify-between gap-3 z-[90] animate-[slideUp_0.25s_ease-out]");
+      const bar = div("fixed bottom-[84px] md:bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl bg-white/95 backdrop-blur-md border border-pb rounded-2xl p-3 shadow-[0_8px_30px_rgba(107,45,69,0.12)] flex items-center justify-between gap-3 z-[90] animate-[slideUp_0.25s_ease-out]");
       bar.id = "bulk-action-bar";
 
       const left = div("text-xs font-bold text-pd");
@@ -1882,7 +1778,9 @@
       });
 
       const cancelBtn = h("button", {
-        class: "bg-transparent border-none cursor-pointer p-1 text-pm hover:text-pk transition-colors",
+        class: CLS_ICON_BTN,
+        "aria-label": "Batalkan pilihan item",
+        title: "Batalkan pilihan item",
         onclick: () => {
           state.selectedBudgetIds = [];
           renderContent();
@@ -1902,3 +1800,4 @@
 </body>
 
 </html>
+
