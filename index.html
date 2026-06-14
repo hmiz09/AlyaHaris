@@ -201,8 +201,23 @@
       if (!state.scriptUrl) { state.syncStatus = "local"; updateSyncBadge(); return; }
       state.syncStatus = "syncing"; updateSyncBadge();
       try {
+        // "no-cors" hides the response status/body entirely, so a POST that
+        // doesn't throw is NOT proof the data actually landed in the Sheet
+        // (e.g. a script error or a property-size-limit failure on the
+        // Apps Script side would be invisible to us). Re-fetch afterwards
+        // and compare to what we sent so the badge reflects reality.
         await fetchWithTimeout(state.scriptUrl, { method: "POST", body: json, mode: "no-cors" }, 15000);
-        state.syncStatus = "synced";
+        await new Promise(r => setTimeout(r, 300)); // small buffer before re-reading
+        try {
+          const cacheBust = state.scriptUrl + (state.scriptUrl.includes("?") ? "&" : "?") + "_cb=" + Date.now();
+          const verify = await fetchWithTimeout(cacheBust, { cache: "no-store" }, 8000);
+          const remoteText = await verify.text();
+          state.syncStatus = (remoteText === json) ? "synced" : "unverified";
+        } catch (e2) {
+          // The save request itself didn't throw, but we couldn't confirm
+          // the cloud actually has the latest data — be honest about that.
+          state.syncStatus = "unverified";
+        }
       } catch (e) {
         state.syncStatus = "local";
       }
@@ -246,14 +261,16 @@
       const el = document.getElementById("sync-badge");
       if (!el) return;
       const cfg = {
-        syncing: { icon: "ti-refresh", color: "#a05f00", bg: "#fff4e5", label: "Menyimpan...", spin: true },
-        synced: { icon: "ti-cloud-check", color: "#2e7d52", bg: "#e9f7ef", label: "Tersimpan" },
-        error: { icon: "ti-cloud-x", color: "#993556", bg: "var(--red-bg)", label: "Gagal simpan" },
-        local: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Tersimpan lokal" },
-        nourl: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal" },
+        syncing: { icon: "ti-refresh", color: "#a05f00", bg: "#fff4e5", label: "Menyimpan...", spin: true, title: "Sedang menyimpan ke cloud..." },
+        synced: { icon: "ti-cloud-check", color: "#2e7d52", bg: "#e9f7ef", label: "Tersimpan", title: "Tersimpan & terverifikasi di Google Sheet" },
+        unverified: { icon: "ti-alert-triangle", color: "#9c5c00", bg: "#fff3e3", label: "Belum terverifikasi", title: "Data terkirim, tapi belum bisa dipastikan tersimpan di cloud. Aman tersimpan di perangkat ini." },
+        error: { icon: "ti-cloud-x", color: "#993556", bg: "var(--red-bg)", label: "Gagal simpan", title: "Gagal memuat data dari server" },
+        local: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Tersimpan lokal", title: "Hanya tersimpan di perangkat ini, gagal terhubung ke cloud" },
+        nourl: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal", title: "Data tersimpan di perangkat ini saja (sinkron cloud belum diatur)" },
       };
       const c = cfg[state.syncStatus] || cfg.nourl;
       el.style.background = c.bg; el.style.color = c.color;
+      el.title = c.title || "";
       el.innerHTML = `<i class="ti ${c.icon || "ti-device-floppy"}${c.spin ? " spin" : ""}"></i> ${c.label}`;
     }
     function var_(v) { return getComputedStyle(document.documentElement).getPropertyValue(v); }
@@ -338,13 +355,21 @@
     function renderNav() {
       const nav = document.getElementById("nav");
       nav.innerHTML = "";
-      nav.className = "fixed bottom-0 left-0 right-0 md:bottom-auto md:left-auto md:right-6 md:top-5 md:w-[520px] bg-white/85 backdrop-blur-xl border-t md:border border-pb flex p-[6px_calc(6px+env(safe-area-inset-right))_calc(6px+env(safe-area-inset-bottom))_calc(6px+env(safe-area-inset-left))] md:p-[6px] md:rounded-2xl z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)] md:shadow-[0_8px_30px_rgba(107,45,69,0.08)] gap-1";
+      nav.className = "fixed bottom-0 left-0 right-0 md:bottom-auto md:left-auto md:right-6 md:top-5 md:w-[640px] bg-white/85 backdrop-blur-xl border-t md:border border-pb flex p-[6px_calc(6px+env(safe-area-inset-right))_calc(6px+env(safe-area-inset-bottom))_calc(6px+env(safe-area-inset-left))] md:p-[6px] md:rounded-2xl z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)] md:shadow-[0_8px_30px_rgba(107,45,69,0.08)] gap-1";
 
       const primaryItems = [
         ["dashboard", "layout-dashboard", "Home"],
         ["checklist", "checklist", "Checklist"],
         ["budget", "coins", "Budget"],
         ["tamu", "users", "Tamu"]
+      ];
+
+      // On mobile these live inside the "Lainnya" sheet; on desktop there's
+      // enough room to show them as direct tabs, saving an extra tap.
+      const moreItems = [
+        ["timeline", "timeline", "Timeline"],
+        ["vendor", "building-store", "Vendor"],
+        ["dana", "piggy-bank", "Dana"]
       ];
 
       const btnBaseClass = "flex-1 flex flex-col items-center justify-center gap-[3px] p-[8px_4px] border-none bg-transparent cursor-pointer rounded-[14px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] font-['DM_Sans',sans-serif] min-h-[48px] active:scale-[0.96] hover:bg-pk/4";
@@ -354,10 +379,10 @@
       const spanClass = "text-[9.5px] text-pm font-bold tracking-wide transition-colors duration-200";
       const activeSpanClass = "text-pk font-bold";
 
-      primaryItems.forEach(([p, icon_name, label]) => {
+      const makeNavBtn = ([p, icon_name, label], extraClass = "") => {
         const isActive = state.page === p;
         const btn = h("button", {
-          class: btnBaseClass + (isActive ? ` ${activeBtnClass}` : ""),
+          class: btnBaseClass + (isActive ? ` ${activeBtnClass}` : "") + (extraClass ? ` ${extraClass}` : ""),
           "aria-label": label,
           onclick: () => { state.page = p; state.selectedBudgetIds = []; renderContent(); renderNav(); renderHeader(); }
         });
@@ -366,13 +391,18 @@
         const sp = h("span", { class: isActive ? activeSpanClass : spanClass });
         sp.textContent = label;
         btn.append(ic, sp);
-        nav.appendChild(btn);
-      });
+        return btn;
+      };
 
-      // Render "Lainnya" (More) button
+      primaryItems.forEach(item => nav.appendChild(makeNavBtn(item)));
+
+      // Desktop-only direct tabs for Timeline/Vendor/Dana
+      moreItems.forEach(item => nav.appendChild(makeNavBtn(item, "hidden md:flex")));
+
+      // Mobile-only "Lainnya" (More) button → opens sheet with the items above
       const isLainnyaActive = ["timeline", "vendor", "dana"].includes(state.page);
       const lainnyaBtn = h("button", {
-        class: btnBaseClass + (isLainnyaActive ? ` ${activeBtnClass}` : ""),
+        class: btnBaseClass + (isLainnyaActive ? ` ${activeBtnClass}` : "") + " md:hidden",
         "aria-label": "Menu lainnya",
         onclick: () => { openModal("lainnya_menu"); }
       });
@@ -830,12 +860,17 @@
       const topRow = div("flex justify-between items-center mb-3");
       const ttl = div(CLS_CARD_TITLE); ttl.style.marginBottom = "0"; ttl.append(icon("tag"), document.createTextNode(state.activeCat));
       const addSubcatBtn = h("button", { class: CLS_BTN_GHOST, onclick: () => {
-        const name = prompt("Nama sub-kategori baru:");
-        if (name && name.trim()) {
-          const items = state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || [];
-          items.push({ id: uid(), name: "Item baru", subcat: name.trim(), estimasi: 0, harga: 0, dibayar: 0 });
-          scheduleSave(); renderContent();
-        }
+        openPromptModal({
+          title: "Sub-Kategori Baru",
+          label: "Nama Sub-Kategori",
+          placeholder: "Mis. Dekorasi, Katering...",
+          onConfirm: (name) => {
+            if (!name) return;
+            const items = state.data.budget[state.activeCat] = state.data.budget[state.activeCat] || [];
+            items.push({ id: uid(), name: "Item baru", subcat: name, estimasi: 0, harga: 0, dibayar: 0 });
+            scheduleSave(); renderContent();
+          }
+        });
       }});
       addSubcatBtn.className = CLS_BTN_GHOST + " p-[8px_12px] text-[11px] min-h-[44px]";
       addSubcatBtn.append(icon("folder-plus", { fontSize: "13px" }), document.createTextNode("Sub-Kategori"));
@@ -921,11 +956,18 @@
           if (sc !== "Umum") {
             const renameBtn = h("button", { onclick: e => {
               e.stopPropagation();
-              const newName = prompt("Ubah nama sub-kategori:", sc);
-              if (newName && newName.trim() && newName.trim() !== sc) {
-                allItems.forEach(i => { if ((i.subcat || "Umum") === sc) i.subcat = newName.trim(); });
-                scheduleSave(); renderContent();
-              }
+              openPromptModal({
+                title: "Ubah Nama Sub-Kategori",
+                label: "Nama Sub-Kategori",
+                value: sc,
+                placeholder: "Nama sub-kategori",
+                onConfirm: (newName) => {
+                  if (newName && newName !== sc) {
+                    allItems.forEach(i => { if ((i.subcat || "Umum") === sc) i.subcat = newName; });
+                    scheduleSave(); renderContent();
+                  }
+                }
+              });
             }});
             renameBtn.className = CLS_ICON_BTN;
             renameBtn.setAttribute("aria-label", `Ubah nama sub-kategori ${sc}`);
@@ -934,9 +976,16 @@
 
             const delScBtn = h("button", { onclick: e => {
               e.stopPropagation();
-              if (!confirm(`Hapus sub-kategori "${sc}"?\nSemua item di dalamnya akan dipindahkan ke "Umum".`)) return;
-              allItems.forEach(i => { if ((i.subcat || "Umum") === sc) delete i.subcat; });
-              scheduleSave(); renderContent();
+              openConfirmModal({
+                title: "Hapus Sub-Kategori",
+                message: `Hapus sub-kategori "${sc}"? Semua item di dalamnya akan dipindahkan ke "Umum".`,
+                confirmLabel: "Hapus",
+                danger: true,
+                onConfirm: () => {
+                  allItems.forEach(i => { if ((i.subcat || "Umum") === sc) delete i.subcat; });
+                  scheduleSave(); renderContent();
+                }
+              });
             }});
             delScBtn.className = CLS_ICON_BTN;
             delScBtn.setAttribute("aria-label", `Hapus sub-kategori ${sc}`);
@@ -1063,7 +1112,7 @@
               const val = item[f] ? Number(item[f]) : 0;
               const colorMap = { estimasi: "var(--pd)", harga: "#b87090", dibayar: "var(--green)" };
 
-              const display = h("span", { class: "text-sm font-medium text-right cursor-pointer p-[6px_8px] rounded-[8px] block transition-[background] duration-150 min-h-[32px] leading-[20px] xs:text-[11px] xs:p-[1px_4px] xs:min-h-[18px] xs:leading-[14px]" });
+              const display = h("span", { class: "text-sm font-medium text-right cursor-pointer p-[6px_8px] rounded-[8px] block transition-colors duration-150 min-h-[32px] leading-[20px] border-b border-dashed border-pb hover:bg-pl/60 hover:border-pk/50 xs:text-[12px] xs:p-[7px_8px] xs:min-h-[34px] xs:leading-[20px]" });
               display.style.color = colorMap[f];
               display.textContent = val ? Number(val).toLocaleString("id-ID") : "—";
               if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) {
@@ -1071,7 +1120,7 @@
               }
 
               display.addEventListener("click", () => {
-                const inp = h("input", { type: "text", inputmode: "numeric", class: "text-right text-sm p-[6px_8px] w-full xs:text-[11px] xs:p-[1px_4px] xs:h-[18px] border border-pb rounded", value: val ? Number(val).toLocaleString("id-ID") : "", placeholder: "0" });
+                const inp = h("input", { type: "text", inputmode: "numeric", class: "text-right text-sm p-[6px_8px] w-full xs:text-[12px] xs:p-[7px_8px] xs:min-h-[34px] border border-pb rounded", value: val ? Number(val).toLocaleString("id-ID") : "", placeholder: "0" });
                 wrap.replaceChild(inp, display);
                 bindThousandsInput(inp);
                 inp.focus();
@@ -1155,14 +1204,18 @@
       subcatSel.appendChild(newScOpt);
       subcatSel.addEventListener("change", () => {
         if (subcatSel.value === "__new__") {
-          const newName = prompt("Nama sub-kategori baru:");
-          if (newName && newName.trim()) {
-            const opt = document.createElement("option"); opt.value = newName.trim(); opt.textContent = newName.trim();
-            subcatSel.insertBefore(opt, newScOpt);
-            subcatSel.value = newName.trim();
-          } else {
-            subcatSel.value = currentSubcats[0] || "Umum";
-          }
+          subcatSel.value = currentSubcats[0] || "Umum";
+          openPromptModal({
+            title: "Sub-Kategori Baru",
+            label: "Nama Sub-Kategori",
+            placeholder: "Mis. Dekorasi, Katering...",
+            onConfirm: (newName) => {
+              if (!newName) return;
+              const opt = document.createElement("option"); opt.value = newName; opt.textContent = newName;
+              subcatSel.insertBefore(opt, newScOpt);
+              subcatSel.value = newName;
+            }
+          });
         }
       });
 
@@ -1306,6 +1359,19 @@
     function openModal(type, form = {}) { state.modal = type; state.modalForm = { ...form }; renderModal(); }
     function closeModal() { state.modal = null; state.modalForm = {}; const m = document.getElementById("modal-container"); if (m) m.remove(); }
 
+    // Styled replacements for native prompt()/confirm(), so dialogs match
+    // the app's theme instead of the browser's default system styling.
+    function openPromptModal({ title, label, placeholder = "", value = "", confirmLabel = "Simpan", onConfirm }) {
+      state.modal = "text_prompt";
+      state.modalForm = { title, label, placeholder, value, confirmLabel, onConfirm };
+      renderModal();
+    }
+    function openConfirmModal({ title, message, confirmLabel = "Ya, Lanjutkan", danger = false, onConfirm }) {
+      state.modal = "confirm_dialog";
+      state.modalForm = { title, message, confirmLabel, danger, onConfirm };
+      renderModal();
+    }
+
     function renderModal() {
       let existing = document.getElementById("modal-container");
       if (existing) existing.remove();
@@ -1316,7 +1382,7 @@
       const handle = div("w-9 h-1.5 bg-pb rounded-full my-3 mx-auto md:hidden");
       sheet.appendChild(handle);
 
-      const titles = { info: "Edit Info Pernikahan", vendor: state.modalForm.id ? "Edit Vendor" : "Tambah Vendor", guest: state.modalForm.id ? "Edit Tamu" : "Tambah Tamu", tl: "Edit Milestone", dana: state.modalForm.id ? "Edit Sumber Dana" : "Tambah Sumber Dana", budget_options: "Kelola Opsi Vendor", lainnya_menu: "Menu Lainnya" };
+      const titles = { info: "Edit Info Pernikahan", vendor: state.modalForm.id ? "Edit Vendor" : "Tambah Vendor", guest: state.modalForm.id ? "Edit Tamu" : "Tambah Tamu", tl: "Edit Milestone", dana: state.modalForm.id ? "Edit Sumber Dana" : "Tambah Sumber Dana", budget_options: "Kelola Opsi Vendor", lainnya_menu: "Menu Lainnya", text_prompt: state.modalForm.title || "Input", confirm_dialog: state.modalForm.title || "Konfirmasi" };
       const titleRow = div("flex items-center justify-between gap-3 p-[0_20px_14px] md:p-[18px_20px_14px] border-b border-pb mb-4");
       const title = div("font-['Cormorant_Garamond',serif] italic text-2xl text-pd font-medium"); title.textContent = titles[state.modal] || "";
       const closeBtn = iconBtn("x", "Tutup modal", closeModal);
@@ -1332,6 +1398,8 @@
       else if (state.modal === "dana") renderDanaModal(body);
       else if (state.modal === "budget_options") renderBudgetOptionsModal(body);
       else if (state.modal === "lainnya_menu") renderLainnyaMenuModal(body);
+      else if (state.modal === "text_prompt") renderTextPromptModal(body);
+      else if (state.modal === "confirm_dialog") renderConfirmDialogModal(body);
 
       sheet.appendChild(body);
       bg.appendChild(sheet);
@@ -1422,6 +1490,44 @@
           scheduleSave(); closeModal(); renderContent();
         })
       );
+    }
+
+    // Styled replacement for native prompt()
+    function renderTextPromptModal(body) {
+      const { label, placeholder, value, onConfirm, confirmLabel } = state.modalForm;
+      if (label) {
+        const lbl = div("text-[12px] text-pm mb-1.5 font-semibold"); lbl.textContent = label;
+        body.appendChild(lbl);
+      }
+      const inp = h("input", { type: "text", class: CLS_INP, placeholder: placeholder || "", value: value || "" });
+      inp.style.marginBottom = "14px";
+      body.appendChild(inp);
+      setTimeout(() => { inp.focus(); inp.select(); }, 60);
+
+      const submit = () => {
+        const v = inp.value.trim();
+        closeModal();
+        if (onConfirm) onConfirm(v);
+      };
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+      body.appendChild(btnRow(confirmLabel || "Simpan", submit));
+    }
+
+    // Styled replacement for native confirm()
+    function renderConfirmDialogModal(body) {
+      const { message, confirmLabel, danger, onConfirm } = state.modalForm;
+      const msg = div("text-[14px] text-pd leading-relaxed mb-5");
+      msg.textContent = message || "";
+      body.appendChild(msg);
+
+      const row = div("grid grid-cols-2 gap-2.5 mt-1.5");
+      const confirmBtn = h("button", { class: CLS_BTN_PRIMARY, onclick: () => { closeModal(); if (onConfirm) onConfirm(); } });
+      confirmBtn.style.justifyContent = "center"; confirmBtn.style.width = "100%";
+      if (danger) confirmBtn.style.background = "linear-gradient(to right, var(--red), #7a2240)";
+      confirmBtn.textContent = confirmLabel || "Ya, Lanjutkan";
+      const cancelBtn = h("button", { class: CLS_BTN_SECONDARY, onclick: closeModal }); cancelBtn.textContent = "Batal";
+      row.append(confirmBtn, cancelBtn);
+      body.appendChild(row);
     }
 
     // ── Export XLSX ────────────────────────────────────────────
@@ -1648,12 +1754,17 @@
         class: CLS_BTN_SECONDARY,
         style: "width:100%;margin-top:12px;background:#fce8ef;color:var(--pk);border:0.5px solid var(--pb);justify-content:center;display:flex;align-items:center;gap:6px;",
         onclick: () => {
-          if (confirm(`Hapus item "${item.name}" dari kategori ini?`)) {
-            state.data.budget[cat] = state.data.budget[cat].filter(i => i.id !== item.id);
-            scheduleSave();
-            closeModal();
-            renderContent();
-          }
+          openConfirmModal({
+            title: "Hapus Item",
+            message: `Hapus item "${item.name}" dari kategori ini?`,
+            confirmLabel: "Hapus",
+            danger: true,
+            onConfirm: () => {
+              state.data.budget[cat] = state.data.budget[cat].filter(i => i.id !== item.id);
+              scheduleSave();
+              renderContent();
+            }
+          });
         }
       });
       deleteItemBtn.append(icon("trash", { fontSize: "14px", color: "var(--pk)" }), document.createTextNode("Hapus Item"));
@@ -1661,17 +1772,39 @@
     }
 
     function renderLainnyaMenuModal(body) {
-      const grid = div("grid grid-cols-3 gap-4 pb-5");
+      const grid = div("grid grid-cols-2 gap-3 pb-5");
 
       const menuItems = [
         { page: "timeline", label: "Timeline", icon: "timeline", color: "var(--pk)", bg: "var(--pl)" },
         { page: "vendor", label: "Vendor", icon: "building-store", color: "#b87090", bg: "#fcedf2" },
-        { page: "dana", label: "Dana", icon: "piggy-bank", color: "var(--green)", bg: "var(--green-bg)" }
+        { page: "dana", label: "Dana", icon: "piggy-bank", color: "var(--green)", bg: "var(--green-bg)" },
+        { label: "Reset Data Contoh", icon: "refresh", color: "#993556", bg: "var(--red-bg)", action: "reset" }
       ];
 
       menuItems.forEach(item => {
         const box = h("button", {
           onclick: () => {
+            if (item.action === "reset") {
+              openConfirmModal({
+                title: "Reset Data Contoh",
+                message: "Ini akan menghapus data contoh: daftar vendor, milestone timeline, sumber dana, dan semua item budget, lalu mengembalikan checklist ke status belum selesai. Info pernikahan, daftar tamu, dan daftar dokumen KUA tidak ikut terhapus. Tindakan ini tidak bisa dibatalkan.",
+                confirmLabel: "Ya, Reset Sekarang",
+                danger: true,
+                onConfirm: () => {
+                  state.data.vendors = [];
+                  state.data.timeline = [];
+                  state.data.dana = [];
+                  state.data.budget = Object.fromEntries(CATS.map(c => [c, []]));
+                  state.data.checklist = state.data.checklist.map(c => ({ ...c, done: false }));
+                  state.activeCat = CATS[0];
+                  state.page = "dashboard";
+                  scheduleSave();
+                  renderContent();
+                  renderNav();
+                }
+              });
+              return;
+            }
             state.page = item.page;
             closeModal();
             renderContent();
@@ -1739,21 +1872,7 @@
       newOption.textContent = "+ Sub-Kategori Baru...";
       select.appendChild(newOption);
 
-      select.addEventListener("change", e => {
-        let targetSubcat = e.target.value;
-        if (!targetSubcat) return;
-
-        if (targetSubcat === "__NEW__") {
-          const name = prompt("Nama sub-kategori baru:");
-          if (name && name.trim()) {
-            targetSubcat = name.trim();
-          } else {
-            select.value = "";
-            return;
-          }
-        }
-
-        // Apply changes
+      const applyMoveTo = (targetSubcat) => {
         const allItems = state.data.budget[state.activeCat] || [];
         allItems.forEach(item => {
           if (state.selectedBudgetIds.includes(item.id)) {
@@ -1769,6 +1888,27 @@
         scheduleSave();
         renderContent();
         renderBulkActionBar();
+      };
+
+      select.addEventListener("change", e => {
+        const targetSubcat = e.target.value;
+        if (!targetSubcat) return;
+
+        if (targetSubcat === "__NEW__") {
+          select.value = "";
+          openPromptModal({
+            title: "Sub-Kategori Baru",
+            label: "Nama Sub-Kategori",
+            placeholder: "Mis. Dekorasi, Katering...",
+            onConfirm: (name) => {
+              if (!name) return;
+              applyMoveTo(name);
+            }
+          });
+          return;
+        }
+
+        applyMoveTo(targetSubcat);
       });
 
       const cancelBtn = h("button", {
