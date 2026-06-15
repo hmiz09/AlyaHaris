@@ -206,11 +206,11 @@
         // (e.g. a script error or a property-size-limit failure on the
         // Apps Script side would be invisible to us). Re-fetch afterwards
         // and compare to what we sent so the badge reflects reality.
-        await fetchWithTimeout(state.scriptUrl, { method: "POST", body: json, mode: "no-cors" }, 15000);
+        await fetchWithTimeout(state.scriptUrl, { method: "POST", body: json, mode: "no-cors" }, 30000);
         await new Promise(r => setTimeout(r, 300)); // small buffer before re-reading
         try {
           const cacheBust = state.scriptUrl + (state.scriptUrl.includes("?") ? "&" : "?") + "_cb=" + Date.now();
-          const verify = await fetchWithTimeout(cacheBust, { cache: "no-store" }, 8000);
+          const verify = await fetchWithTimeout(cacheBust, { cache: "no-store" }, 20000);
           const remoteText = await verify.text();
           state.syncStatus = (remoteText === json) ? "synced" : "unverified";
         } catch (e2) {
