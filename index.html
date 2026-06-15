@@ -1402,6 +1402,16 @@
       else if (state.modal === "confirm_dialog") renderConfirmDialogModal(body);
 
       sheet.appendChild(body);
+
+      // Pressing Enter inside a text field acts like tapping the primary
+      // "Simpan" button, so edits don't require reaching for the button.
+      sheet.addEventListener("keydown", e => {
+        if (e.key !== "Enter") return;
+        if (e.target.tagName !== "INPUT") return;
+        const saveBtn = body.querySelector('[data-modal-save="true"]');
+        if (saveBtn) { e.preventDefault(); saveBtn.click(); }
+      });
+
       bg.appendChild(sheet);
       document.body.appendChild(bg);
     }
@@ -1416,7 +1426,7 @@
     // Modal buttons row using Tailwind CSS
     function btnRow(saveLabel, onSave) {
       const row = div("grid grid-cols-2 gap-2.5 mt-1.5");
-      const s = h("button", { class: CLS_BTN_PRIMARY, onclick: onSave }); s.style.justifyContent = "center"; s.style.width = "100%"; s.textContent = saveLabel;
+      const s = h("button", { class: CLS_BTN_PRIMARY, "data-modal-save": "true", onclick: onSave }); s.style.justifyContent = "center"; s.style.width = "100%"; s.textContent = saveLabel;
       const c = h("button", { class: CLS_BTN_SECONDARY, onclick: closeModal }); c.textContent = "Batal";
       row.append(s, c); return row;
     }
@@ -1509,7 +1519,7 @@
         closeModal();
         if (onConfirm) onConfirm(v);
       };
-      inp.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.stopPropagation(); submit(); } });
       body.appendChild(btnRow(confirmLabel || "Simpan", submit));
     }
 
