@@ -369,7 +369,7 @@
       const moreItems = [
         ["timeline", "timeline", "Timeline"],
         ["vendor", "building-store", "Vendor"],
-        ["dana", "piggy-bank", "Dana"]
+        ["dana", "pig-money", "Dana"]
       ];
 
       const btnBaseClass = "flex-1 flex flex-col items-center justify-center gap-[3px] p-[8px_4px] border-none bg-transparent cursor-pointer rounded-[14px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] font-['DM_Sans',sans-serif] min-h-[48px] active:scale-[0.96] hover:bg-pk/4";
@@ -441,7 +441,7 @@
       // 1. Ringkasan Keuangan card
       const rkCard = div(CLS_CARD);
       const rkTtl = div(CLS_CARD_TITLE);
-      rkTtl.append(icon("piggy-bank"), document.createTextNode("Ringkasan Keuangan"));
+      rkTtl.append(icon("pig-money"), document.createTextNode("Ringkasan Keuangan"));
       rkCard.appendChild(rkTtl);
 
       const fGrid = div("grid grid-cols-2 gap-2.5 mb-3");
@@ -1258,7 +1258,7 @@
       // Big number: total dana
       const bigRow = div("text-center mb-3.5 pb-3.5 border-b border-pb");
       const bigLabel = div("text-[11px] text-pm mb-1 flex items-center justify-center gap-1.25");
-      bigLabel.innerHTML = `<i class="ti ti-piggy-bank" style="font-size:14px"></i> Total Dana Tersedia`;
+      bigLabel.innerHTML = `<i class="ti ti-pig-money" style="font-size:14px"></i> Total Dana Tersedia`;
       const bigNum = div("font-['Cormorant_Garamond',serif] text-[36px] text-green font-medium leading-none"); bigNum.textContent = totalD > 0 ? fmtRp(totalD) : "Rp 0";
       bigRow.append(bigLabel, bigNum);
       sumCard.appendChild(bigRow);
@@ -1303,7 +1303,7 @@
       const listCard = div(CLS_CARD);
       const topRow = div("flex justify-between items-center mb-2.5");
       const ttl = div(CLS_CARD_TITLE); ttl.style.marginBottom = "0";
-      ttl.innerHTML = `<i class="ti ti-piggy-bank"></i> Sumber Dana (${dana.length})`;
+      ttl.innerHTML = `<i class="ti ti-pig-money"></i> Sumber Dana (${dana.length})`;
       const addBtn = h("button", { class: CLS_BTN_PRIMARY, onclick: () => openModal("dana", { id: "", nama: "", jumlah: "", keterangan: "" }) });
       addBtn.append(icon("plus"), document.createTextNode("Tambah"));
       topRow.append(ttl, addBtn);
@@ -1311,7 +1311,7 @@
 
       if (!dana.length) {
         const empty = div("text-center p-8 text-pm text-[13px]");
-        empty.innerHTML = `<i class="ti ti-piggy-bank" style="font-size:32px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada dana. Tambahkan sumber uang kamu.`;
+        empty.innerHTML = `<i class="ti ti-pig-money" style="font-size:32px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada dana. Tambahkan sumber uang kamu.`;
         listCard.appendChild(empty);
       } else {
         // Header
@@ -1403,13 +1403,29 @@
 
       sheet.appendChild(body);
 
-      // Pressing Enter inside a text field acts like tapping the primary
-      // "Simpan" button, so edits don't require reaching for the button.
+      // Pressing Enter inside a text field advances to the next field
+      // (like Tab), and only triggers Save once it reaches the last field.
+      // (Saving immediately from any field risked submitting a form with
+      // later fields still empty/unedited — e.g. amount left at 0.)
       sheet.addEventListener("keydown", e => {
         if (e.key !== "Enter") return;
-        if (e.target.tagName !== "INPUT") return;
-        const saveBtn = body.querySelector('[data-modal-save="true"]');
-        if (saveBtn) { e.preventDefault(); saveBtn.click(); }
+        const tag = e.target.tagName;
+        if (tag !== "INPUT" && tag !== "SELECT") return;
+        if (e.target.type === "checkbox" || e.target.type === "radio") return;
+        e.preventDefault();
+        const focusable = Array.from(body.querySelectorAll("input, select")).filter(el => {
+          if (el.disabled || el.type === "hidden" || el.type === "checkbox" || el.type === "radio") return false;
+          return el.offsetParent !== null; // skip hidden/collapsed fields
+        });
+        const idx = focusable.indexOf(e.target);
+        if (idx > -1 && idx < focusable.length - 1) {
+          const next = focusable[idx + 1];
+          next.focus();
+          if (next.select) try { next.select(); } catch (err) { }
+        } else {
+          const saveBtn = body.querySelector('[data-modal-save="true"]');
+          if (saveBtn) saveBtn.click();
+        }
       });
 
       bg.appendChild(sheet);
@@ -1787,7 +1803,7 @@
       const menuItems = [
         { page: "timeline", label: "Timeline", icon: "timeline", color: "var(--pk)", bg: "var(--pl)" },
         { page: "vendor", label: "Vendor", icon: "building-store", color: "#b87090", bg: "#fcedf2" },
-        { page: "dana", label: "Dana", icon: "piggy-bank", color: "var(--green)", bg: "var(--green-bg)" },
+        { page: "dana", label: "Dana", icon: "pig-money", color: "var(--green)", bg: "var(--green-bg)" },
         { label: "Reset Data Contoh", icon: "refresh", color: "#993556", bg: "var(--red-bg)", action: "reset" }
       ];
 
