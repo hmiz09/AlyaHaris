@@ -369,7 +369,7 @@
       const moreItems = [
         ["timeline", "timeline", "Timeline"],
         ["vendor", "building-store", "Vendor"],
-        ["dana", "pig-money", "Dana"]
+        ["dana", "wallet", "Dana"]
       ];
 
       const btnBaseClass = "flex-1 flex flex-col items-center justify-center gap-[3px] p-[8px_4px] border-none bg-transparent cursor-pointer rounded-[14px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] font-['DM_Sans',sans-serif] min-h-[48px] active:scale-[0.96] hover:bg-pk/4";
@@ -441,7 +441,7 @@
       // 1. Ringkasan Keuangan card
       const rkCard = div(CLS_CARD);
       const rkTtl = div(CLS_CARD_TITLE);
-      rkTtl.append(icon("pig-money"), document.createTextNode("Ringkasan Keuangan"));
+      rkTtl.append(icon("wallet"), document.createTextNode("Ringkasan Keuangan"));
       rkCard.appendChild(rkTtl);
 
       const fGrid = div("grid grid-cols-2 gap-2.5 mb-3");
@@ -1258,7 +1258,7 @@
       // Big number: total dana
       const bigRow = div("text-center mb-3.5 pb-3.5 border-b border-pb");
       const bigLabel = div("text-[13px] text-pm mb-1 flex items-center justify-center gap-1.25 font-medium");
-      bigLabel.innerHTML = `<i class="ti ti-pig-money" style="font-size:15px"></i> Total Dana Tersedia`;
+      bigLabel.innerHTML = `<i class="ti ti-wallet" style="font-size:15px"></i> Total Dana Tersedia`;
       const bigNum = div("font-['Cormorant_Garamond',serif] text-[36px] text-green font-medium leading-none"); bigNum.textContent = totalD > 0 ? fmtRp(totalD) : "Rp 0";
       bigRow.append(bigLabel, bigNum);
       sumCard.appendChild(bigRow);
@@ -1271,7 +1271,7 @@
       ].forEach(([l, v, color]) => {
         const box = div("bg-pl rounded-[12px] p-[10px_8px] text-center");
         const lbl = div("text-[12.5px] text-pm uppercase tracking-wider mb-1 font-semibold"); lbl.textContent = l;
-        const val = div("font-['Cormorant_Garamond',serif] leading-[1.2] font-medium"); val.style.color = color; val.style.fontSize = v > 9999999 ? "15px" : "18px"; val.textContent = v > 0 ? fmtRp(v) : "–";
+        const val = div("font-['Cormorant_Garamond',serif] leading-[1.2] font-bold"); val.style.color = color; val.style.fontSize = v > 9999999 ? "15px" : "18px"; val.textContent = v > 0 ? fmtRp(v) : "–";
         box.append(lbl, val); g4.appendChild(box);
       });
       sumCard.appendChild(g4);
@@ -1284,7 +1284,7 @@
         pill.className = `p-[10px_12px] rounded-[10px]`;
         pill.style.background = isPlus ? "var(--green-bg)" : "var(--red-bg)";
         const pl = div("text-[12.5px] uppercase tracking-widest mb-1 font-semibold"); pl.style.color = isPlus ? "var(--green)" : "var(--red)"; pl.textContent = label;
-        const pv = div("font-['Cormorant_Garamond',serif] text-[18px] font-medium"); pv.style.color = isPlus ? "var(--green)" : "var(--red)";
+        const pv = div("font-['Cormorant_Garamond',serif] text-[18px] font-bold"); pv.style.color = isPlus ? "var(--green)" : "var(--red)";
         pv.textContent = (isPlus ? "+" : "-") + fmtRp(Math.abs(val));
         pill.append(pl, pv); pillRow.appendChild(pill);
       });
@@ -1303,7 +1303,7 @@
       const listCard = div(CLS_CARD);
       const topRow = div("flex justify-between items-center mb-2.5");
       const ttl = div(CLS_CARD_TITLE); ttl.style.marginBottom = "0";
-      ttl.innerHTML = `<i class="ti ti-pig-money"></i> Sumber Dana (${dana.length})`;
+      ttl.innerHTML = `<i class="ti ti-wallet"></i> Sumber Dana (${dana.length})`;
       const addBtn = h("button", { class: CLS_BTN_PRIMARY, onclick: () => openModal("dana", { id: "", nama: "", jumlah: "", keterangan: "" }) });
       addBtn.append(icon("plus"), document.createTextNode("Tambah"));
       topRow.append(ttl, addBtn);
@@ -1311,7 +1311,7 @@
 
       if (!dana.length) {
         const empty = div("text-center p-8 text-pm text-[14px]");
-        empty.innerHTML = `<i class="ti ti-pig-money" style="font-size:32px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada dana. Tambahkan sumber uang kamu.`;
+        empty.innerHTML = `<i class="ti ti-wallet" style="font-size:32px;display:block;margin-bottom:8px;color:var(--pb)"></i>Belum ada dana. Tambahkan sumber uang kamu.`;
         listCard.appendChild(empty);
       } else {
         // Header
@@ -1803,7 +1803,7 @@
       const menuItems = [
         { page: "timeline", label: "Timeline", icon: "timeline", color: "var(--pk)", bg: "var(--pl)" },
         { page: "vendor", label: "Vendor", icon: "building-store", color: "#b87090", bg: "#fcedf2" },
-        { page: "dana", label: "Dana", icon: "pig-money", color: "var(--green)", bg: "var(--green-bg)" },
+        { page: "dana", label: "Dana", icon: "wallet", color: "var(--green)", bg: "var(--green-bg)" },
         { label: "Reset Data Contoh", icon: "refresh", color: "#993556", bg: "var(--red-bg)", action: "reset" }
       ];
 
