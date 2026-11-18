@@ -3,25 +3,24 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="theme-color" content="#fdf6f8" />
+  <meta name="theme-color" content="#160f17" />
   <title>Haris & Alya 💍</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="assets/tailwind.css" />
   
 </head>
 
 <body>
-  <div id="app" class="flex flex-col h-screen h-[100dvh]">
-    <div id="header" class="shrink-0 bg-[rgba(255,255,255,0.88)] backdrop-blur-md border-b border-[rgba(240,205,216,0.7)] p-[12px_16px_14px] relative z-40"></div>
-    <div id="content" class="flex-1 overflow-y-auto p-[16px_16px_90px]"></div>
-    <nav id="nav" class="fixed bottom-0 left-0 right-0 bg-[rgba(255,255,255,0.88)] backdrop-blur-md border-t border-[rgba(240,205,216,0.7)] flex p-[8px_6px_calc(8px+env(safe-area-inset-bottom))] z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)]"></nav>
+  <div id="app">
+    <header id="header"></header>
+    <nav id="nav" aria-label="Navigasi utama"></nav>
+    <main id="content"></main>
   </div>
 
   <script src="config.js"></script>
@@ -30,8 +29,8 @@
     const uid = () => Math.random().toString(36).slice(2, 8);
     const fmtRp = n => n ? ("Rp " + Math.round(n).toLocaleString("id-ID")) : "–";
     const CATS = ["Seserahan", "Lamaran", "Pre-Wedding", "Transport", "Resepsi", "Akad"];
-    const VSTATUS = { confirmed: { bg: "#e9f7ef", color: "#2e7d52", label: "Confirmed" }, pending: { bg: "#fff4e5", color: "#a05f00", label: "Pending" }, searching: { bg: "#fce8ef", color: "#993556", label: "Searching" } };
-    const RSVP_MAP = { confirmed: { bg: "#e9f7ef", color: "#2e7d52", label: "Hadir" }, declined: { bg: "#fce8ef", color: "#993556", label: "Tidak Hadir" }, pending: { bg: "#fff4e5", color: "#a05f00", label: "Belum" } };
+    const VSTATUS = { confirmed: { bg: "var(--green-bg)", color: "var(--green)", label: "Confirmed" }, pending: { bg: "var(--orange-bg)", color: "var(--orange)", label: "Pending" }, searching: { bg: "var(--red-bg)", color: "var(--red)", label: "Searching" } };
+    const RSVP_MAP = { confirmed: { bg: "var(--green-bg)", color: "var(--green)", label: "Hadir" }, declined: { bg: "var(--red-bg)", color: "var(--red)", label: "Tidak Hadir" }, pending: { bg: "var(--orange-bg)", color: "var(--orange)", label: "Belum" } };
     const SIDES = ["Mempelai Pria", "Mempelai Wanita", "Keluarga Bersama"];
 
     let state = {
@@ -87,13 +86,13 @@
     let loaded = false;
 
     // Tailwind common class constants to minimize stylesheet blocks and duplication
-    const CLS_CARD = "bg-white/70 backdrop-blur-xl border border-pb/60 rounded-[20px] p-5 mb-4 shadow-[0_8px_30px_rgba(107,45,69,0.03)] hover:shadow-[0_12px_40px_rgba(107,45,69,0.06)] hover:-translate-y-[1px] transition-all duration-300 ease-in-out";
+    const CLS_CARD = "planner-card bg-surface border border-pb rounded-[20px] p-5 mb-4";
     const CLS_CARD_TITLE = "text-[13px] md:text-[14px] tracking-[0.15em] uppercase text-pd/85 mb-4 flex items-center gap-2 font-bold";
-    const CLS_INP = "border border-pb rounded-xl p-[12px_16px] text-[15px] bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
-    const CLS_INP_SM = "border border-pb rounded-xl p-[8px_12px] text-sm bg-white/85 text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-white focus:ring-4 focus:ring-pk/10 focus:-translate-y-[1px] appearance-none";
-    const CLS_BTN_PRIMARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-gradient-to-r from-pk to-pd text-white flex items-center gap-2 font-['DM_Sans',sans-serif] min-h-[44px] justify-center shadow-[0_4px_15px_rgba(220,75,118,0.2)] hover:shadow-[0_6px_20px_rgba(220,75,118,0.3)] hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
+    const CLS_INP = "border border-pb rounded-xl p-[12px_16px] text-[15px] bg-surface text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-surface focus:ring-4 focus:ring-pk/10";
+    const CLS_INP_SM = "border border-pb rounded-xl p-[8px_12px] text-sm bg-surface text-pd w-full font-['DM_Sans',sans-serif] transition-all duration-200 focus:outline-none focus:border-pk focus:bg-surface focus:ring-4 focus:ring-pk/10";
+    const CLS_BTN_PRIMARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-gradient-to-r from-pk to-accent-end text-on-accent flex items-center gap-2 font-['DM_Sans',sans-serif] min-h-[44px] justify-center hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
     const CLS_BTN_SECONDARY = "border-none rounded-xl p-[12px_24px] text-sm font-semibold cursor-pointer bg-pk/8 text-pk font-['DM_Sans',sans-serif] min-h-[44px] justify-center hover:bg-pk/12 hover:-translate-y-[1px] active:scale-[0.95] transition-all duration-250 ease-in-out appearance-none";
-    const CLS_BTN_GHOST = "border border-pb rounded-xl p-[9px_14px] text-[13px] font-semibold cursor-pointer bg-white text-pm flex items-center gap-1.5 font-['DM_Sans',sans-serif] min-h-[44px] hover:border-pm hover:bg-pl/50 hover:text-pk active:scale-[0.95] transition-all duration-200 ease-in-out appearance-none";
+    const CLS_BTN_GHOST = "border border-pb rounded-xl p-[9px_14px] text-[13px] font-semibold cursor-pointer bg-surface text-pm flex items-center gap-1.5 font-['DM_Sans',sans-serif] min-h-[44px] hover:border-pm hover:bg-pl/50 hover:text-pk active:scale-[0.95] transition-all duration-200 ease-in-out appearance-none";
     const CLS_ICON_BTN = "inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl border-none bg-transparent cursor-pointer text-pm hover:bg-pl/70 hover:text-pk active:scale-[0.95] transition-all duration-200";
 
     // ── Computed ───────────────────────────────────────────────
@@ -261,10 +260,10 @@
       const el = document.getElementById("sync-badge");
       if (!el) return;
       const cfg = {
-        syncing: { icon: "ti-refresh", color: "#a05f00", bg: "#fff4e5", label: "Menyimpan...", spin: true, title: "Sedang menyimpan ke cloud..." },
-        synced: { icon: "ti-cloud-check", color: "#2e7d52", bg: "#e9f7ef", label: "Tersimpan", title: "Tersimpan & terverifikasi di Google Sheet" },
-        unverified: { icon: "ti-alert-triangle", color: "#9c5c00", bg: "#fff3e3", label: "Belum terverifikasi", title: "Data terkirim, tapi belum bisa dipastikan tersimpan di cloud. Aman tersimpan di perangkat ini." },
-        error: { icon: "ti-cloud-x", color: "#993556", bg: "var(--red-bg)", label: "Gagal simpan", title: "Gagal memuat data dari server" },
+        syncing: { icon: "ti-refresh", color: "var(--orange)", bg: "var(--orange-bg)", label: "Menyimpan...", spin: true, title: "Sedang menyimpan ke cloud..." },
+        synced: { icon: "ti-cloud-check", color: "var(--green)", bg: "var(--green-bg)", label: "Tersimpan", title: "Tersimpan & terverifikasi di Google Sheet" },
+        unverified: { icon: "ti-alert-triangle", color: "var(--orange)", bg: "var(--orange-bg)", label: "Belum terverifikasi", title: "Data terkirim, tapi belum bisa dipastikan tersimpan di cloud. Aman tersimpan di perangkat ini." },
+        error: { icon: "ti-cloud-x", color: "var(--red)", bg: "var(--red-bg)", label: "Gagal simpan", title: "Gagal memuat data dari server" },
         local: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Tersimpan lokal", title: "Hanya tersimpan di perangkat ini, gagal terhubung ke cloud" },
         nourl: { icon: "ti-device-floppy", color: "var(--pm)", bg: "var(--pl)", label: "Lokal", title: "Data tersimpan di perangkat ini saja (sinkron cloud belum diatur)" },
       };
@@ -293,7 +292,7 @@
       const isDashboard = state.page === "dashboard";
 
       if (isDashboard) {
-        hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[12px_16px_14px] md:p-[16px_16px_18px] relative z-40 transition-all duration-300";
+        hdr.className = "wedding-hero";
         const inner = div("max-w-4xl mx-auto w-full flex flex-col gap-2 md:gap-2.5");
 
         // Top row: sync badge (centered)
@@ -303,7 +302,7 @@
         inner.appendChild(topRow);
 
         // Title
-        const title = div("font-['Cormorant_Garamond',serif] italic text-[28px] md:text-[30px] text-pd leading-none text-center font-bold");
+        const title = h("h1", { class: "wedding-title" });
         title.textContent = "Haris & Alya";
         inner.appendChild(title);
 
@@ -317,15 +316,15 @@
         inner.appendChild(dateRow);
 
         // Location
-        const loc = div("flex items-center justify-center gap-1 text-[11px] text-pm font-semibold");
+        const loc = div("flex items-center justify-center gap-1 text-center text-xs text-pm font-semibold");
         loc.appendChild(icon("map-pin", { fontSize: "12px" }));
         loc.appendChild(document.createTextNode(state.data.info.location));
         inner.appendChild(loc);
 
         // Countdown
         const cdRow = div("flex justify-center gap-2.5 md:gap-3 mt-0.5 md:mt-1");
-        [["Days", cd.days], ["Weeks", cd.weeks], ["Months", cd.months]].forEach(([l, v]) => {
-          const box = div("text-center bg-white/95 border border-pb/70 rounded-2xl p-[8px_14px] md:p-[10px_18px] min-w-[70px] md:min-w-[76px] shadow-[0_4px_15px_rgba(107,45,69,0.02)] hover:scale-[1.04] transition-transform duration-200");
+        [["Hari", cd.days], ["Minggu", cd.weeks], ["Bulan", cd.months]].forEach(([l, v]) => {
+          const box = div("text-center bg-surface border border-pb/70 rounded-2xl p-[8px_14px] md:p-[10px_18px] min-w-[70px] md:min-w-[90px]");
           const num = div("font-['Cormorant_Garamond',serif] text-[25px] md:text-[28px] font-bold text-pk leading-none"); num.textContent = v;
           const lbl = div("text-[9px] text-pm tracking-wider uppercase mt-1 font-bold"); lbl.textContent = l;
           box.append(num, lbl);
@@ -335,12 +334,10 @@
         hdr.appendChild(inner);
       } else {
         // Compact header for other pages to save massive vertical space
-        hdr.className = "shrink-0 bg-white/85 backdrop-blur-xl border-b border-pb p-[10px_16px] relative z-40 transition-all duration-300";
+        hdr.className = "page-header";
         const inner = div("max-w-4xl mx-auto w-full flex items-center justify-between gap-4");
 
-        const title = div("font-['Cormorant_Garamond',serif] italic text-[20px] text-pd font-bold cursor-pointer");
-        title.textContent = "Haris & Alya";
-        title.addEventListener("click", () => { state.page = "dashboard"; renderContent(); renderNav(); renderHeader(); });
+        const title = h("button", { class: "min-h-[44px] font-['Cormorant_Garamond',serif] italic text-2xl text-pd font-bold", onclick: () => navigate("dashboard") }, ["Haris & Alya"]);
 
         const badgeCol = div("flex items-center");
         badgeCol.appendChild(h("span", { id: "sync-badge", class: "inline-flex items-center gap-[5px] p-[4px_12px] rounded-full text-[10px] font-bold" }));
@@ -352,74 +349,42 @@
       updateSyncBadge();
     }
 
+    function navigate(page) {
+      state.page = page;
+      state.selectedBudgetIds = [];
+      render();
+      window.scrollTo(0, 0);
+    }
+
     function renderNav() {
       const nav = document.getElementById("nav");
-      nav.innerHTML = "";
-      nav.className = "group fixed bottom-0 left-0 right-0 md:bottom-auto md:left-auto md:right-6 md:top-5 md:w-[400px] md:hover:w-[640px] md:transition-[width] md:duration-300 md:ease-out bg-white/85 backdrop-blur-xl border-t md:border border-pb flex p-[6px_calc(6px+env(safe-area-inset-right))_calc(6px+env(safe-area-inset-bottom))_calc(6px+env(safe-area-inset-left))] md:p-[6px] md:rounded-2xl z-[100] shadow-[0_-4px_30px_rgba(107,45,69,0.05)] md:shadow-[0_8px_30px_rgba(107,45,69,0.08)] gap-1";
-
-      const primaryItems = [
+      nav.replaceChildren();
+      const items = [
         ["dashboard", "layout-dashboard", "Home"],
         ["checklist", "checklist", "Checklist"],
         ["budget", "coins", "Budget"],
-        ["tamu", "users", "Tamu"]
+        ["tamu", "users", "Tamu"],
+        ["timeline", "timeline", "Timeline", "desktop-tab"],
+        ["vendor", "building-store", "Vendor", "desktop-tab"],
+        ["dana", "wallet", "Dana", "desktop-tab"],
+        ["more", "dots", "Lainnya"]
       ];
-
-      // On mobile these live inside the "Lainnya" sheet; on desktop there's
-      // enough room to show them as direct tabs, saving an extra tap.
-      const moreItems = [
-        ["timeline", "timeline", "Timeline"],
-        ["vendor", "building-store", "Vendor"],
-        ["dana", "wallet", "Dana"]
-      ];
-
-      const btnBaseClass = "flex-1 flex flex-col items-center justify-center gap-[3px] p-[8px_4px] border-none bg-transparent cursor-pointer rounded-[14px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] font-['DM_Sans',sans-serif] min-h-[48px] active:scale-[0.96] hover:bg-pk/4";
-      const activeBtnClass = "bg-[rgba(212,83,126,0.08)]";
-      const iconClass = "text-[19px] text-pm transition-colors duration-200";
-      const activeIconClass = "text-pk font-bold";
-      const spanClass = "text-[9.5px] text-pm font-bold tracking-wide transition-colors duration-200";
-      const activeSpanClass = "text-pk font-bold";
-
-      const makeNavBtn = ([p, icon_name, label], extraClass = "") => {
-        const isActive = state.page === p;
+      items.forEach(([page, glyph, label, extraClass = ""]) => {
         const btn = h("button", {
-          class: btnBaseClass + (isActive ? ` ${activeBtnClass}` : "") + (extraClass ? ` ${extraClass}` : ""),
-          "aria-label": label,
-          onclick: () => { state.page = p; state.selectedBudgetIds = []; renderContent(); renderNav(); renderHeader(); }
-        });
-        const ic = icon(icon_name, { fontSize: "19px" });
-        ic.className = `ti ti-${icon_name} ` + (isActive ? activeIconClass : iconClass);
-        const sp = h("span", { class: isActive ? activeSpanClass : spanClass });
-        sp.textContent = label;
-        btn.append(ic, sp);
-        return btn;
-      };
-
-      primaryItems.forEach(item => nav.appendChild(makeNavBtn(item)));
-
-      // Desktop-only direct tabs for Timeline/Vendor/Dana
-      moreItems.forEach(item => nav.appendChild(makeNavBtn(item, "hidden md:group-hover:flex")));
-
-      // Mobile-only "Lainnya" (More) button → opens sheet with the items above
-      const isLainnyaActive = ["timeline", "vendor", "dana"].includes(state.page);
-      const lainnyaBtn = h("button", {
-        class: btnBaseClass + (isLainnyaActive ? ` ${activeBtnClass}` : "") + " md:hidden",
-        "aria-label": "Menu lainnya",
-        onclick: () => { openModal("lainnya_menu"); }
+          class: `nav-tab ${extraClass}`,
+          "aria-label": page === "more" ? "Menu lainnya" : label,
+          onclick: () => page === "more" ? openModal("lainnya_menu") : navigate(page)
+        }, [icon(glyph), h("span", {}, [label])]);
+        if (page === "more") btn.setAttribute("aria-haspopup", "dialog");
+        if (state.page === page) btn.setAttribute("aria-current", "page");
+        if (page === "more" && ["timeline", "vendor", "dana"].includes(state.page)) btn.classList.add("more-current");
+        nav.appendChild(btn);
       });
-      const ic = icon("dots", { fontSize: "19px" });
-      ic.className = "ti ti-dots " + (isLainnyaActive ? activeIconClass : iconClass);
-      const sp = h("span", { class: isLainnyaActive ? activeSpanClass : spanClass });
-      sp.textContent = "Lainnya";
-      lainnyaBtn.append(ic, sp);
-      nav.appendChild(lainnyaBtn);
     }
 
     function renderContent() {
       const c = document.getElementById("content");
-      c.classList.remove("fade-in-content");
-      void c.offsetWidth;
-      c.className = "flex-1 overflow-y-auto p-[16px_16px_96px] md:p-[22px_24px_40px] w-full max-w-4xl mx-auto animate-[fadeInContent_0.35s_cubic-bezier(0.16,1,0.3,1)_forwards]";
-      c.innerHTML = "";
+      c.replaceChildren();
       const fns = { dashboard: renderDashboard, checklist: renderChecklist, timeline: renderTimeline, tamu: renderTamu, vendor: renderVendor, budget: renderBudget, dana: renderDana };
       (fns[state.page] || renderDashboard)(c);
     }
@@ -558,10 +523,10 @@
       tlc.appendChild(bigDay);
 
       // Create a gorgeous 2-column desktop grid, collapsing to single vertical column on mobile
-      const desktopGrid = div("grid grid-cols-1 md:grid-cols-2 gap-6");
-      const leftCol = div("flex flex-col gap-6");
+      const desktopGrid = div("grid grid-cols-1 lg:grid-cols-2 gap-4");
+      const leftCol = div("min-w-0");
       leftCol.append(rkCard, vc);
-      const rightCol = div("flex flex-col gap-6");
+      const rightCol = div("min-w-0");
       rightCol.append(bc, tlc);
       desktopGrid.append(leftCol, rightCol);
 
@@ -653,16 +618,16 @@
 
     function makeCheckRow(item, onToggle, onEdit, onDelete) {
       const row = div("flex items-center gap-3 p-[12px_8px] rounded-[10px] transition-colors duration-150 min-h-[48px] active:bg-pl");
-      const circle = div("w-[22px] h-[22px] rounded-full border-[1.5px] border-pb bg-white flex items-center justify-center shrink-0 transition-all duration-200" + (item.done ? " bg-pk border-pk" : ""));
+      const circle = div("w-[22px] h-[22px] rounded-full border-[1.5px] border-pb bg-surface flex items-center justify-center shrink-0 transition-all duration-200" + (item.done ? " bg-pk border-pk" : ""));
       if (item.done) circle.appendChild(icon("check"));
       circle.addEventListener("click", onToggle);
       const txt = div("flex-1 text-sm text-pd leading-[1.4]" + (item.done ? " text-pm line-through" : "")); txt.textContent = item.text; txt.style.flex = "1";
       txt.addEventListener("click", onToggle);
       const actions = div("flex gap-1 shrink-0");
-      const editBtn = iconBtn("pencil", `Edit ${item.text}`, onEdit, "var(--pb)");
+      const editBtn = iconBtn("pencil", `Edit ${item.text}`, onEdit, "var(--pm)");
       actions.appendChild(editBtn);
       if (onDelete) {
-        const delBtn = iconBtn("trash", `Hapus ${item.text}`, onDelete, "var(--pb)");
+        const delBtn = iconBtn("trash", `Hapus ${item.text}`, onDelete, "var(--pm)");
         actions.appendChild(delBtn);
       }
       row.append(circle, txt, actions);
@@ -679,7 +644,7 @@
       d.timeline.forEach((t, i) => {
         const row = div("flex gap-2.5 py-2 border-b border-pb items-start");
         const left = div("flex flex-col items-center w-3");
-        const dot = div("w-3 h-3 rounded-full bg-white border-2 border-pb shrink-0 mt-1" + (i === 0 ? " bg-pk border-pk" : ""));
+        const dot = div("w-3 h-3 rounded-full bg-surface border-2 border-pb shrink-0 mt-1" + (i === 0 ? " bg-pk border-pk" : ""));
         left.appendChild(dot);
         if (i < d.timeline.length - 1) { const ln = div("w-[2px] bg-pb flex-1 min-h-[24px] mt-1"); left.appendChild(ln); }
         const right = div("flex-1");
@@ -688,7 +653,7 @@
         right.append(mo, tk);
         const acts = div("flex gap-1.5 ml-auto pl-2 shrink-0");
         const editBtn = iconBtn("pencil", `Edit milestone ${t.task}`, () => openModal("tl", { ...t }));
-        const delBtn = iconBtn("trash", `Hapus milestone ${t.task}`, () => { state.data.timeline = state.data.timeline.filter(x => x.id !== t.id); scheduleSave(); renderContent(); }, "var(--pb)");
+        const delBtn = iconBtn("trash", `Hapus milestone ${t.task}`, () => { state.data.timeline = state.data.timeline.filter(x => x.id !== t.id); scheduleSave(); renderContent(); }, "var(--pm)");
         acts.append(editBtn, delBtn);
         row.append(left, right, acts);
         card.appendChild(row);
@@ -720,9 +685,9 @@
       const gPend = d.guests.filter(g => g.rsvp === "pending").length;
       const gTotal = d.guests.length;
 
-      const sg = div("grid grid-cols-4 gap-2.5 mb-3.5");
+      const sg = div("grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3.5");
       [[gTotal, "Total", "var(--pk)"], [gConf, "Hadir", "var(--green)"], [gDec, "Menolak", "var(--red)"], [gPend, "Belum", "var(--orange)"]].forEach(([v, l, cl]) => {
-        const sc = div("bg-white border border-pb rounded-[14px] p-2.5 text-center shadow-[0_4px_20px_rgba(107,45,69,0.04)]");
+        const sc = div("bg-surface border border-pb rounded-[14px] p-2.5 text-center");
         const num = div("font-['Cormorant_Garamond',serif] text-[22px] leading-none font-medium"); num.style.color = cl; num.textContent = v;
         const lbl = div("text-[10px] text-pm mt-1 font-medium"); lbl.textContent = l;
         sc.append(num, lbl); sg.appendChild(sc);
@@ -740,55 +705,62 @@
       // Search
       const srch = h("input", { type: "text", class: CLS_INP, placeholder: "Cari nama tamu...", value: state.guestSearch });
       srch.style.marginBottom = "8px";
-      srch.addEventListener("input", e => { state.guestSearch = e.target.value; renderContent(); });
+      srch.setAttribute("aria-label", "Cari nama tamu");
+      srch.addEventListener("input", e => { state.guestSearch = e.target.value; renderGuestList(); });
       card.appendChild(srch);
 
       // Filter tabs
       const filters = div("flex gap-1.5 overflow-x-auto pb-1 mb-2.5");
       [["all", "Semua"], ["confirmed", "Hadir"], ["declined", "Menolak"], ["pending", "Belum"]].forEach(([f, l]) => {
-        const btn = h("button", { onclick: () => { state.guestFilter = f; renderContent(); } });
+        const btn = h("button", { onclick: () => { state.guestFilter = f; updateFilters(); renderGuestList(); } });
         btn.setAttribute("aria-label", `Filter tamu ${l}`);
-        btn.style.cssText = `padding:7px 14px;min-height:44px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;border:0.5px solid ${state.guestFilter === f ? "var(--pk)" : "var(--pb)"};background:${state.guestFilter === f ? "var(--pk)" : "var(--pl)"};color:${state.guestFilter === f ? "#fff" : "var(--pd)"};`;
+        btn.className = "guest-filter";
+        btn.dataset.filter = f;
         btn.textContent = l;
         filters.appendChild(btn);
       });
       card.appendChild(filters);
 
-      const filtered = d.guests.filter(g => {
-        return (state.guestFilter === "all" || g.rsvp === state.guestFilter) && (!state.guestSearch || g.name.toLowerCase().includes(state.guestSearch.toLowerCase()));
-      });
-
-      if (filtered.length === 0) {
-        const empty = div("text-center p-8 text-pm text-[13px]");
-        empty.innerHTML = `<i class="ti ti-users" style="font-size:28px;display:block;margin-bottom:8px;color:var(--pb)"></i>${gTotal === 0 ? "Belum ada tamu. Tambahkan di atas." : "Tidak ada hasil."}`;
-        card.appendChild(empty);
-      } else {
-        const hdr = div("grid grid-cols-[1fr_auto_auto] gap-2 text-[10px] text-pm uppercase pb-1.5 border-b border-pb mb-0.5");
-        ["Nama", "RSVP", ""].forEach(txt => { const s = document.createElement("span"); s.textContent = txt; hdr.appendChild(s); });
-        card.appendChild(hdr);
-        filtered.forEach(g => {
-          const row = div("grid grid-cols-[1fr_auto_auto] gap-2 items-center py-2.5 border-b border-pb");
-          const nameCol = div("");
-          const name = div("text-[13px] text-pd font-semibold"); name.textContent = g.name;
-          const side = div("text-[11px] text-pm mt-0.25"); side.textContent = g.side;
-          nameCol.append(name, side);
-          const rsvpSel = h("select", { class: "text-[11.5px] p-[7px_12px] min-h-[44px] rounded-full font-semibold border-none cursor-pointer transition-all duration-200 font-['DM_Sans',sans-serif] appearance-none xs:text-[15px] xs:p-[6px_12px]", "aria-label": `Ubah RSVP ${g.name}` });
-          rsvpSel.style.cssText = `background:${RSVP_MAP[g.rsvp].bg};color:${RSVP_MAP[g.rsvp].color};`;
-          [["confirmed", "✓ Hadir"], ["declined", "✗ Tidak"], ["pending", "? Belum"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (g.rsvp === v) o.selected = true; rsvpSel.appendChild(o); });
-          rsvpSel.addEventListener("change", e => { g.rsvp = e.target.value; scheduleSave(); renderContent(); });
-          const acts = div("flex gap-1");
-          const eb = iconBtn("pencil", `Edit tamu ${g.name}`, () => openModal("guest", { ...g }));
-          const db = iconBtn("trash", `Hapus tamu ${g.name}`, () => { state.data.guests = state.data.guests.filter(x => x.id !== g.id); scheduleSave(); renderContent(); }, "var(--pb)");
-          acts.append(eb, db);
-          row.append(nameCol, rsvpSel, acts);
-          row.style.gridTemplateColumns = "1fr auto 92px";
-          row.style.gap = "8px";
-          row.style.alignItems = "center";
-          row.style.padding = "12px 0";
-          row.style.borderBottom = "0.5px solid var(--pb)";
-          card.appendChild(row);
-        });
+      const list = div("");
+      card.appendChild(list);
+      function updateFilters() {
+        for (const btn of filters.children) btn.setAttribute("aria-pressed", String(state.guestFilter === btn.dataset.filter));
       }
+      function renderGuestList() {
+        list.replaceChildren();
+        const filtered = d.guests.filter(g => {
+          return (state.guestFilter === "all" || g.rsvp === state.guestFilter) && (!state.guestSearch || g.name.toLowerCase().includes(state.guestSearch.toLowerCase()));
+        });
+
+        if (filtered.length === 0) {
+          const empty = div("text-center p-8 text-pm text-[13px]");
+          empty.innerHTML = `<i class="ti ti-users" style="font-size:28px;display:block;margin-bottom:8px;color:var(--pb)"></i>${gTotal === 0 ? "Belum ada tamu. Tambahkan di atas." : "Tidak ada hasil."}`;
+          list.appendChild(empty);
+        } else {
+          const hdr = div("grid grid-cols-[minmax(0,1fr)_auto_92px] gap-2 text-[10px] text-pm uppercase pb-1.5 border-b border-pb mb-0.5");
+          ["Nama", "RSVP", ""].forEach(txt => { const s = document.createElement("span"); s.textContent = txt; hdr.appendChild(s); });
+          list.appendChild(hdr);
+          filtered.forEach(g => {
+            const row = div("grid grid-cols-[minmax(0,1fr)_auto_92px] gap-2 items-center py-2.5 border-b border-pb");
+            const nameCol = div("min-w-0 break-words");
+            const name = div("text-[13px] text-pd font-semibold"); name.textContent = g.name;
+            const side = div("text-[11px] text-pm mt-0.25"); side.textContent = g.side;
+            nameCol.append(name, side);
+            const rsvpSel = h("select", { class: "text-[11.5px] p-[7px_12px] min-h-[44px] rounded-full font-semibold border-none cursor-pointer transition-all duration-200 font-['DM_Sans',sans-serif] appearance-none xs:text-[15px] xs:p-[6px_12px]", "aria-label": `Ubah RSVP ${g.name}` });
+            rsvpSel.style.cssText = `background:${RSVP_MAP[g.rsvp].bg};color:${RSVP_MAP[g.rsvp].color};`;
+            [["confirmed", "✓ Hadir"], ["declined", "✗ Tidak"], ["pending", "? Belum"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; if (g.rsvp === v) o.selected = true; rsvpSel.appendChild(o); });
+            rsvpSel.addEventListener("change", e => { g.rsvp = e.target.value; scheduleSave(); renderContent(); });
+            const acts = div("flex gap-1");
+            const eb = iconBtn("pencil", `Edit tamu ${g.name}`, () => openModal("guest", { ...g }));
+            const db = iconBtn("trash", `Hapus tamu ${g.name}`, () => { state.data.guests = state.data.guests.filter(x => x.id !== g.id); scheduleSave(); renderContent(); }, "var(--pm)");
+            acts.append(eb, db);
+            row.append(nameCol, rsvpSel, acts);
+            list.appendChild(row);
+          });
+        }
+      }
+      updateFilters();
+      renderGuestList();
       c.appendChild(card);
     }
 
@@ -813,7 +785,7 @@
           const name = div("flex-1 text-[14px] font-medium text-pd"); name.textContent = v.name;
           const badge = div("text-[11px] p-[4px_12px] rounded-full font-semibold truncate"); badge.style.background = VSTATUS[v.status].bg; badge.style.color = VSTATUS[v.status].color; badge.textContent = VSTATUS[v.status].label;
           const eb = iconBtn("pencil", `Edit vendor ${v.name}`, () => openModal("vendor", { ...v }));
-          const db = iconBtn("trash", `Hapus vendor ${v.name}`, () => { state.data.vendors = state.data.vendors.filter(x => x.id !== v.id); scheduleSave(); renderContent(); }, "var(--pb)");
+          const db = iconBtn("trash", `Hapus vendor ${v.name}`, () => { state.data.vendors = state.data.vendors.filter(x => x.id !== v.id); scheduleSave(); renderContent(); }, "var(--pm)");
           top.append(name, badge, eb, db);
           row.appendChild(top);
           const type = div("text-[12px] text-pm"); type.textContent = v.type;
@@ -835,17 +807,17 @@
       c.appendChild(expRow);
 
       // Cat tabs
-      const tabs = div("cat-tabs flex gap-2 overflow-x-auto pb-1.5 mb-3.5");
+      const tabs = div("flex flex-wrap gap-2 mb-3.5");
       CATS.forEach(cat => {
         const e = catSum(cat, "estimasi");
         const isActiveCat = state.activeCat === cat;
         const btn = h("button", {
           class: `cat-tab p-[8px_16px] min-h-[44px] rounded-full text-[12.5px] font-semibold cursor-pointer border border-pb bg-pl text-pd truncate shrink-0 font-['DM_Sans',sans-serif] transition-all duration-200 ease-in-out active:scale-[0.96]${isActiveCat ? " active" : ""}`,
           "aria-label": `Buka kategori budget ${cat}`,
-          onclick: () => { state.activeCat = cat; state.selectedBudgetIds = []; renderContent(); }
+          onclick: () => { state.activeCat = cat; state.selectedBudgetIds = []; renderContent(); renderBulkActionBar(); }
         });
         if (isActiveCat) {
-          btn.style.background = "#fff";
+          btn.style.background = "var(--surface)";
           btn.style.borderColor = "var(--pk)";
           btn.style.color = "var(--pk)";
           btn.style.boxShadow = "inset 0 0 0 1px rgba(220,75,118,0.2)";
@@ -882,8 +854,8 @@
       const catDb = catSum(state.activeCat, "dibayar");
       const catSisa = catHg - catDb;
       const boxes3 = div("grid grid-cols-3 gap-3 mb-4");
-      [["Estimasi", catE, "var(--pk)", "bg-pl/50"], ["Harga Asli", catHg, "#a34e70", "bg-pl/50"], ["Dibayar", catDb, "var(--green)", "bg-green-bg/70"]].forEach(([l, v, color, bgClass]) => {
-        const box = div(`${bgClass} border border-pb/45 rounded-2xl p-[12px_8px] text-center shadow-[0_2px_8px_rgba(107,45,69,0.01)]`);
+      [["Estimasi", catE, "var(--pk)", "bg-pl/50"], ["Harga Asli", catHg, "var(--pm)", "bg-pl/50"], ["Dibayar", catDb, "var(--green)", "bg-green-bg/70"]].forEach(([l, v, color, bgClass]) => {
+        const box = div(`${bgClass} border border-pb/45 rounded-2xl p-[12px_8px] text-center`);
         const lbl = div("text-[10px] md:text-[11px] text-pd/70 uppercase tracking-wider mb-1.5 font-bold"); lbl.textContent = l;
         const val = div("font-['Cormorant_Garamond',serif] leading-none font-bold text-[18px] md:text-[20px]"); val.style.color = color; val.textContent = v > 0 ? fmtRp(v) : "–";
         box.append(lbl, val); boxes3.appendChild(box);
@@ -1004,30 +976,27 @@
           if (isCollapsed) return; // skip rendering items if collapsed
 
           const scroll = div("overflow-x-auto");
-          const hdr = div("grid grid-cols-[28px_2.2fr_1fr_1fr_1fr_44px] gap-2.5 text-[12px] text-pd/70 font-bold uppercase tracking-wider pb-2.5 border-b border-pb min-w-[616px] xs:hidden");
+          const hdr = div("budget-grid budget-head text-xs text-pm font-bold pb-2.5 border-b border-pb");
           ["", "Item", "Estimasi", "Harga Asli", "Dibayar", ""].forEach((txt, i) => { const s = document.createElement("span"); s.textContent = txt; if (i > 1 && i < 5) s.style.textAlign = "right"; hdr.appendChild(s); });
           scroll.appendChild(hdr);
 
           scItems.forEach(item => {
             const isSelected = (state.selectedBudgetIds || []).includes(item.id);
-            const chk = div(`w-[22px] h-[22px] rounded border ${isSelected ? 'bg-pk border-pk text-white' : 'border-pb bg-white'} flex items-center justify-center shrink-0 cursor-pointer xs:self-center xs:col-start-1 xs:row-start-1 xs:row-end-4`, [
-              isSelected && icon("check", { fontSize: "11px", color: "#fff" })
-            ], { role: "checkbox", "aria-checked": isSelected ? "true" : "false", "aria-label": `Pilih item ${item.name}` });
-            chk.addEventListener("click", (e) => {
-              e.stopPropagation();
-              state.selectedBudgetIds = state.selectedBudgetIds || [];
-              if (isSelected) {
-                state.selectedBudgetIds = state.selectedBudgetIds.filter(id => id !== item.id);
-              } else {
-                state.selectedBudgetIds.push(item.id);
-              }
+            const chk = h("button", {
+              class: "budget-pick " + CLS_ICON_BTN,
+              "aria-pressed": String(isSelected),
+              "aria-label": `Pilih item ${item.name}`
+            }, [icon(isSelected ? "square-check-filled" : "square", { fontSize: "21px" })]);
+            chk.addEventListener("click", () => {
+              state.selectedBudgetIds = isSelected
+                ? state.selectedBudgetIds.filter(id => id !== item.id)
+                : [...state.selectedBudgetIds, item.id];
               renderContent();
               renderBulkActionBar();
             });
 
-            const row = div("grid grid-cols-[28px_2.2fr_1fr_1fr_1fr_44px] gap-1.5 items-center py-2.5 border-b border-pb min-w-[616px] xs:grid xs:grid-cols-[32px_1fr_auto] xs:grid-rows-auto xs:gap-0 xs:min-w-0 xs:py-2.5 xs:bg-transparent xs:rounded-none xs:border-none xs:border-b xs:border-pb/40 xs:mb-0 xs:relative");
-
-            const nameCol = div("flex flex-col gap-0.5 min-w-0 xs:col-start-2 xs:row-start-1 xs:row-end-4 xs:pr-3 xs:self-center");
+            const row = div("budget-grid py-2.5 border-b border-pb");
+            const nameCol = div("budget-name flex flex-col gap-0.5");
 
             const nameRow = div("flex items-center gap-1.5 cursor-pointer");
             nameRow.addEventListener("click", () => openModal("budget_options", { item, cat: state.activeCat }));
@@ -1040,7 +1009,7 @@
             nameRow.appendChild(chevronIcon);
 
             if (item.link) {
-              const lk = h("a", { href: item.link, target: "_blank", class: "inline-flex items-center text-[#ff5722] no-underline shrink-0" });
+              const lk = h("a", { href: item.link, target: "_blank", class: "inline-flex items-center text-orange no-underline shrink-0" });
               lk.appendChild(icon("shopping-cart", { fontSize: "13px" }));
               lk.addEventListener("click", e => e.stopPropagation());
               nameRow.appendChild(lk);
@@ -1058,7 +1027,7 @@
 
             if (hasMultipleOptions) {
               const sel = h("select");
-              sel.className = "max-w-[110px] truncate text-[10px] p-[2px_16px_2px_4px] border border-pb/60 rounded bg-white text-pm font-['DM_Sans',sans-serif] appearance-none bg-no-repeat bg-[right_6px_center] cursor-pointer xs:max-w-[220px] xs:text-[11px] xs:p-[2px_18px_2px_6px]";
+              sel.className = "max-w-[110px] truncate text-[10px] p-[2px_16px_2px_4px] border border-pb/60 rounded bg-surface text-pm font-['DM_Sans',sans-serif] appearance-none bg-no-repeat bg-[right_6px_center] cursor-pointer xs:max-w-[220px] xs:text-[11px] xs:p-[2px_18px_2px_6px]";
               sel.style.backgroundImage = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%23c4849a' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\")";
 
               optionsList.forEach(opt => {
@@ -1108,11 +1077,14 @@
             }
 
             ["estimasi", "harga", "dibayar"].forEach(f => {
-              const fieldLbl = { estimasi: "Est", harga: "Asli", dibayar: "Bayar" }[f];
+              const fieldLbl = { estimasi: "Estimasi", harga: "Harga asli", dibayar: "Dibayar" }[f];
               const val = item[f] ? Number(item[f]) : 0;
-              const colorMap = { estimasi: "var(--pd)", harga: "#b87090", dibayar: "var(--green)" };
+              const colorMap = { estimasi: "var(--pd)", harga: "var(--pm)", dibayar: "var(--green)" };
 
-              const display = h("span", { class: "text-sm font-medium text-right cursor-pointer p-[6px_8px] rounded-[8px] block transition-colors duration-150 min-h-[32px] leading-[20px] border-b border-dashed border-pb hover:bg-pl/60 hover:border-pk/50 xs:text-[12px] xs:p-[7px_8px] xs:min-h-[34px] xs:leading-[20px]" });
+              const display = h("button", {
+                class: "text-sm font-medium text-right cursor-pointer px-2 rounded-lg block w-full min-h-[44px] border border-pb hover:bg-pl",
+                "aria-label": `Edit ${fieldLbl} ${item.name}`
+              });
               display.style.color = colorMap[f];
               display.textContent = val ? Number(val).toLocaleString("id-ID") : "—";
               if (f === "dibayar" && Number(item.harga) > 0 && Number(item.dibayar) >= Number(item.harga)) {
@@ -1120,7 +1092,7 @@
               }
 
               display.addEventListener("click", () => {
-                const inp = h("input", { type: "text", inputmode: "numeric", class: "text-right text-sm p-[6px_8px] w-full xs:text-[12px] xs:p-[7px_8px] xs:min-h-[34px] border border-pb rounded", value: val ? Number(val).toLocaleString("id-ID") : "", placeholder: "0" });
+                const inp = h("input", { type: "text", inputmode: "numeric", class: "text-right text-sm p-[6px_8px] w-full min-h-[44px] bg-surface border border-pk rounded-lg", "aria-label": fieldLbl, value: val ? Number(val).toLocaleString("id-ID") : "", placeholder: "0" });
                 wrap.replaceChild(inp, display);
                 bindThousandsInput(inp);
                 inp.focus();
@@ -1140,18 +1112,18 @@
                 inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
               });
 
-              const wrap = div("w-full xs:flex xs:flex-row xs:items-center xs:gap-1.5 xs:py-0.5 xs:justify-end xs:col-start-3 xs:row-start-" + (f === "estimasi" ? "1" : f === "harga" ? "2" : "3"), [
-                h("span", { class: "hidden xs:block xs:text-[8.5px] xs:uppercase xs:text-pm xs:font-semibold xs:tracking-wider xs:shrink-0 xs:min-w-[28px] xs:text-right" }, [fieldLbl]),
+              const wrap = div("budget-price", [
+                h("span", { class: "budget-price-label" }, [fieldLbl]),
                 display
               ]);
               row.appendChild(wrap);
             });
 
             const del = h("button", { onclick: () => { state.data.budget[state.activeCat] = state.data.budget[state.activeCat].filter(i => i.id !== item.id); scheduleSave(); renderContent(); } });
-            del.className = CLS_ICON_BTN + " xs:hidden";
+            del.className = CLS_ICON_BTN + " budget-delete";
             del.setAttribute("aria-label", `Hapus item ${item.name}`);
             del.title = `Hapus item ${item.name}`;
-            del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pb)" }));
+            del.appendChild(icon("trash", { fontSize: "15px", color: "var(--pm)" }));
             row.prepend(nameCol);
             row.prepend(chk);
             row.appendChild(del);
@@ -1177,7 +1149,7 @@
         ["estimasi", "harga", "dibayar"].forEach((f, i) => {
           const s = h("span", { class: "text-right xs:flex xs:justify-between xs:text-right xs:py-1" });
           s.textContent = fmtRp(catSum(state.activeCat, f));
-          s.style.color = ["var(--pk)", "#b87090", "var(--green)"][i];
+          s.style.color = ["var(--pk)", "var(--pm)", "var(--green)"][i];
           const labelName = ["Estimasi", "Harga_Asli", "Dibayar"][i];
           s.className += ` xs:before:content-['${labelName}'] xs:before:font-medium xs:before:text-pm xs:before:text-[11px]`;
           tot.appendChild(s);
@@ -1267,7 +1239,7 @@
       const g4 = div("grid grid-cols-2 gap-2 mb-3");
       [
         ["Estimasi Budget", totalE, "var(--pk)"],
-        ["Harga Asli", totalH, "#b87090"],
+        ["Harga Asli", totalH, "var(--pm)"],
       ].forEach(([l, v, color]) => {
         const box = div("bg-pl rounded-[12px] p-[10px_8px] text-center");
         const lbl = div("text-[12.5px] text-pm uppercase tracking-wider mb-1 font-semibold"); lbl.textContent = l;
@@ -1328,7 +1300,7 @@
           const jml = div("text-[15px] font-bold text-green whitespace-nowrap"); jml.textContent = fmtRp(Number(item.jumlah) || 0);
           const acts = div("flex gap-1");
           const eb = iconBtn("pencil", `Edit dana ${item.nama}`, () => openModal("dana", { ...item }));
-          const db = iconBtn("trash", `Hapus dana ${item.nama}`, () => { state.data.dana = state.data.dana.filter(x => x.id !== item.id); scheduleSave(); renderContent(); }, "var(--pb)");
+          const db = iconBtn("trash", `Hapus dana ${item.nama}`, () => { state.data.dana = state.data.dana.filter(x => x.id !== item.id); scheduleSave(); renderContent(); }, "var(--pm)");
           acts.append(eb, db);
           row.append(nameCol, jml, acts);
           listCard.appendChild(row);
@@ -1357,7 +1329,19 @@
 
     // ── Modals ─────────────────────────────────────────────────
     function openModal(type, form = {}) { state.modal = type; state.modalForm = { ...form }; renderModal(); }
-    function closeModal() { state.modal = null; state.modalForm = {}; const m = document.getElementById("modal-container"); if (m) m.remove(); }
+    let modalTrigger;
+    let stopTrackingViewport;
+    function closeModal() {
+      state.modal = null;
+      state.modalForm = {};
+      document.getElementById("modal-container")?.remove();
+      document.documentElement.classList.remove("dialog-open");
+      document.getElementById("app").removeAttribute("inert");
+      stopTrackingViewport?.();
+      stopTrackingViewport = null;
+      if (modalTrigger?.isConnected) modalTrigger.focus({ preventScroll: true });
+      modalTrigger = null;
+    }
 
     // Styled replacements for native prompt()/confirm(), so dialogs match
     // the app's theme instead of the browser's default system styling.
@@ -1373,18 +1357,24 @@
     }
 
     function renderModal() {
-      let existing = document.getElementById("modal-container");
-      if (existing) existing.remove();
-      const bg = div("fixed inset-0 bg-[rgba(107,45,69,0.4)] backdrop-blur-[4px] z-[200] flex items-end md:items-center justify-center p-0 md:p-6 animate-[fadeIn_0.2s_ease-out]"); bg.id = "modal-container";
+      const existing = document.getElementById("modal-container");
+      if (!existing) modalTrigger = document.activeElement;
+      existing?.remove();
+      stopTrackingViewport?.();
+      stopTrackingViewport = null;
+      const bg = div("fixed inset-0 dialog-backdrop z-[200] flex items-end md:items-center justify-center animate-[fadeIn_0.2s_ease-out]"); bg.id = "modal-container";
       bg.addEventListener("click", e => { if (e.target === bg) closeModal(); });
-      const sheet = div("bg-white rounded-t-[24px] md:rounded-2xl w-full md:max-w-xl max-h-[85dvh] overflow-y-auto pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-6 shadow-[0_24px_80px_rgba(74,18,36,0.22)] animate-[slideUp_0.28s_cubic-bezier(0.16,1,0.3,1)]");
-      sheet.style.webkitOverflowScrolling = "touch";
+      const sheet = div("bg-surface rounded-t-[24px] md:rounded-2xl w-full md:max-w-xl dialog-sheet overflow-y-auto pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-6 animate-[slideUp_0.28s_cubic-bezier(0.16,1,0.3,1)]");
+      sheet.setAttribute("role", "dialog");
+      sheet.setAttribute("aria-modal", "true");
+      sheet.setAttribute("aria-labelledby", "dialog-title");
       const handle = div("w-9 h-1.5 bg-pb rounded-full my-3 mx-auto md:hidden");
       sheet.appendChild(handle);
 
       const titles = { info: "Edit Info Pernikahan", vendor: state.modalForm.id ? "Edit Vendor" : "Tambah Vendor", guest: state.modalForm.id ? "Edit Tamu" : "Tambah Tamu", tl: "Edit Milestone", dana: state.modalForm.id ? "Edit Sumber Dana" : "Tambah Sumber Dana", budget_options: "Kelola Opsi Vendor", lainnya_menu: "Menu Lainnya", text_prompt: state.modalForm.title || "Input", confirm_dialog: state.modalForm.title || "Konfirmasi" };
       const titleRow = div("flex items-center justify-between gap-3 p-[0_20px_14px] md:p-[18px_20px_14px] border-b border-pb mb-4");
-      const title = div("font-['Cormorant_Garamond',serif] italic text-2xl text-pd font-medium"); title.textContent = titles[state.modal] || "";
+      const title = div("font-['Cormorant_Garamond',serif] italic text-2xl text-pd font-medium"); title.id = "dialog-title";
+      title.textContent = titles[state.modal] || "";
       const closeBtn = iconBtn("x", "Tutup modal", closeModal);
       titleRow.append(title, closeBtn);
       sheet.appendChild(titleRow);
@@ -1408,7 +1398,18 @@
       // (Saving immediately from any field risked submitting a form with
       // later fields still empty/unedited — e.g. amount left at 0.)
       sheet.addEventListener("keydown", e => {
-        if (e.key !== "Enter") return;
+        if (e.key === "Escape") { closeModal(); return; }
+        if (e.key === "Tab") {
+          const controls = Array.from(sheet.querySelectorAll("button, input, select, textarea, a[href]"))
+            .filter(el => !el.disabled && el.offsetParent !== null);
+          const edge = e.shiftKey ? controls[0] : controls.at(-1);
+          if (e.target === edge) {
+            e.preventDefault();
+            (e.shiftKey ? controls.at(-1) : controls[0]).focus();
+          }
+          return;
+        }
+        if (e.key !== "Enter" || e.isComposing) return;
         const tag = e.target.tagName;
         if (tag !== "INPUT" && tag !== "SELECT") return;
         if (e.target.type === "checkbox" || e.target.type === "radio") return;
@@ -1430,6 +1431,23 @@
 
       bg.appendChild(sheet);
       document.body.appendChild(bg);
+      document.documentElement.classList.add("dialog-open");
+      document.getElementById("app").setAttribute("inert", "");
+      const viewport = window.visualViewport;
+      if (viewport) {
+        const fitViewport = () => {
+          bg.style.setProperty("--visible-height", `${viewport.height}px`);
+          bg.style.setProperty("--visible-top", `${viewport.offsetTop}px`);
+        };
+        fitViewport();
+        viewport.addEventListener("resize", fitViewport);
+        viewport.addEventListener("scroll", fitViewport);
+        stopTrackingViewport = () => {
+          viewport.removeEventListener("resize", fitViewport);
+          viewport.removeEventListener("scroll", fitViewport);
+        };
+      }
+      closeBtn.focus({ preventScroll: true });
     }
 
     function field(label, input) {
@@ -1528,7 +1546,9 @@
       const inp = h("input", { type: "text", class: CLS_INP, placeholder: placeholder || "", value: value || "" });
       inp.style.marginBottom = "14px";
       body.appendChild(inp);
-      setTimeout(() => { inp.focus(); inp.select(); }, 60);
+      if (matchMedia("(pointer: fine)").matches) {
+        requestAnimationFrame(() => { if (inp.isConnected) { inp.focus(); inp.select(); } });
+      }
 
       const submit = () => {
         const v = inp.value.trim();
@@ -1549,7 +1569,10 @@
       const row = div("grid grid-cols-2 gap-2.5 mt-1.5");
       const confirmBtn = h("button", { class: CLS_BTN_PRIMARY, onclick: () => { closeModal(); if (onConfirm) onConfirm(); } });
       confirmBtn.style.justifyContent = "center"; confirmBtn.style.width = "100%";
-      if (danger) confirmBtn.style.background = "linear-gradient(to right, var(--red), #7a2240)";
+      if (danger) {
+        confirmBtn.style.background = "var(--red)";
+        confirmBtn.style.color = "var(--on-accent)";
+      }
       confirmBtn.textContent = confirmLabel || "Ya, Lanjutkan";
       const cancelBtn = h("button", { class: CLS_BTN_SECONDARY, onclick: closeModal }); cancelBtn.textContent = "Batal";
       row.append(confirmBtn, cancelBtn);
@@ -1557,7 +1580,32 @@
     }
 
     // ── Export XLSX ────────────────────────────────────────────
-    function exportXlsx() {
+    let xlsxLoader;
+    async function exportXlsx(event) {
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        if (!window.XLSX) {
+          xlsxLoader ||= new Promise((resolve, reject) => {
+            const script = h("script", {
+              src: "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js",
+              onload: resolve,
+              onerror: () => { script.remove(); reject(new Error("XLSX gagal dimuat")); }
+            });
+            document.head.appendChild(script);
+          });
+          await xlsxLoader;
+        }
+        exportWorkbook();
+      } catch {
+        xlsxLoader = null;
+        openConfirmModal({ title: "Export gagal", message: "File Excel belum bisa dibuat. Coba lagi setelah koneksi stabil.", confirmLabel: "Tutup", onConfirm: () => {} });
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function exportWorkbook() {
       const wb = XLSX.utils.book_new();
       const d = state.data;
 
@@ -1778,7 +1826,7 @@
       // Delete Entire Item Button (styled red, outline or ghost)
       const deleteItemBtn = h("button", {
         class: CLS_BTN_SECONDARY,
-        style: "width:100%;margin-top:12px;background:#fce8ef;color:var(--pk);border:0.5px solid var(--pb);justify-content:center;display:flex;align-items:center;gap:6px;",
+        style: "width:100%;margin-top:12px;background:var(--red-bg);color:var(--pk);border:0.5px solid var(--pb);justify-content:center;display:flex;align-items:center;gap:6px;",
         onclick: () => {
           openConfirmModal({
             title: "Hapus Item",
@@ -1802,9 +1850,9 @@
 
       const menuItems = [
         { page: "timeline", label: "Timeline", icon: "timeline", color: "var(--pk)", bg: "var(--pl)" },
-        { page: "vendor", label: "Vendor", icon: "building-store", color: "#b87090", bg: "#fcedf2" },
+        { page: "vendor", label: "Vendor", icon: "building-store", color: "var(--pm)", bg: "var(--pl)" },
         { page: "dana", label: "Dana", icon: "wallet", color: "var(--green)", bg: "var(--green-bg)" },
-        { label: "Reset Data Contoh", icon: "refresh", color: "#993556", bg: "var(--red-bg)", action: "reset" }
+        { label: "Reset Data Contoh", icon: "refresh", color: "var(--red)", bg: "var(--red-bg)", action: "reset" }
       ];
 
       menuItems.forEach(item => {
@@ -1823,28 +1871,19 @@
                   state.data.budget = Object.fromEntries(CATS.map(c => [c, []]));
                   state.data.checklist = state.data.checklist.map(c => ({ ...c, done: false }));
                   state.activeCat = CATS[0];
-                  state.page = "dashboard";
                   scheduleSave();
-                  renderContent();
-                  renderNav();
+                  navigate("dashboard");
                 }
               });
               return;
             }
-            state.page = item.page;
             closeModal();
-            renderContent();
-            renderNav();
+            navigate(item.page);
           }
         });
         box.className = "flex flex-col items-center gap-2.5 p-[20px_8px] border-none rounded-2xl cursor-pointer transition-transform duration-150 opacity-100 hover:opacity-90";
         box.style.background = item.bg;
         box.style.color = item.color;
-
-        box.addEventListener("touchstart", () => { box.style.transform = "scale(0.94)"; });
-        box.addEventListener("touchend", () => { box.style.transform = "scale(1)"; });
-        box.addEventListener("mousedown", () => { box.style.transform = "scale(0.94)"; });
-        box.addEventListener("mouseup", () => { box.style.transform = "scale(1)"; });
 
         const ic = document.createElement("i");
         ic.className = `ti ti-${item.icon}`;
@@ -1867,7 +1906,7 @@
       state.selectedBudgetIds = state.selectedBudgetIds || [];
       if (state.selectedBudgetIds.length === 0) return;
 
-      const bar = div("fixed bottom-[84px] md:bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl bg-white/95 backdrop-blur-md border border-pb rounded-2xl p-3 shadow-[0_8px_30px_rgba(107,45,69,0.12)] flex items-center justify-between gap-3 z-[90] animate-[slideUp_0.25s_ease-out]");
+      const bar = div("bulk-bar bg-surface border border-pb rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 z-[90]");
       bar.id = "bulk-action-bar";
 
       const left = div("text-xs font-bold text-pd");
@@ -1951,7 +1990,7 @@
 
       right.append(select, cancelBtn);
       bar.append(left, right);
-      document.body.appendChild(bar);
+      document.getElementById("app").appendChild(bar);
     }
 
     // ── Start ──────────────────────────────────────────────────
